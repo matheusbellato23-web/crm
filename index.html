@@ -55,30 +55,46 @@
                 </div>
             </div>
             <nav class="sidebar-nav">
+                <!-- Dashboard at the top, no header -->
                 <ul>
                     <li class="nav-item active" data-view="dashboard">
                         <i data-lucide="layout-dashboard"></i>
                         <span>Dashboard</span>
                     </li>
+                </ul>
+
+                <!-- CRM Section -->
+                <div class="nav-section-title">CRM</div>
+                <ul>
                     <li class="nav-item" data-view="contacts">
                         <i data-lucide="users"></i>
-                        <span>Contatos</span>
+                        <span>Contatos (Leads)</span>
                     </li>
                     <li class="nav-item" data-view="kanban">
-                        <i data-lucide="kanban-square"></i>
-                        <span>Pipeline (Kanban)</span>
-                    </li>
-                    <li class="nav-item" data-view="customers">
-                        <i data-lucide="gem"></i>
-                        <span>Clientes</span>
+                        <i data-lucide="target"></i>
+                        <span>Oportunidades (Pipeline)</span>
                     </li>
                     <li class="nav-item" data-view="products">
                         <i data-lucide="package"></i>
-                        <span>Produtos</span>
+                        <span>Produtos & Serviços</span>
                     </li>
+                </ul>
+
+                <!-- Produção Section -->
+                <div class="nav-section-title">Produção</div>
+                <ul>
                     <li class="nav-item" data-view="tasks">
                         <i data-lucide="check-square"></i>
-                        <span>Tarefas</span>
+                        <span>Tarefas Comerciais</span>
+                    </li>
+                </ul>
+
+                <!-- Finanças Section -->
+                <div class="nav-section-title">Finanças</div>
+                <ul>
+                    <li class="nav-item" data-view="customers">
+                        <i data-lucide="gem"></i>
+                        <span>Clientes (Faturamento)</span>
                     </li>
                 </ul>
             </nav>

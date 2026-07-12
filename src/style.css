@@ -107,6 +107,7 @@ body {
 .sidebar {
     width: 240px;
     background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -115,7 +116,7 @@ body {
 
 .sidebar-header {
     padding: 20px 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .logo {
@@ -142,7 +143,7 @@ body {
     font-family: var(--font-heading);
     font-weight: 600;
     font-size: 16px;
-    color: #ffffff;
+    color: var(--text-primary);
     letter-spacing: -0.02em;
 }
 
@@ -153,35 +154,57 @@ body {
 
 .sidebar-nav {
     flex: 1;
-    padding: 20px 12px;
+    padding: 16px 12px;
 }
 
 .sidebar-nav ul {
     list-style: none;
 }
 
+.nav-section-title {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    padding: 16px 12px 6px;
+}
+
 .nav-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 16px;
-    color: #94a3b8; /* Slate 400 for menu */
+    padding: 8px 12px;
+    color: var(--text-secondary);
     border-radius: var(--radius-sm);
     cursor: pointer;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     transition: all var(--transition-fast);
     font-weight: 500;
     font-size: 13px;
+    position: relative;
 }
 
 .nav-item:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--text-primary);
+    background-color: var(--bg-card-hover);
 }
 
 .nav-item.active {
-    color: #ffffff;
+    color: var(--color-primary);
+    background-color: var(--color-primary-glow);
+    font-weight: 600;
+}
+
+.nav-item.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
     background-color: var(--color-primary);
+    border-radius: 0 4px 4px 0;
 }
 
 .nav-item i {
@@ -191,7 +214,7 @@ body {
 
 .sidebar-footer {
     padding: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -204,15 +227,16 @@ body {
     padding: 8px 12px;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.03);
-    color: #94a3b8;
+    background-color: var(--bg-app);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
     transition: all var(--transition-fast);
     font-size: 12px;
 }
 
 .theme-toggle:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    background-color: var(--bg-card-hover);
 }
 
 .theme-toggle .sun-icon {
@@ -238,7 +262,7 @@ body {
     width: 32px;
     height: 32px;
     border-radius: var(--radius-full);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
 }
 
 .user-info {
@@ -249,12 +273,12 @@ body {
 .username {
     font-size: 12px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .user-role {
     font-size: 10px;
-    color: #64748b;
+    color: var(--text-secondary);
 }
 
 /* Main Area Layout */
