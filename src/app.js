@@ -169,6 +169,7 @@ function init() {
         state.currentEnv = loggedEnv;
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("appContainer").classList.remove("hidden");
+        document.getElementById("appContainer").classList.add("logged-in");
         document.getElementById("sidebarUsername").innerText = "Admin";
         
         // Setup initial view
@@ -176,6 +177,7 @@ function init() {
     } else {
         document.getElementById("loginOverlay").classList.remove("hidden");
         document.getElementById("appContainer").classList.add("hidden");
+        document.getElementById("appContainer").classList.remove("logged-in");
     }
 }
 
@@ -1374,6 +1376,7 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
         errorMsg.classList.add("hidden");
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("appContainer").classList.remove("hidden");
+        document.getElementById("appContainer").classList.add("logged-in");
         document.getElementById("sidebarUsername").innerText = "Admin";
         
         renderAll();
@@ -1394,6 +1397,7 @@ document.getElementById("btnLogout").addEventListener("click", () => {
     state.currentEnv = "";
     document.getElementById("loginOverlay").classList.remove("hidden");
     document.getElementById("appContainer").classList.add("hidden");
+    document.getElementById("appContainer").classList.remove("logged-in");
     document.getElementById("loginForm").reset();
 });
 
