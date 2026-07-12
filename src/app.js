@@ -1344,8 +1344,15 @@ searchInput.addEventListener("input", () => {
     else if (activeTab === "dashboard") renderDashboard();
     else if (activeTab === "customers") renderCustomers();
     else if (activeTab === "products") renderProducts();
-    else if (activeTab === "proposals") renderProposals();
 });
+
+// Contacts filter dropdown listener
+const filterStatus = document.getElementById("filterStatus");
+if (filterStatus) {
+    filterStatus.addEventListener("change", () => {
+        renderContacts();
+    });
+}
 
 // Modals Trigger Handlers
 document.getElementById("btnQuickAddContact").addEventListener("click", openAddContact);
