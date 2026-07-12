@@ -163,25 +163,25 @@ body {
 
 .nav-section-title {
     font-size: 9px;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     color: var(--text-muted);
-    padding: 16px 12px 6px;
+    padding: 12px 12px 4px;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 12px;
+    padding: 6px 12px;
     color: var(--text-secondary);
     border-radius: var(--radius-sm);
     cursor: pointer;
     margin-bottom: 2px;
     transition: all var(--transition-fast);
-    font-weight: 500;
-    font-size: 13px;
+    font-weight: 400; /* thinner font weight */
+    font-size: 12px;  /* smaller font size */
     position: relative;
 }
 
@@ -193,7 +193,7 @@ body {
 .nav-item.active {
     color: var(--color-primary);
     background-color: var(--color-primary-glow);
-    font-weight: 600;
+    font-weight: 500; /* slightly bolder when active, but still clean */
 }
 
 .nav-item.active::before {
@@ -207,9 +207,11 @@ body {
     border-radius: 0 4px 4px 0;
 }
 
-.nav-item i {
-    width: 16px;
-    height: 16px;
+.nav-item i,
+.nav-item svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 1.5px !important; /* thinner icon strokes */
 }
 
 .sidebar-footer {
