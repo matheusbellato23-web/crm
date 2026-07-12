@@ -1,6 +1,7 @@
 // Centralized State Management with Multi-Tenancy for Nexus CRM
 let state = {
     currentEnv: "", // Set after login
+    privacyMode: false, // Privacy mode toggle
     environments: {} // Tenant data
 };
 
@@ -14,15 +15,15 @@ const defaultProducts = [
 ];
 
 const defaultContacts = [
-    { id: "c1", name: "João Silva", company: "Inova Tech", email: "joao@inovatech.com.br", phone: "(11) 98765-4321", value: 3500.00, status: "negotiating", notes: "Interessado em Criação de Site e SEO.", createdAt: "2026-07-05T14:30:00.000Z", timeline: [{ id: "act1", type: "note", description: "Contato cadastrado no sistema.", timestamp: "2026-07-05T14:30:00.000Z" }] },
-    { id: "c2", name: "Maria Oliveira", company: "Giga Corp", email: "maria.oliveira@gigacorp.com", phone: "(21) 99888-7766", value: 8700.00, status: "won", notes: "Compra fechada de Site + Google Ads.", createdAt: "2026-07-01T09:15:00.000Z", timeline: [{ id: "act2", type: "note", description: "Lead convertido em cliente.", timestamp: "2026-07-09T18:12:00.000Z" }] },
-    { id: "c3", name: "Carlos Souza", company: "Acme Ltda", email: "carlos@acmelimitada.com", phone: "(31) 97777-6655", value: 1200.00, status: "proposal", notes: "Aguardando resposta da proposta de Google Ads.", createdAt: "2026-07-08T11:00:00.000Z", timeline: [] },
-    { id: "c4", name: "Ana Costa", company: "Tech Soluções", email: "ana@techsolucoes.tech", phone: "(11) 96543-2109", value: 3200.00, status: "lead", notes: "Lead do Google Ads. Quer fazer site novo.", createdAt: "2026-07-12T10:00:00.000Z", timeline: [] }
+    { id: "c1", name: "João Silva", company: "Inova Tech", email: "joao@inovatech.com.br", phone: "(11) 98765-4321", value: 3500.00, status: "negotiating", niche: "SaaS / Startup", notes: "Interessado em Criação de Site e SEO.", createdAt: "2026-07-05T14:30:00.000Z", timeline: [{ id: "act1", type: "note", description: "Contato cadastrado no sistema.", timestamp: "2026-07-05T14:30:00.000Z" }] },
+    { id: "c2", name: "Maria Oliveira", company: "Giga Corp", email: "maria.oliveira@gigacorp.com", phone: "(21) 99888-7766", value: 8700.00, status: "won", niche: "E-commerce", notes: "Compra fechada de Site + Google Ads.", createdAt: "2026-07-01T09:15:00.000Z", timeline: [{ id: "act2", type: "note", description: "Lead convertido em cliente.", timestamp: "2026-07-09T18:12:00.000Z" }] },
+    { id: "c3", name: "Carlos Souza", company: "Acme Ltda", email: "carlos@acmelimitada.com", phone: "(31) 97777-6655", value: 1200.00, status: "proposal", niche: "Negócio Local", notes: "Aguardando resposta da proposta de Google Ads.", createdAt: "2026-07-08T11:00:00.000Z", timeline: [] },
+    { id: "c4", name: "Ana Costa", company: "Tech Soluções", email: "ana@techsolucoes.tech", phone: "(11) 96543-2109", value: 3200.00, status: "lead", niche: "Serviços B2B", notes: "Lead do Google Ads. Quer fazer site novo.", createdAt: "2026-07-12T10:00:00.000Z", timeline: [] }
 ];
 
 const defaultCustomers = [
-    { id: "cust1", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", productName: "Desenvolvimento E-commerce", value: 7500.00, type: "single", status: "active", createdAt: "2026-07-09T18:12:00.000Z" },
-    { id: "cust2", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", productName: "Gestão de Google Ads", value: 1200.00, type: "monthly", status: "active", createdAt: "2026-07-09T18:12:00.000Z" }
+    { id: "cust1", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Desenvolvimento E-commerce", value: 7500.00, type: "single", status: "active", createdAt: "2026-07-09T18:12:00.000Z" },
+    { id: "cust2", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Gestão de Google Ads", value: 1200.00, type: "monthly", status: "active", createdAt: "2026-07-09T18:12:00.000Z" }
 ];
 
 const defaultTasks = [
@@ -50,6 +51,12 @@ function init() {
     if (savedState) {
         state = JSON.parse(savedState);
     }
+    
+    // Privacy Mode setup
+    if (state.privacyMode === undefined) {
+        state.privacyMode = false;
+    }
+    updatePrivacyIcon();
     
     // Check session login
     const loggedIn = sessionStorage.getItem("nexus_crm_logged_in");
@@ -79,6 +86,7 @@ let pipelineChart = null;
 
 // Helpers & Formatting
 const formatCurrency = (value) => {
+    if (state.privacyMode) return "R$ ••••••";
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 };
 
@@ -121,11 +129,10 @@ function renderDashboard() {
     
     // KPIs: calculate LTV from customers
     const totalSalesLTV = env.customers.reduce((sum, cust) => {
-        // LTV: One-off products + 6 months estimated recurring contracts
         if (cust.status === "active") {
             return sum + (cust.type === "monthly" ? cust.value * 6 : cust.type === "yearly" ? cust.value : cust.value);
         }
-        return sum + (cust.type === "single" ? cust.value : 0); // only count single sales if inactive
+        return sum + (cust.type === "single" ? cust.value : 0);
     }, 0);
 
     const activePipelineValue = env.contacts.filter(c => ['contacted', 'proposal', 'negotiating'].includes(c.status)).reduce((sum, c) => sum + c.value, 0);
@@ -256,19 +263,19 @@ function renderCharts() {
                 label: 'Receita (R$)',
                 data: [contTotal, propTotal, negTotal, wonTotal],
                 backgroundColor: [
-                    'rgba(99, 102, 241, 0.65)',
-                    'rgba(6, 182, 212, 0.65)',
-                    'rgba(245, 158, 11, 0.65)',
-                    'rgba(16, 185, 129, 0.65)'
+                    'rgba(0, 140, 255, 0.75)',
+                    'rgba(13, 148, 136, 0.75)',
+                    'rgba(154, 52, 18, 0.75)',
+                    'rgba(22, 101, 52, 0.75)'
                 ],
                 borderColor: [
-                    '#6366f1',
-                    '#06b6d4',
-                    '#f59e0b',
-                    '#10b981'
+                    '#008cff',
+                    '#0d9488',
+                    '#9a3412',
+                    '#166534'
                 ],
                 borderWidth: 1.5,
-                borderRadius: 6
+                borderRadius: 4
             }]
         },
         options: {
@@ -293,12 +300,12 @@ function renderCharts() {
             datasets: [{
                 data: stageCounts,
                 backgroundColor: [
-                    'rgba(107, 114, 128, 0.7)',
-                    'rgba(99, 102, 241, 0.7)',
-                    'rgba(6, 182, 212, 0.7)',
-                    'rgba(245, 158, 11, 0.7)',
-                    'rgba(16, 185, 129, 0.7)',
-                    'rgba(239, 68, 68, 0.7)'
+                    'rgba(71, 85, 105, 0.7)',
+                    'rgba(0, 140, 255, 0.7)',
+                    'rgba(13, 148, 136, 0.7)',
+                    'rgba(154, 52, 18, 0.7)',
+                    'rgba(22, 101, 52, 0.7)',
+                    'rgba(153, 27, 27, 0.7)'
                 ],
                 borderWidth: 0
             }]
@@ -332,6 +339,7 @@ function renderContacts() {
         filtered = filtered.filter(c => 
             c.name.toLowerCase().includes(searchVal) ||
             (c.company && c.company.toLowerCase().includes(searchVal)) ||
+            (c.niche && c.niche.toLowerCase().includes(searchVal)) ||
             c.email.toLowerCase().includes(searchVal)
         );
     }
@@ -363,7 +371,7 @@ function renderContacts() {
                         <div class="contact-avatar">${getInitials(c.name)}</div>
                         <div class="contact-name-company">
                             <span class="contact-name-val">${c.name}</span>
-                            <span class="contact-company-sub">${c.company || "-"}</span>
+                            <span class="contact-company-sub">${c.company || "-"} <span style="font-size:10px;color:var(--text-muted)">(${c.niche || "Outro"})</span></span>
                         </div>
                     </div>
                 </td>
@@ -416,7 +424,8 @@ function renderKanban() {
         if (searchVal) {
             contactsInStage = contactsInStage.filter(c => 
                 c.name.toLowerCase().includes(searchVal) || 
-                (c.company && c.company.toLowerCase().includes(searchVal))
+                (c.company && c.company.toLowerCase().includes(searchVal)) ||
+                (c.niche && c.niche.toLowerCase().includes(searchVal))
             );
         }
 
@@ -431,7 +440,7 @@ function renderKanban() {
             
             card.innerHTML = `
                 <h4 class="kanban-card-title">${c.name}</h4>
-                <div class="kanban-card-company">${c.company || "Sem Empresa"}</div>
+                <div class="kanban-card-company">${c.company || "Sem Empresa"} <small style="color:var(--text-muted);font-size:9px;">(${c.niche || "Outro"})</small></div>
                 <div class="kanban-card-footer">
                     <span class="kanban-card-value">${formatCurrency(c.value)}</span>
                     <span class="kanban-card-days">${getDaysSince(c.createdAt)}</span>
@@ -461,12 +470,12 @@ function renderKanban() {
         });
 
         column.addEventListener("dragleave", () => {
-            column.style.backgroundColor = "var(--bg-sidebar)";
+            column.style.backgroundColor = "";
         });
 
         column.addEventListener("drop", (e) => {
             e.preventDefault();
-            column.style.backgroundColor = "var(--bg-sidebar)";
+            column.style.backgroundColor = "";
             const id = e.dataTransfer.getData("text/plain");
             const newStatus = column.getAttribute("data-status");
             
@@ -480,7 +489,6 @@ function updateContactStatus(id, newStatus) {
     const contact = env.contacts.find(c => c.id === id);
     if (contact && contact.status !== newStatus) {
         if (newStatus === "won") {
-            // Open product conversion modal first
             openConversionModal(contact.id);
         } else {
             const oldStatusText = translateStatus(contact.status);
@@ -511,6 +519,7 @@ function renderCustomers() {
         filtered = filtered.filter(cust => 
             cust.name.toLowerCase().includes(searchVal) ||
             (cust.company && cust.company.toLowerCase().includes(searchVal)) ||
+            (cust.niche && cust.niche.toLowerCase().includes(searchVal)) ||
             cust.productName.toLowerCase().includes(searchVal)
         );
     }
@@ -554,6 +563,7 @@ function renderCustomers() {
                     </div>
                 </td>
                 <td>${cust.company || "-"}</td>
+                <td><span style="font-size: 11px; color: var(--text-secondary); background: var(--bg-app); padding: 2px 6px; border-radius: 4px;">${cust.niche || "Outro"}</span></td>
                 <td>${cust.productName}</td>
                 <td>
                     <span class="badge-recurrence ${cust.type}">
@@ -793,7 +803,6 @@ function populateConversionProductsDropdown() {
         select.appendChild(option);
     });
     
-    // Set change listener to pre-populate values on product change
     select.addEventListener("change", (e) => {
         const prod = env.products.find(p => p.id === e.target.value);
         if (prod) {
@@ -808,6 +817,7 @@ function populateConversionProductsDropdown() {
 function openAddContact() {
     document.getElementById("contactForm").reset();
     document.getElementById("contactId").value = "";
+    document.getElementById("contactNiche").value = "Negócio Local";
     document.getElementById("contactModalTitle").innerText = "Adicionar Contato";
     document.getElementById("contactModal").classList.add("active");
 }
@@ -824,6 +834,7 @@ function openEditContact(id) {
     document.getElementById("contactPhone").value = c.phone || "";
     document.getElementById("contactValue").value = c.value || 0;
     document.getElementById("contactStatus").value = c.status;
+    document.getElementById("contactNiche").value = c.niche || "Negócio Local";
     document.getElementById("contactNotes").value = c.notes || "";
 
     document.getElementById("contactModalTitle").innerText = "Editar Contato";
@@ -853,6 +864,7 @@ function openContactDetails(id) {
     document.getElementById("detailEmail").innerText = c.email;
     document.getElementById("detailPhone").innerText = c.phone || "Não cadastrado";
     document.getElementById("detailValue").innerText = formatCurrency(c.value);
+    document.getElementById("detailNiche").innerText = c.niche || "Outro";
     
     const badge = document.getElementById("detailBadgeStatus");
     badge.className = `status-badge ${c.status}`;
@@ -951,7 +963,6 @@ function openConversionModal(contactId) {
 
     document.getElementById("conversionContactId").value = c.id;
     
-    // Set initial product field selection
     const select = document.getElementById("conversionProduct");
     if (env.products.length > 0) {
         select.value = env.products[0].id;
@@ -969,7 +980,6 @@ document.getElementById("btnCloseConversionModal").addEventListener("click", () 
     document.getElementById("conversionModal").classList.remove("active");
 });
 document.getElementById("btnCancelConversionModal").addEventListener("click", () => {
-    // Just skip adding to customers but close modal and complete deal status won
     const env = getEnv();
     const id = document.getElementById("conversionContactId").value;
     const contact = env.contacts.find(c => c.id === id);
@@ -1010,12 +1020,13 @@ document.getElementById("conversionForm").addEventListener("submit", (e) => {
             timestamp: new Date().toISOString()
         });
 
-        // Add to Customers list
+        // Add to Customers list (with carrying over Niche!)
         const newCust = {
             id: "cust_" + Date.now(),
             contactId: contact.id,
             name: contact.name,
             company: contact.company,
+            niche: contact.niche || "Outro",
             productName: product.name,
             value: finalPrice,
             type: billingType,
@@ -1032,13 +1043,16 @@ document.getElementById("conversionForm").addEventListener("submit", (e) => {
 });
 
 // Import Modal Triggers
-document.getElementById("btnOpenImport").addEventListener("click", () => {
-    document.getElementById("importText").value = "";
-    document.getElementById("importLogsPanel").classList.add("hidden");
-    document.getElementById("importLogsTableBody").innerHTML = "";
-    document.getElementById("importFileName").innerText = "Nenhum arquivo selecionado";
-    document.getElementById("importModal").classList.add("active");
-});
+function setupOpenImportButton() {
+    document.getElementById("btnOpenImport").addEventListener("click", () => {
+        document.getElementById("importText").value = "";
+        document.getElementById("importLogsPanel").classList.add("hidden");
+        document.getElementById("importLogsTableBody").innerHTML = "";
+        document.getElementById("importFileName").innerText = "Nenhum arquivo selecionado";
+        document.getElementById("importModal").classList.add("active");
+    });
+}
+
 document.getElementById("btnCloseImportModal").addEventListener("click", () => {
     document.getElementById("importModal").classList.remove("active");
 });
@@ -1064,8 +1078,6 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
         return;
     }
 
-    // Identify header line
-    const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
     const records = lines.slice(1);
     
     let successCount = 0;
@@ -1079,13 +1091,14 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
 
         const cells = record.split(",").map(c => c.trim());
         
-        // Map fields
+        // Map fields (Nome, Empresa, Email, Telefone, Valor, Nicho, Notas)
         const name = cells[0] || "";
         const company = cells[1] || "";
         const email = cells[2] || "";
         const phone = cells[3] || "";
         const value = parseFloat(cells[4]) || 0;
-        const notes = cells[5] || "";
+        const niche = cells[5] || "Outro";
+        const notes = cells[6] || "";
 
         if (!name || !email) {
             const tr = document.createElement("tr");
@@ -1099,7 +1112,6 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
             return;
         }
 
-        // Duplicate checks (Email or Phone)
         const duplicateEmail = env.contacts.some(c => c.email.toLowerCase() === email.toLowerCase());
         const duplicatePhone = phone && env.contacts.some(c => c.phone && c.phone.replace(/\D/g, '') === phone.replace(/\D/g, ''));
 
@@ -1127,7 +1139,6 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
             return;
         }
 
-        // Create Contact
         const newContact = {
             id: "c_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
             name,
@@ -1135,6 +1146,7 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
             email,
             phone,
             value,
+            niche,
             status: "lead",
             notes,
             createdAt: new Date().toISOString(),
@@ -1174,11 +1186,9 @@ document.getElementById("importFile").addEventListener("change", (e) => {
             try {
                 const arr = JSON.parse(content);
                 if (Array.isArray(arr)) {
-                    // Convert back to CSV text or process array directly
-                    // To keep things simple, let's write them directly into the textarea as CSV formatted text for processing
-                    let csvText = "Nome,Empresa,Email,Telefone,Valor,Notas\n";
+                    let csvText = "Nome,Empresa,Email,Telefone,Valor,Nicho,Notas\n";
                     arr.forEach(item => {
-                        csvText += `${item.name || ""},${item.company || ""},${item.email || ""},${item.phone || ""},${item.value || 0},${item.notes || ""}\n`;
+                        csvText += `${item.name || ""},${item.company || ""},${item.email || ""},${item.phone || ""},${item.value || 0},${item.niche || "Outro"},${item.notes || ""}\n`;
                     });
                     document.getElementById("importText").value = csvText;
                 } else {
@@ -1188,7 +1198,6 @@ document.getElementById("importFile").addEventListener("change", (e) => {
                 alert("Erro ao ler JSON: " + err.message);
             }
         } else {
-            // Paste CSV contents directly
             document.getElementById("importText").value = content;
         }
     };
@@ -1202,7 +1211,6 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
     const pass = document.getElementById("loginPassword").value.trim();
     const errorMsg = document.getElementById("loginErrorMsg");
 
-    // Login parameters check
     if (user === "Admin" && pass === "080125") {
         sessionStorage.setItem("nexus_crm_logged_in", "true");
         sessionStorage.setItem("nexus_crm_env", "webco");
@@ -1214,9 +1222,10 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
         document.getElementById("sidebarUsername").innerText = "Admin";
         
         renderAll();
+        // Setup late bind buttons after login loads DOM
+        setupOpenImportButton();
     } else {
         errorMsg.classList.remove("hidden");
-        // Shake card effect
         const card = document.querySelector(".login-card");
         card.style.animation = "shake 0.3s ease-in-out";
         setTimeout(() => card.style.animation = "", 300);
@@ -1322,6 +1331,7 @@ document.getElementById("contactForm").addEventListener("submit", (e) => {
     const phone = document.getElementById("contactPhone").value;
     const value = parseFloat(document.getElementById("contactValue").value) || 0;
     const status = document.getElementById("contactStatus").value;
+    const niche = document.getElementById("contactNiche").value;
     const notes = document.getElementById("contactNotes").value;
 
     if (id) {
@@ -1335,6 +1345,7 @@ document.getElementById("contactForm").addEventListener("submit", (e) => {
             contact.email = email;
             contact.phone = phone;
             contact.value = value;
+            contact.niche = niche;
             
             if (contact.status !== status) {
                 if (status === "won") {
@@ -1362,6 +1373,7 @@ document.getElementById("contactForm").addEventListener("submit", (e) => {
             phone,
             value,
             status,
+            niche,
             notes,
             createdAt: new Date().toISOString(),
             timeline: [
@@ -1446,7 +1458,33 @@ themeToggleBtn.addEventListener("click", () => {
     renderCharts();
 });
 
+// Toggle Privacy Mode Event Listener
+const privacyBtn = document.getElementById("btnTogglePrivacy");
+privacyBtn.addEventListener("click", () => {
+    state.privacyMode = !state.privacyMode;
+    updatePrivacyIcon();
+    saveState();
+    renderAll();
+});
+
+function updatePrivacyIcon() {
+    const privacyBtn = document.getElementById("btnTogglePrivacy");
+    if (privacyBtn) {
+        if (state.privacyMode) {
+            privacyBtn.innerHTML = `<i data-lucide="eye-off"></i>`;
+        } else {
+            privacyBtn.innerHTML = `<i data-lucide="eye"></i>`;
+        }
+        lucide.createIcons();
+    }
+}
+
 // Boot Setup
 window.addEventListener("DOMContentLoaded", () => {
     init();
+    
+    // Bind buttons early in case of active session reload
+    if (sessionStorage.getItem("nexus_crm_logged_in") === "true") {
+        setupOpenImportButton();
+    }
 });

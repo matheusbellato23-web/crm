@@ -110,9 +110,8 @@
                     <input type="text" placeholder="Buscar..." id="globalSearch">
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-secondary" id="btnOpenImport">
-                        <i data-lucide="file-input"></i>
-                        <span>Importar Leads</span>
+                    <button class="btn btn-secondary" id="btnTogglePrivacy" title="Ocultar/Exibir Valores">
+                        <i data-lucide="eye"></i>
                     </button>
                     <button class="btn btn-primary" id="btnQuickAddContact">
                         <i data-lucide="plus"></i>
@@ -256,6 +255,10 @@
                             <option value="won">Ganho (Won)</option>
                             <option value="lost">Perdido (Lost)</option>
                         </select>
+                        <button class="btn btn-secondary" id="btnOpenImport">
+                            <i data-lucide="file-input"></i>
+                            <span>Importar Leads</span>
+                        </button>
                         <button class="btn btn-primary" id="btnAddContact">
                             <i data-lucide="plus"></i>
                             <span>Adicionar Contato</span>
@@ -401,6 +404,7 @@
                                 <tr>
                                     <th>Cliente</th>
                                     <th>Empresa</th>
+                                    <th>Nicho</th>
                                     <th>Produto Adquirido</th>
                                     <th>Tipo de Cobrança</th>
                                     <th>Valor do Contrato</th>
@@ -558,6 +562,22 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactNiche">Nicho do Cliente *</label>
+                            <select id="contactNiche" class="form-control" required>
+                                <option value="Negócio Local">Negócio Local</option>
+                                <option value="E-commerce">E-commerce</option>
+                                <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
+                                <option value="SaaS / Startup">SaaS / Startup</option>
+                                <option value="Serviços B2B">Serviços B2B</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <!-- Empty spacer -->
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label for="contactNotes">Notas Iniciais</label>
                         <textarea id="contactNotes" class="form-control" rows="3" placeholder="Informações relevantes sobre o contato..."></textarea>
@@ -614,6 +634,13 @@
                             <div>
                                 <span class="label">Valor Estimado</span>
                                 <span class="val" id="detailValue">R$ 5.000,00</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i data-lucide="tag"></i>
+                            <div>
+                                <span class="label">Nicho</span>
+                                <span class="val" id="detailNiche">Negócio Local</span>
                             </div>
                         </div>
                     </div>
