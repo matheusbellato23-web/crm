@@ -529,21 +529,109 @@ function renderKanban() {
     const stages = ['lead', 'contacted', 'proposal', 'negotiating', 'won', 'lost'];
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
     
+    // Read pipeline filters
+    const filterNiche = document.getElementById("kanbanFilterNiche") ? document.getElementById("kanbanFilterNiche").value : "all";
+    const filterPeriod = document.getElementById("kanbanFilterPeriod") ? document.getElementById("kanbanFilterPeriod").value : "all";
+
+    // Helper for period filtering
+    const filterByPeriod = (dateStr, periodKey) => {
+        if (periodKey === "all") return true;
+        const d = new Date(dateStr);
+        const now = new Date();
+        if (periodKey === "this_month") {
+            return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+        }
+        if (periodKey === "last_30") {
+            return (now - d) <= (30 * 24 * 60 * 60 * 1000);
+        }
+        if (periodKey === "last_90") {
+            return (now - d) <= (90 * 24 * 60 * 60 * 1000);
+        }
+        return true;
+    };
+
+    // Filter contacts based on niche, period and search
+    let filteredContacts = env.contacts.filter(c => {
+        // Search filter
+        if (searchVal) {
+            const matchSearch = c.name.toLowerCase().includes(searchVal) || 
+                               (c.company && c.company.toLowerCase().includes(searchVal)) ||
+                               (c.niche && c.niche.toLowerCase().includes(searchVal));
+            if (!matchSearch) return false;
+        }
+        // Niche filter
+        if (filterNiche !== "all" && c.niche !== filterNiche) {
+            return false;
+        }
+        // Period filter
+        if (!filterByPeriod(c.createdAt || new Date().toISOString(), filterPeriod)) {
+            return false;
+        }
+        return true;
+    });
+
+    // Calculate Sales Funnel Metrics
+    const topLeads = filteredContacts.filter(c => c.status === 'lead' || c.status === 'contacted');
+    const midLeads = filteredContacts.filter(c => c.status === 'proposal' || c.status === 'negotiating');
+    const bottomLeads = filteredContacts.filter(c => c.status === 'won');
+
+    const topCount = topLeads.length;
+    const topValue = topLeads.reduce((sum, c) => sum + (c.value || 0), 0);
+
+    const midCount = midLeads.length;
+    const midValue = midLeads.reduce((sum, c) => sum + (c.value || 0), 0);
+
+    const bottomCount = bottomLeads.length;
+    const bottomValue = bottomLeads.reduce((sum, c) => sum + (c.value || 0), 0);
+
+    // Calculate marketing costs (Active Marketing Assets monthly cost + logged marketing expenses in period)
+    const activeAssetsCost = env.marketingAssets
+        .filter(a => a.status === 'active')
+        .reduce((sum, a) => sum + (parseFloat(a.cost) || 0), 0);
+
+    let periodExpenses = env.expenses.filter(e => e.category === 'marketing');
+    periodExpenses = periodExpenses.filter(e => filterByPeriod(e.date, filterPeriod));
+    const loggedExpensesCost = periodExpenses.reduce((sum, e) => sum + e.value, 0);
+
+    let totalMarketingCost = loggedExpensesCost;
+    if (filterPeriod === "this_month" || filterPeriod === "last_30" || filterPeriod === "all") {
+        totalMarketingCost += activeAssetsCost;
+    } else if (filterPeriod === "last_90") {
+        totalMarketingCost += (activeAssetsCost * 3);
+    }
+
+    // Conversion rate
+    const totalFunnelCount = topCount + midCount + bottomCount;
+    const conversionRate = totalFunnelCount > 0 ? (bottomCount / totalFunnelCount) * 100 : 0;
+
+    // Update Dashboard Metrics UI
+    if (document.getElementById("funnelTopCount")) {
+        document.getElementById("funnelTopCount").innerText = topCount;
+        document.getElementById("funnelTopValue").innerText = `${formatCurrency(topValue)} est.`;
+    }
+    if (document.getElementById("funnelMidCount")) {
+        document.getElementById("funnelMidCount").innerText = midCount;
+        document.getElementById("funnelMidValue").innerText = `${formatCurrency(midValue)} est.`;
+    }
+    if (document.getElementById("funnelBottomCount")) {
+        document.getElementById("funnelBottomCount").innerText = bottomCount;
+        document.getElementById("funnelBottomValue").innerText = `${formatCurrency(bottomValue)} fat.`;
+    }
+    if (document.getElementById("funnelCostValue")) {
+        document.getElementById("funnelCostValue").innerText = formatCurrency(totalMarketingCost);
+    }
+    if (document.getElementById("funnelConversionRate")) {
+        document.getElementById("funnelConversionRate").innerText = `${conversionRate.toFixed(1)}%`;
+    }
+
+    // Render columns
     stages.forEach(stage => {
         const columnContainer = document.getElementById(`kanban-${stage}`);
         const countBadge = document.getElementById(`count-${stage}`);
         columnContainer.innerHTML = "";
 
-        let contactsInStage = env.contacts.filter(c => c.status === stage);
-        
-        if (searchVal) {
-            contactsInStage = contactsInStage.filter(c => 
-                c.name.toLowerCase().includes(searchVal) || 
-                (c.company && c.company.toLowerCase().includes(searchVal)) ||
-                (c.niche && c.niche.toLowerCase().includes(searchVal))
-            );
-        }
-
+        // Get contacts in stage after filters
+        let contactsInStage = filteredContacts.filter(c => c.status === stage);
         countBadge.innerText = contactsInStage.length;
 
         contactsInStage.forEach(c => {
@@ -3080,4 +3168,10 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnCloseDayPreviewOk").onclick = () => {
         document.getElementById("dayPreviewModal").classList.remove("active");
     };
+
+    // Pipeline Funnel Filter Binds
+    const kfn = document.getElementById("kanbanFilterNiche");
+    if (kfn) kfn.onchange = renderKanban;
+    const kfp = document.getElementById("kanbanFilterPeriod");
+    if (kfp) kfp.onchange = renderKanban;
 });

@@ -347,6 +347,65 @@
                     </div>
                 </div>
 
+                <!-- Filters Row -->
+                <div class="filters-row" style="display: flex; gap: 16px; margin-bottom: 20px; align-items: center;">
+                    <div class="form-group" style="margin: 0; width: 200px;">
+                        <label for="kanbanFilterNiche" style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; display: block;">Filtrar por Nicho</label>
+                        <select id="kanbanFilterNiche" class="form-control" style="font-size: 11px; padding: 6px 10px; height: 32px;">
+                            <option value="all">Todos os Nichos</option>
+                            <option value="SaaS / Startup">SaaS / Startup</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Serviços">Serviços</option>
+                            <option value="Saúde / Estética">Saúde / Estética</option>
+                            <option value="Infoprodutos">Infoprodutos</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin: 0; width: 200px;">
+                        <label for="kanbanFilterPeriod" style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; display: block;">Filtrar por Período</label>
+                        <select id="kanbanFilterPeriod" class="form-control" style="font-size: 11px; padding: 6px 10px; height: 32px;">
+                            <option value="all">Todo o Período</option>
+                            <option value="this_month">Este Mês</option>
+                            <option value="last_30">Últimos 30 dias</option>
+                            <option value="last_90">Últimos 90 dias</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Funnel Dashboard widget -->
+                <div class="funnel-metrics-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <!-- Card 1: Topo -->
+                    <div class="kpi-card" style="padding: 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-card); display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 10px; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Topo (Novos)</span>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--color-primary); margin: 4px 0;" id="funnelTopCount">0</div>
+                        <span style="font-size: 10px; color: var(--text-secondary);" id="funnelTopValue">R$ 0,00 estimado</span>
+                    </div>
+                    <!-- Card 2: Meio -->
+                    <div class="kpi-card" style="padding: 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-card); display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 10px; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Meio (Orçamentos)</span>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--color-warning); margin: 4px 0;" id="funnelMidCount">0</div>
+                        <span style="font-size: 10px; color: var(--text-secondary);" id="funnelMidValue">R$ 0,00 estimado</span>
+                    </div>
+                    <!-- Card 3: Fundo -->
+                    <div class="kpi-card" style="padding: 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-card); display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 10px; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Fundo (Fechados)</span>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--color-success); margin: 4px 0;" id="funnelBottomCount">0</div>
+                        <span style="font-size: 10px; color: var(--text-secondary);" id="funnelBottomValue">R$ 0,00 faturado</span>
+                    </div>
+                    <!-- Card 4: Custo -->
+                    <div class="kpi-card" style="padding: 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-card); display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 10px; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Custo (Mídia/SEO)</span>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--color-danger); margin: 4px 0;" id="funnelCostValue">R$ 0,00</div>
+                        <span style="font-size: 10px; color: var(--text-secondary);">Divulgação no período</span>
+                    </div>
+                    <!-- Card 5: Conversão -->
+                    <div class="kpi-card" style="padding: 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-card); display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 10px; text-transform: uppercase; font-weight: 600; color: var(--text-muted);">Conversão Geral</span>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--color-teal); margin: 4px 0;" id="funnelConversionRate">0%</div>
+                        <span style="font-size: 10px; color: var(--text-secondary);">Taxa de fechamento</span>
+                    </div>
+                </div>
+
                 <div class="kanban-board">
                     <div class="kanban-column" data-status="lead">
                         <div class="kanban-column-header">
