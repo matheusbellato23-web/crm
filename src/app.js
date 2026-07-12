@@ -109,6 +109,13 @@ function getScopeList(productId) {
     ];
 }
 
+const defaultMarketingAssets = [
+    { id: "ma1", title: "Site Principal - Web Co. Labs", category: "sites", status: "active", url: "https://webcolabs.com.br", metrics: "2.4k visitas/mês", cost: "R$ 45,00/mês", notes: "Site institucional oficial." },
+    { id: "ma2", title: "Campanha Google Ads - Criação de Sites", category: "ads", status: "active", url: "https://ads.google.com", metrics: "120 leads/mês | CTR 4.8%", cost: "R$ 1.500,00/mês", notes: "Focado em pequenas empresas locais." },
+    { id: "ma3", title: "Instagram Oficial @webcolabs", category: "social", status: "active", url: "https://instagram.com/webcolabs", metrics: "3.2k seguidores | 5.2% engajamento", cost: "R$ 0,00", notes: "Postagens semanais de portfólio." },
+    { id: "ma4", title: "SEO Orgânico - Blog de Tecnologia", category: "organic", status: "active", url: "https://webcolabs.com.br/blog", metrics: "850 acessos orgânicos/mês", cost: "R$ 300,00/mês", notes: "Artigos otimizados para busca local." }
+];
+
 // Helper to get active environment data
 function getEnv() {
     const env = state.currentEnv || "webco";
@@ -122,7 +129,8 @@ function getEnv() {
             invoices: [...defaultInvoices],
             expenses: [...defaultExpenses],
             contracts: [...defaultContractsList],
-            events: [...defaultEvents]
+            events: [...defaultEvents],
+            marketingAssets: [...defaultMarketingAssets]
         };
     }
     // Dynamic schema checks for users upgrading state
@@ -131,6 +139,7 @@ function getEnv() {
     if (!state.environments[env].expenses) state.environments[env].expenses = [...defaultExpenses];
     if (!state.environments[env].contracts) state.environments[env].contracts = [...defaultContractsList];
     if (!state.environments[env].events) state.environments[env].events = [...defaultEvents];
+    if (!state.environments[env].marketingAssets) state.environments[env].marketingAssets = [...defaultMarketingAssets];
     return state.environments[env];
 }
 
@@ -218,6 +227,7 @@ function renderAll() {
     renderContracts();
     renderCalendar();
     renderFinance();
+    renderMarketingAssets();
     populateContactDropdowns();
     populateConversionProductsDropdown();
     populateEventContactsDropdown();
@@ -1431,6 +1441,7 @@ searchInput.addEventListener("input", () => {
     else if (activeTab === "proposals") renderProposals();
     else if (activeTab === "contracts") renderContracts();
     else if (activeTab === "finance") renderFinance();
+    else if (activeTab === "marketing") renderMarketingAssets();
 });
 
 // Modals Trigger Handlers
@@ -2382,6 +2393,151 @@ function renderFinanceCharts(env) {
     });
 }
 
+// 12. Marketing Assets & Channels Management
+let activeMarketingFilter = "all";
+
+function renderMarketingAssets() {
+    const env = getEnv();
+    const grid = document.getElementById("marketingAssetsGrid");
+    const emptyState = document.getElementById("marketingEmptyState");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const searchVal = document.getElementById("globalSearch").value.toLowerCase();
+    
+    let filtered = [...env.marketingAssets];
+
+    // Category Filter
+    if (activeMarketingFilter !== "all") {
+        filtered = filtered.filter(asset => asset.category === activeMarketingFilter);
+    }
+
+    // Search query Filter
+    if (searchVal) {
+        filtered = filtered.filter(asset => 
+            asset.title.toLowerCase().includes(searchVal) ||
+            (asset.metrics && asset.metrics.toLowerCase().includes(searchVal)) ||
+            (asset.notes && asset.notes.toLowerCase().includes(searchVal))
+        );
+    }
+
+    // Setup categories tab class
+    document.querySelectorAll("#marketingFilters li").forEach(li => {
+        if (li.getAttribute("data-marketing-filter") === activeMarketingFilter) {
+            li.classList.add("active");
+        } else {
+            li.classList.remove("active");
+        }
+    });
+
+    if (filtered.length === 0) {
+        emptyState.classList.remove("hidden");
+    } else {
+        emptyState.classList.add("hidden");
+
+        filtered.forEach(asset => {
+            const card = document.createElement("div");
+            card.className = "marketing-card";
+
+            // Category Details
+            let iconName = "globe";
+            let categoryName = "Sites & LPs";
+            let categoryClass = "sites";
+
+            if (asset.category === "ads") {
+                iconName = "megaphone";
+                categoryName = "Anúncios";
+                categoryClass = "ads";
+            } else if (asset.category === "organic") {
+                iconName = "search";
+                categoryName = "SEO / Orgânico";
+                categoryClass = "organic";
+            } else if (asset.category === "social") {
+                iconName = "instagram";
+                categoryName = "Social & Blog";
+                categoryClass = "social";
+            }
+
+            // Status Details
+            let statusText = "Ativo";
+            let statusClass = "active";
+            if (asset.status === "planning") {
+                statusText = "Em Planejamento";
+                statusClass = "warning";
+            } else if (asset.status === "paused") {
+                statusText = "Pausado";
+                statusClass = "inactive";
+            }
+
+            card.innerHTML = `
+                <div class="marketing-card-header">
+                    <div class="marketing-card-icon-title">
+                        <div class="marketing-card-icon-wrapper ${categoryClass}">
+                            <i data-lucide="${iconName}" style="width: 14px; height: 14px;"></i>
+                        </div>
+                        <div style="display:flex; flex-direction:column;">
+                            <span class="marketing-card-title">${asset.title}</span>
+                            <span style="font-size:9px; color:var(--text-muted);">${categoryName}</span>
+                        </div>
+                    </div>
+                    <span class="badge-status ${statusClass}" style="padding: 2px 6px; font-size: 8px;">${statusText}</span>
+                </div>
+                <div class="marketing-card-body">
+                    ${asset.url ? `<a href="${asset.url}" target="_blank" class="marketing-card-link"><i data-lucide="external-link" style="width:10px; height:10px;"></i> ${asset.url.replace(/^https?:\/\//, '')}</a>` : '<span style="color:var(--text-muted); font-style:italic;">Sem link cadastrado</span>'}
+                    
+                    <div class="marketing-card-metrics" style="margin-top:4px;">
+                        <span style="font-size:9px; color:var(--text-muted); display:block; margin-bottom:2px;">Métricas de Desempenho</span>
+                        <span style="font-size:11px;">${asset.metrics || "Sem métricas registradas"}</span>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                        <span class="marketing-card-cost">Custo: <strong>${asset.cost || "Grátis"}</strong></span>
+                    </div>
+
+                    ${asset.notes ? `<p class="marketing-card-notes">${asset.notes}</p>` : ""}
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid var(--border-color); padding-top:10px; margin-top:4px;">
+                    <button class="btn btn-secondary btn-xs btn-edit-asset" style="padding: 2px 6px; font-size: 9px;"><i data-lucide="edit-2" style="width:10px; height:10px; margin-right:2px;"></i> Editar</button>
+                    <button class="btn btn-secondary btn-xs btn-delete-asset" style="padding: 2px 6px; font-size: 9px; color:var(--color-danger); border-color:var(--color-danger-glow);"><i data-lucide="trash-2" style="width:10px; height:10px; margin-right:2px;"></i> Excluir</button>
+                </div>
+            `;
+
+            card.querySelector(".btn-edit-asset").onclick = () => openEditMarketingAsset(asset.id);
+            card.querySelector(".btn-delete-asset").onclick = () => deleteMarketingAsset(asset.id);
+
+            grid.appendChild(card);
+        });
+    }
+    lucide.createIcons();
+}
+
+function openEditMarketingAsset(id) {
+    const env = getEnv();
+    const asset = env.marketingAssets.find(x => x.id === id);
+    if (!asset) return;
+
+    document.getElementById("marketingAssetId").value = asset.id;
+    document.getElementById("marketingAssetTitle").value = asset.title;
+    document.getElementById("marketingAssetCategory").value = asset.category;
+    document.getElementById("marketingAssetStatus").value = asset.status;
+    document.getElementById("marketingAssetUrl").value = asset.url || "";
+    document.getElementById("marketingAssetMetrics").value = asset.metrics || "";
+    document.getElementById("marketingAssetCost").value = asset.cost || "";
+    document.getElementById("marketingAssetNotes").value = asset.notes || "";
+
+    document.getElementById("marketingAssetModalTitle").innerText = "Editar Ativo de Marketing";
+    document.getElementById("marketingAssetModal").classList.add("active");
+}
+
+function deleteMarketingAsset(id) {
+    if (confirm("Deseja realmente remover este ativo de marketing?")) {
+        const env = getEnv();
+        env.marketingAssets = env.marketingAssets.filter(x => x.id !== id);
+        saveState();
+        renderAll();
+    }
+}
+
 // Boot Setup
 window.addEventListener("DOMContentLoaded", () => {
     init();
@@ -2544,4 +2700,68 @@ window.addEventListener("DOMContentLoaded", () => {
         renderAll();
         document.getElementById("expenseModal").classList.remove("active");
     };
+
+    // Marketing Assets Modals Binds
+    document.getElementById("btnCreateMarketingAsset").onclick = () => {
+        document.getElementById("marketingAssetForm").reset();
+        document.getElementById("marketingAssetId").value = "";
+        document.getElementById("marketingAssetModalTitle").innerText = "Adicionar Ativo de Marketing";
+        document.getElementById("marketingAssetModal").classList.add("active");
+    };
+    document.getElementById("btnCloseMarketingAssetModal").onclick = () => {
+        document.getElementById("marketingAssetModal").classList.remove("active");
+    };
+    document.getElementById("btnCancelMarketingAssetModal").onclick = () => {
+        document.getElementById("marketingAssetModal").classList.remove("active");
+    };
+
+    document.getElementById("marketingAssetForm").onsubmit = (e) => {
+        e.preventDefault();
+        const env = getEnv();
+        const id = document.getElementById("marketingAssetId").value;
+        const title = document.getElementById("marketingAssetTitle").value;
+        const category = document.getElementById("marketingAssetCategory").value;
+        const status = document.getElementById("marketingAssetStatus").value;
+        const url = document.getElementById("marketingAssetUrl").value;
+        const metrics = document.getElementById("marketingAssetMetrics").value;
+        const cost = document.getElementById("marketingAssetCost").value;
+        const notes = document.getElementById("marketingAssetNotes").value;
+
+        if (id) {
+            const asset = env.marketingAssets.find(x => x.id === id);
+            if (asset) {
+                asset.title = title;
+                asset.category = category;
+                asset.status = status;
+                asset.url = url;
+                asset.metrics = metrics;
+                asset.cost = cost;
+                asset.notes = notes;
+            }
+        } else {
+            const newAsset = {
+                id: "ma_" + Date.now(),
+                title,
+                category,
+                status,
+                url,
+                metrics,
+                cost,
+                notes
+            };
+            env.marketingAssets.push(newAsset);
+        }
+
+        saveState();
+        renderAll();
+        document.getElementById("marketingAssetModal").classList.remove("active");
+    };
+
+    // Category Filter Navigation Binds
+    document.querySelectorAll("#marketingFilters li").forEach(tab => {
+        tab.onclick = () => {
+            activeMarketingFilter = tab.getAttribute("data-marketing-filter");
+            renderMarketingAssets();
+        };
+    });
 });

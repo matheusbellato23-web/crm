@@ -87,6 +87,10 @@
                 <!-- Produção Section -->
                 <div class="nav-section-title">Produção</div>
                 <ul>
+                    <li class="nav-item" data-view="marketing">
+                        <i data-lucide="megaphone"></i>
+                        <span>Ativos de Marketing</span>
+                    </li>
                     <li class="nav-item" data-view="contracts">
                         <i data-lucide="shield-check"></i>
                         <span>Contratos</span>
@@ -1022,6 +1026,53 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Marketing View -->
+            <section id="marketingView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Ativos & Canais de Marketing</h1>
+                        <p class="view-subtitle">Gerencie e monitore sites, landing pages, campanhas de anúncios (Google/FB) e redes sociais ativas da empresa.</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnCreateMarketingAsset">
+                        <i data-lucide="plus"></i>
+                        <span>Adicionar Ativo</span>
+                    </button>
+                </div>
+
+                <!-- Filters for Category -->
+                <div class="header-filters" style="margin-bottom: 20px;">
+                    <ul class="tasks-filters" id="marketingFilters" style="list-style:none; padding:0; display:flex; gap:8px; margin:0;">
+                        <li class="active" data-marketing-filter="all">
+                            <span>Todos os Ativos</span>
+                        </li>
+                        <li data-marketing-filter="sites">
+                            <span>Sites & Landing Pages</span>
+                        </li>
+                        <li data-marketing-filter="ads">
+                            <span>Anúncios (Google/FB)</span>
+                        </li>
+                        <li data-marketing-filter="organic">
+                            <span>Orgânico / SEO</span>
+                        </li>
+                        <li data-marketing-filter="social">
+                            <span>Redes Sociais & Conteúdo</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Grid layout for cards -->
+                <div class="marketing-assets-grid" id="marketingAssetsGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+                    <!-- Dynamic cards will render here -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="table-empty-state hidden" id="marketingEmptyState" style="padding: 40px; text-align: center;">
+                    <i data-lucide="megaphone" class="empty-icon" style="width: 48px; height: 48px; color: var(--text-muted); opacity: 0.5; margin-bottom: 12px;"></i>
+                    <h3>Nenhum ativo cadastrado nesta categoria</h3>
+                    <p>Adicione um novo ativo clicando no botão acima para começar.</p>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -1505,6 +1556,68 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="btnCancelTaskModal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Adicionar Tarefa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT MARKETING ASSET -->
+    <div class="modal" id="marketingAssetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="marketingAssetModalTitle">Adicionar Ativo de Marketing</h3>
+                <button class="btn-close" id="btnCloseMarketingAssetModal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="marketingAssetForm">
+                <input type="hidden" id="marketingAssetId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="marketingAssetTitle">Nome do Ativo *</label>
+                            <input type="text" id="marketingAssetTitle" class="form-control" placeholder="Ex: Campanha Google Ads - B2B" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="marketingAssetCategory">Categoria do Canal *</label>
+                            <select id="marketingAssetCategory" class="form-control" required>
+                                <option value="sites">🖥️ Sites & Landing Pages</option>
+                                <option value="ads">📣 Anúncios Patrocinados (Google/Facebook Ads)</option>
+                                <option value="organic">🔍 Tráfego Orgânico / SEO</option>
+                                <option value="social">✍️ Redes Sociais & Conteúdo (Blog)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="marketingAssetStatus">Status do Canal *</label>
+                            <select id="marketingAssetStatus" class="form-control" required>
+                                <option value="active">🟢 Ativo</option>
+                                <option value="planning">🟠 Em Planejamento</option>
+                                <option value="paused">🔴 Pausado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="marketingAssetUrl">Link / URL de Destino</label>
+                            <input type="url" id="marketingAssetUrl" class="form-control" placeholder="https://exemplo.com">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="marketingAssetMetrics">Métricas Principais (Desempenho)</label>
+                            <input type="text" id="marketingAssetMetrics" class="form-control" placeholder="Ex: 120 leads/mês ou 5k seguidores">
+                        </div>
+                        <div class="form-group">
+                            <label for="marketingAssetCost">Custo Estimado (Investimento/mês)</label>
+                            <input type="text" id="marketingAssetCost" class="form-control" placeholder="Ex: R$ 1.500,00 ou Grátis">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="marketingAssetNotes">Observações</label>
+                        <textarea id="marketingAssetNotes" class="form-control" rows="2" placeholder="Detalhes estratégicos sobre este canal de marketing..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelMarketingAssetModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Ativo</button>
                 </div>
             </form>
         </div>
