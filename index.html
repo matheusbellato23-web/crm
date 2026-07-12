@@ -78,6 +78,10 @@
                         <i data-lucide="package"></i>
                         <span>Produtos & Serviços</span>
                     </li>
+                    <li class="nav-item" data-view="proposals">
+                        <i data-lucide="file-text"></i>
+                        <span>Propostas</span>
+                    </li>
                 </ul>
 
                 <!-- Produção Section -->
@@ -475,6 +479,189 @@
                         <i data-lucide="package" class="empty-icon"></i>
                         <h3>Nenhum produto cadastrado</h3>
                         <p>Adicione itens para criar um catálogo e facilitar a qualificação dos seus leads.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Proposals View -->
+            <section id="proposalsView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Propostas Comerciais</h1>
+                        <p class="view-subtitle">Crie, visualize e exporte em PDF propostas de serviços personalizadas para seus leads.</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnCreateProposal">
+                        <i data-lucide="plus"></i>
+                        <span>Gerar Proposta</span>
+                    </button>
+                </div>
+
+                <!-- List View Container -->
+                <div class="proposals-content-wrapper" id="proposalsListWrapper">
+                    <div class="table-card">
+                        <div class="table-container">
+                            <table class="data-table" id="proposalsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Lead / Cliente</th>
+                                        <th>Produto Ofertado</th>
+                                        <th>Valor Final</th>
+                                        <th>Recorrência</th>
+                                        <th>Data de Emissão</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="proposalsTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-empty-state hidden" id="proposalsEmptyState">
+                            <i data-lucide="file-text" class="empty-icon"></i>
+                            <h3>Nenhuma proposta comercial gerada</h3>
+                            <p>Clique em "Gerar Proposta" para criar um documento formal preenchendo as variáveis.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Builder Panel Container -->
+                <div class="proposals-builder-wrapper hidden" id="proposalBuilderWrapper">
+                    <div class="builder-actions-header">
+                        <button class="btn btn-secondary" id="btnBackToProposalsList">
+                            <i data-lucide="arrow-left"></i> Voltar à Lista
+                        </button>
+                        <div style="display:flex;gap:10px;">
+                            <button class="btn btn-secondary" id="btnPrintProposal">
+                                <i data-lucide="printer"></i> Imprimir / Salvar PDF
+                            </button>
+                            <button class="btn btn-primary" id="btnSaveProposal">
+                                <i data-lucide="save"></i> Salvar Proposta
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="builder-columns">
+                        <!-- Left Panel: Form Controls -->
+                        <div class="builder-form-panel">
+                            <h3>Parâmetros da Proposta</h3>
+                            <form id="proposalConfigForm">
+                                <input type="hidden" id="proposalId">
+                                <div class="form-group">
+                                    <label for="proposalContactSelect">Selecionar Lead *</label>
+                                    <select id="proposalContactSelect" class="form-control" required>
+                                        <!-- Dynamic options -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="proposalProductSelect">Selecionar Produto/Serviço *</label>
+                                    <select id="proposalProductSelect" class="form-control" required>
+                                        <!-- Dynamic options -->
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="proposalFinalValue">Preço Final (R$)</label>
+                                        <input type="number" id="proposalFinalValue" class="form-control" min="0" step="0.01" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="proposalRecurrence">Cobrança/Recorrência</label>
+                                        <select id="proposalRecurrence" class="form-control" required>
+                                            <option value="single">Taxa Única</option>
+                                            <option value="monthly">Mensalidade</option>
+                                            <option value="yearly">Anuidade</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="proposalStatusSelect">Status da Proposta</label>
+                                    <select id="proposalStatusSelect" class="form-control" required>
+                                        <option value="pending">Aguardando Retorno (Pendente)</option>
+                                        <option value="accepted">Aprovada (Ganho)</option>
+                                        <option value="declined">Recusada</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Right Panel: Visual Preview (A4 Paper Representation) -->
+                        <div class="builder-preview-panel">
+                            <div class="paper-preview" id="proposalPrintArea">
+                                <div class="proposal-header">
+                                    <div class="proposal-logo-wrapper">
+                                        <div class="proposal-logo-icon">W</div>
+                                        <div class="proposal-logo-text">Web Co. Labs</div>
+                                    </div>
+                                    <div class="proposal-meta-info">
+                                        <p><strong>Proposta Comercial:</strong> #<span id="previewProposalId">0000</span></p>
+                                        <p><strong>Data:</strong> <span id="previewProposalDate">12/07/2026</span></p>
+                                        <p><strong>Validade:</strong> 15 dias</p>
+                                    </div>
+                                </div>
+
+                                <hr class="proposal-divider">
+
+                                <div class="proposal-client-section">
+                                    <h3>Destinatário:</h3>
+                                    <p class="client-name" id="previewClientName">Nome do Cliente</p>
+                                    <p class="client-details" id="previewClientDetails">Empresa - e-mail@cliente.com</p>
+                                </div>
+
+                                <div class="proposal-intro">
+                                    <p>Agradecemos a oportunidade de apresentar nossa proposta comercial para prestação de serviços digitais. O presente documento detalha o escopo de atuação e as condições comerciais recomendadas para atingir os objetivos da sua empresa.</p>
+                                </div>
+
+                                <div class="proposal-scope-section">
+                                    <h3>Descrição do Serviço & Escopo Proposto</h3>
+                                    <div class="scope-card">
+                                        <h4 id="previewProductName">Nome do Produto</h4>
+                                        <div id="previewProductScope">
+                                            <!-- Dynamic scope list -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="proposal-financial-section">
+                                    <h3>Condições Comerciais</h3>
+                                    <table class="proposal-financial-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Descrição do Serviço</th>
+                                                <th>Recorrência</th>
+                                                <th>Valor do Investimento</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td id="previewFinancialProduct">Nome do Produto</td>
+                                                <td id="previewFinancialRecurrence">Mensal</td>
+                                                <td id="previewFinancialValue">R$ 0,00</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="proposal-payment-notes">
+                                        <p><strong>Forma de pagamento:</strong> Boleto bancário ou PIX (vencimento em 5 dias após assinatura do contrato).</p>
+                                    </div>
+                                </div>
+
+                                <div class="proposal-footer-terms">
+                                    <p>Ao assinar este documento, as partes concordam com os termos e valores comerciais expressos nesta proposta comercial, servindo de base para a redação do contrato de prestação de serviços definitivo.</p>
+                                </div>
+
+                                <div class="proposal-signatures">
+                                    <div class="signature-box">
+                                        <div class="sig-line"></div>
+                                        <p><strong>Web Co. Labs</strong></p>
+                                        <p>Representante Comercial</p>
+                                    </div>
+                                    <div class="signature-box">
+                                        <div class="sig-line"></div>
+                                        <p><strong id="previewSignatureClient">Nome do Cliente</strong></p>
+                                        <p>Contratante</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

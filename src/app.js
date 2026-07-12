@@ -31,6 +31,62 @@ const defaultTasks = [
     { id: "t2", title: "Ligar para Carlos Souza sobre proposta", contactId: "c3", dueDate: "2026-07-15", priority: "medium", completed: false }
 ];
 
+// Dynamic Proposal Scope Templates
+const defaultScopes = {
+    p1: [
+        "Design de interface personalizado no Figma focado em experiência do usuário",
+        "Desenvolvimento responsivo completo (compatível com smartphones, tablets e desktop)",
+        "Otimização extrema de carregamento e velocidade (Core Web Vitals)",
+        "Implementação de tags de rastreamento (Google Analytics, Meta Pixel)",
+        "Configurações iniciais de SEO técnico on-page",
+        "Prazo de entrega estimado: 15 dias úteis"
+    ],
+    p2: [
+        "Plataforma e-commerce completa com painel administrativo intuitivo",
+        "Integração com gateways de pagamento credenciados (Cartão, PIX, Boleto)",
+        "Configuração de frete automático (Correios e transportadoras com cotação online)",
+        "Catálogo inteligente com cadastro ilimitado de produtos e controle de estoque",
+        "Layout exclusivo responsivo focado em taxas de conversão de checkout",
+        "Certificado de segurança SSL integrado"
+    ],
+    p3: [
+        "Planejamento estratégico de tráfego pago focado em captação de leads qualificados",
+        "Estudo aprofundado de público-alvo e pesquisa de palavras-chave no Google",
+        "Criação e testes de anúncios patrocinados (criativos, textos persuasivos)",
+        "Otimização diária de lances, orçamentos e índice de qualidade dos anúncios",
+        "Instalação e configuração de tags de conversão do Google Ads",
+        "Relatório mensal detalhado de performance com métricas chave (CPL, ROI)"
+    ],
+    p4: [
+        "Auditoria técnica completa do site/landing page atual da empresa",
+        "Otimização de arquivos e código-fonte (HTML, CSS e JS minimizados)",
+        "Compressão inteligente de imagens sem perda de qualidade visual",
+        "Configuração de cache avançado de servidor e CDN global (Cloudflare)",
+        "Correções de estrutura SEO (hierarquia de títulos, tags alt, robots, sitemaps)",
+        "Relatório comparativo de velocidade (Antes vs Depois) via PageSpeed Insights"
+    ],
+    p5: [
+        "Backup semanal completo do site e banco de dados em nuvem segura",
+        "Atualizações recorrentes de plugins, temas e núcleo da plataforma WordPress",
+        "Monitoramento de estabilidade e uptime 24/7 (garantia de site no ar)",
+        "Suporte técnico prioritário de até 5 horas mensais para alterações de conteúdo",
+        "Correções rápidas de bugs e problemas de layout pós-atualizações",
+        "Canal exclusivo de atendimento via WhatsApp comercial"
+    ]
+};
+
+function getScopeList(productId) {
+    if (defaultScopes[productId]) {
+        return defaultScopes[productId];
+    }
+    return [
+        "Prestação de serviço especializado conforme especificações do cliente",
+        "Cronograma de execução estruturado em fases alinhadas",
+        "Garantia de suporte técnico para ajustes finos e revisões",
+        "Entregáveis detalhados e homologação de escopo conjunta"
+    ];
+}
+
 // Helper to get active environment data
 function getEnv() {
     const env = state.currentEnv || "webco";
@@ -39,8 +95,12 @@ function getEnv() {
             contacts: [...defaultContacts],
             tasks: [...defaultTasks],
             products: [...defaultProducts],
-            customers: [...defaultCustomers]
+            customers: [...defaultCustomers],
+            proposals: []
         };
+    }
+    if (!state.environments[env].proposals) {
+        state.environments[env].proposals = [];
     }
     return state.environments[env];
 }
@@ -118,6 +178,7 @@ function renderAll() {
     renderCustomers();
     renderProducts();
     renderTasks();
+    renderProposals();
     populateContactDropdowns();
     populateConversionProductsDropdown();
     lucide.createIcons();
@@ -1283,6 +1344,7 @@ searchInput.addEventListener("input", () => {
     else if (activeTab === "dashboard") renderDashboard();
     else if (activeTab === "customers") renderCustomers();
     else if (activeTab === "products") renderProducts();
+    else if (activeTab === "proposals") renderProposals();
 });
 
 // Modals Trigger Handlers
@@ -1479,6 +1541,268 @@ function updatePrivacyIcon() {
     }
 }
 
+// 8. Proposals Management Render & Builder
+function renderProposals() {
+    const env = getEnv();
+    const searchVal = document.getElementById("globalSearch").value.toLowerCase();
+    
+    let filtered = [...env.proposals];
+
+    if (searchVal) {
+        filtered = filtered.filter(prop => {
+            const contactName = prop.contactId ? (env.contacts.find(c => c.id === prop.contactId)?.name || "") : "";
+            const productName = prop.productName || "";
+            return contactName.toLowerCase().includes(searchVal) || productName.toLowerCase().includes(searchVal);
+        });
+    }
+
+    const tbody = document.getElementById("proposalsTableBody");
+    const emptyState = document.getElementById("proposalsEmptyState");
+    tbody.innerHTML = "";
+
+    if (filtered.length === 0) {
+        emptyState.classList.remove("hidden");
+        document.getElementById("proposalsTable").classList.add("hidden");
+    } else {
+        emptyState.classList.add("hidden");
+        document.getElementById("proposalsTable").classList.remove("hidden");
+
+        filtered.forEach(prop => {
+            const contact = env.contacts.find(c => c.id === prop.contactId);
+            const contactName = contact ? contact.name : "Nenhum";
+            const companyName = contact && contact.company ? ` (${contact.company})` : "";
+            const tr = document.createElement("tr");
+            
+            let statusText = "Pendente";
+            let statusBadge = "warning";
+            if (prop.status === "accepted") { statusText = "Aceita (Ganho)"; statusBadge = "positive"; }
+            else if (prop.status === "declined") { statusText = "Recusada"; statusBadge = "inactive"; }
+
+            tr.innerHTML = `
+                <td><strong>${contactName}</strong><br><small style="color:var(--text-muted)">${companyName || "-"}</small></td>
+                <td>${prop.productName}</td>
+                <td><strong>${formatCurrency(prop.value)}</strong></td>
+                <td>
+                    <span class="badge-recurrence ${prop.recurrence}">
+                        ${prop.recurrence === 'monthly' ? 'Mensal' : prop.recurrence === 'yearly' ? 'Anual' : 'Único'}
+                    </span>
+                </td>
+                <td>${formatDate(prop.date)}</td>
+                <td><span class="badge-status ${statusBadge}">${statusText}</span></td>
+                <td>
+                    <div class="kanban-card-actions">
+                        <button class="btn-icon-only btn-view-proposal" title="Visualizar / Editar"><i data-lucide="eye" style="width:14px;height:14px;"></i></button>
+                        <button class="btn-icon-only btn-delete-proposal" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                    </div>
+                </td>
+            `;
+
+            tr.querySelector(".btn-view-proposal").addEventListener("click", () => openViewProposal(prop.id));
+            tr.querySelector(".btn-delete-proposal").addEventListener("click", () => deleteProposal(prop.id));
+
+            tbody.appendChild(tr);
+        });
+    }
+}
+
+function openCreateProposal() {
+    const env = getEnv();
+    if (env.contacts.length === 0) {
+        alert("Cadastre pelo menos um lead para gerar propostas!");
+        return;
+    }
+
+    document.getElementById("proposalConfigForm").reset();
+    document.getElementById("proposalId").value = "";
+    
+    // Populate dropdowns
+    populateProposalDropdowns();
+    
+    // Set default values
+    if (env.products.length > 0) {
+        document.getElementById("proposalProductSelect").value = env.products[0].id;
+        document.getElementById("proposalFinalValue").value = env.products[0].price;
+        document.getElementById("proposalRecurrence").value = env.products[0].type;
+    } else {
+        document.getElementById("proposalFinalValue").value = 1000;
+        document.getElementById("proposalRecurrence").value = "single";
+    }
+    
+    document.getElementById("proposalStatusSelect").value = "pending";
+    
+    // Show Builder, Hide List
+    document.getElementById("proposalsListWrapper").classList.add("hidden");
+    document.getElementById("proposalBuilderWrapper").classList.remove("hidden");
+    
+    // Trigger live preview update
+    updateProposalPreview();
+}
+
+function openViewProposal(id) {
+    const env = getEnv();
+    const prop = env.proposals.find(p => p.id === id);
+    if (!prop) return;
+
+    // Populate dropdowns
+    populateProposalDropdowns();
+
+    // Load form values
+    document.getElementById("proposalId").value = prop.id;
+    document.getElementById("proposalContactSelect").value = prop.contactId;
+    document.getElementById("proposalProductSelect").value = prop.productId || "";
+    document.getElementById("proposalFinalValue").value = prop.value;
+    document.getElementById("proposalRecurrence").value = prop.recurrence;
+    document.getElementById("proposalStatusSelect").value = prop.status;
+
+    // Show Builder, Hide List
+    document.getElementById("proposalsListWrapper").classList.add("hidden");
+    document.getElementById("proposalBuilderWrapper").classList.remove("hidden");
+    
+    // Trigger live preview update
+    updateProposalPreview();
+}
+
+function populateProposalDropdowns() {
+    const env = getEnv();
+    
+    // Contacts select
+    const cSelect = document.getElementById("proposalContactSelect");
+    cSelect.innerHTML = "";
+    env.contacts.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.innerText = `${c.name} (${c.company || "Sem Empresa"})`;
+        cSelect.appendChild(opt);
+    });
+
+    // Products select
+    const pSelect = document.getElementById("proposalProductSelect");
+    pSelect.innerHTML = `<option value="custom">-- Serviço Customizado --</option>`;
+    env.products.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.innerText = p.name;
+        pSelect.appendChild(opt);
+    });
+}
+
+function updateProposalPreview() {
+    const env = getEnv();
+    
+    const propId = document.getElementById("proposalId").value || "PROP-" + Date.now().toString().substring(8);
+    const contactId = document.getElementById("proposalContactSelect").value;
+    const productId = document.getElementById("proposalProductSelect").value;
+    const finalVal = parseFloat(document.getElementById("proposalFinalValue").value) || 0;
+    const recurrence = document.getElementById("proposalRecurrence").value;
+
+    const contact = env.contacts.find(c => c.id === contactId);
+    let productName = "Serviço Customizado";
+    let scopeList = [];
+
+    if (productId !== "custom") {
+        const prod = env.products.find(p => p.id === productId);
+        if (prod) {
+            productName = prod.name;
+            scopeList = getScopeList(prod.id);
+        }
+    } else {
+        scopeList = getScopeList("custom");
+    }
+
+    // Write to DOM elements in proposalPrintArea
+    document.getElementById("previewProposalId").innerText = propId;
+    document.getElementById("previewProposalDate").innerText = formatDate(new Date().toISOString());
+
+    if (contact) {
+        document.getElementById("previewClientName").innerText = contact.name;
+        document.getElementById("previewClientDetails").innerText = `${contact.company || "Pessoa Física"} - ${contact.email}`;
+        document.getElementById("previewSignatureClient").innerText = contact.name;
+    } else {
+        document.getElementById("previewClientName").innerText = "Cliente não selecionado";
+        document.getElementById("previewClientDetails").innerText = "";
+        document.getElementById("previewSignatureClient").innerText = "Contratante";
+    }
+
+    document.getElementById("previewProductName").innerText = productName;
+    document.getElementById("previewFinancialProduct").innerText = productName;
+
+    // Fill scope list in preview
+    const scopeContainer = document.getElementById("previewProductScope");
+    scopeContainer.innerHTML = "";
+    const ul = document.createElement("ul");
+    scopeList.forEach(s => {
+        const li = document.createElement("li");
+        li.innerText = s;
+        ul.appendChild(li);
+    });
+    scopeContainer.appendChild(ul);
+
+    // Format financial table recurrence & value
+    const recText = recurrence === 'monthly' ? 'Mensalidade Recorrente' : recurrence === 'yearly' ? 'Anualidade Recorrente' : 'Taxa Única de Configuração';
+    document.getElementById("previewFinancialRecurrence").innerText = recText;
+    document.getElementById("previewFinancialValue").innerText = formatCurrency(finalVal);
+}
+
+function saveProposal() {
+    const env = getEnv();
+    
+    const id = document.getElementById("proposalId").value;
+    const contactId = document.getElementById("proposalContactSelect").value;
+    const productId = document.getElementById("proposalProductSelect").value;
+    const finalVal = parseFloat(document.getElementById("proposalFinalValue").value) || 0;
+    const recurrence = document.getElementById("proposalRecurrence").value;
+    const status = document.getElementById("proposalStatusSelect").value;
+
+    let productName = "Serviço Customizado";
+    if (productId !== "custom") {
+        const prod = env.products.find(p => p.id === productId);
+        if (prod) productName = prod.name;
+    }
+
+    if (id) {
+        // Edit existing proposal
+        const prop = env.proposals.find(p => p.id === id);
+        if (prop) {
+            prop.contactId = contactId;
+            prop.productId = productId;
+            prop.productName = productName;
+            prop.value = finalVal;
+            prop.recurrence = recurrence;
+            prop.status = status;
+        }
+    } else {
+        // Create new proposal
+        const newProp = {
+            id: "PROP-" + Date.now().toString().substring(8),
+            contactId,
+            productId,
+            productName,
+            value: finalVal,
+            recurrence,
+            status,
+            date: new Date().toISOString()
+        };
+        env.proposals.push(newProp);
+    }
+
+    saveState();
+    
+    // Hide Builder, Show List
+    document.getElementById("proposalBuilderWrapper").classList.add("hidden");
+    document.getElementById("proposalsListWrapper").classList.remove("hidden");
+    
+    renderAll();
+}
+
+function deleteProposal(id) {
+    if (confirm("Tem certeza que deseja excluir esta proposta comercial?")) {
+        const env = getEnv();
+        env.proposals = env.proposals.filter(p => p.id !== id);
+        saveState();
+        renderAll();
+    }
+}
+
 // Boot Setup
 window.addEventListener("DOMContentLoaded", () => {
     init();
@@ -1487,4 +1811,29 @@ window.addEventListener("DOMContentLoaded", () => {
     if (sessionStorage.getItem("nexus_crm_logged_in") === "true") {
         setupOpenImportButton();
     }
+    
+    // Bind proposals actions
+    document.getElementById("btnCreateProposal").addEventListener("click", openCreateProposal);
+    document.getElementById("btnBackToProposalsList").addEventListener("click", () => {
+        document.getElementById("proposalBuilderWrapper").classList.add("hidden");
+        document.getElementById("proposalsListWrapper").classList.remove("hidden");
+    });
+    document.getElementById("btnPrintProposal").addEventListener("click", () => {
+        window.print();
+    });
+    document.getElementById("btnSaveProposal").addEventListener("click", saveProposal);
+    
+    // Form change listeners to feed live preview
+    document.getElementById("proposalContactSelect").addEventListener("change", updateProposalPreview);
+    document.getElementById("proposalProductSelect").addEventListener("change", (e) => {
+        const env = getEnv();
+        const prod = env.products.find(p => p.id === e.target.value);
+        if (prod) {
+            document.getElementById("proposalFinalValue").value = prod.price;
+            document.getElementById("proposalRecurrence").value = prod.type;
+        }
+        updateProposalPreview();
+    });
+    document.getElementById("proposalFinalValue").addEventListener("input", updateProposalPreview);
+    document.getElementById("proposalRecurrence").addEventListener("change", updateProposalPreview);
 });
