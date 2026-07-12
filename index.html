@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus CRM - Web Co.</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="dark-theme">
+    
+    <!-- LOGIN OVERLAY -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <div class="logo-icon">W</div>
+                    <span class="logo-text">Web Co.<span>CRM</span></span>
+                </div>
+                <p>Insira suas credenciais administrativas para continuar</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUser">Usuário</label>
+                    <input type="text" id="loginUser" class="form-control" placeholder="Admin" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="••••••" required autocomplete="current-password">
+                </div>
+                <div class="login-error hidden" id="loginErrorMsg">
+                    Usuário ou senha incorretos!
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Acessar Painel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Container (Hidden initially until logged in) -->
+    <div class="app-container hidden" id="appContainer">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon" style="background: linear-gradient(135deg, #008cff, #0df2c9)">W</div>
+                    <span class="logo-text">Web Co.<span>CRM</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-view="dashboard">
+                        <i data-lucide="layout-dashboard"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li class="nav-item" data-view="contacts">
+                        <i data-lucide="users"></i>
+                        <span>Contatos</span>
+                    </li>
+                    <li class="nav-item" data-view="kanban">
+                        <i data-lucide="kanban-square"></i>
+                        <span>Pipeline (Kanban)</span>
+                    </li>
+                    <li class="nav-item" data-view="customers">
+                        <i data-lucide="gem"></i>
+                        <span>Clientes</span>
+                    </li>
+                    <li class="nav-item" data-view="products">
+                        <i data-lucide="package"></i>
+                        <span>Produtos</span>
+                    </li>
+                    <li class="nav-item" data-view="tasks">
+                        <i data-lucide="check-square"></i>
+                        <span>Tarefas</span>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="theme-toggle" id="themeToggleBtn">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                    <span>Modo Claro</span>
+                </div>
+                <div class="user-profile">
+                    <img src="https://api.dicebear.com/7.x/identicon/svg?seed=webco" alt="Web Co. Logo" class="avatar">
+                    <div class="user-info">
+                        <span class="username" id="sidebarUsername">Admin</span>
+                        <span class="user-role">Web Co. Agency</span>
+                    </div>
+                    <button class="btn-icon-only btn-sm" id="btnLogout" title="Sair" style="margin-left: auto;">
+                        <i data-lucide="log-out" style="width:14px;height:14px;"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-search">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" placeholder="Buscar..." id="globalSearch">
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="btnOpenImport">
+                        <i data-lucide="file-input"></i>
+                        <span>Importar Leads</span>
+                    </button>
+                    <button class="btn btn-primary" id="btnQuickAddContact">
+                        <i data-lucide="plus"></i>
+                        <span>Novo Contato</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <section id="dashboardView" class="view-section active">
+                <div class="view-header">
+                    <div>
+                        <h1 class="view-title">Dashboard</h1>
+                        <p class="view-subtitle">Visão geral do desempenho de vendas e tráfego pago da Web Co.</p>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper sales">
+                                <i data-lucide="dollar-sign"></i>
+                            </div>
+                            <span class="kpi-badge positive"><i data-lucide="trending-up"></i> +12%</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Vendas Fechadas (LTV)</span>
+                            <span class="kpi-value" id="kpiTotalSales">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper pipeline">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                            <span class="kpi-badge info">Em negociação</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Pipeline Ativo</span>
+                            <span class="kpi-value" id="kpiActivePipeline">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper conversion">
+                                <i data-lucide="percent"></i>
+                            </div>
+                            <span class="kpi-badge positive" id="kpiConversionBadge"><i data-lucide="arrow-up-right"></i> Altamente Eficiente</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Taxa de Conversão</span>
+                            <span class="kpi-value" id="kpiConversionRate">0%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper tasks">
+                                <i data-lucide="check-circle-2"></i>
+                            </div>
+                            <span class="kpi-badge warning" id="kpiTaskStatusBadge">Foco no dia</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Tarefas Pendentes</span>
+                            <span class="kpi-value" id="kpiPendingTasks">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3>Desempenho Financeiro</h3>
+                            <span class="chart-legend">Ganhos vs Em Negociação</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="salesTrendChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card small">
+                        <div class="chart-header">
+                            <h3>Distribuição do Funil</h3>
+                            <span class="chart-legend">Contatos por Estágio</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="pipelineDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Recent Contacts & Pending Tasks -->
+                <div class="dashboard-details-grid">
+                    <div class="details-card">
+                        <div class="card-header">
+                            <h3>Leads Recentes</h3>
+                            <button class="btn btn-text" id="btnViewAllContacts">Ver todos</button>
+                        </div>
+                        <div class="table-container compact">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Empresa</th>
+                                        <th>Valor</th>
+                                        <th>Estágio</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentLeadsTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="details-card">
+                        <div class="card-header">
+                            <h3>Tarefas Críticas</h3>
+                            <button class="btn btn-text" id="btnViewAllTasks">Ver todas</button>
+                        </div>
+                        <div class="dashboard-tasks-list" id="urgentTasksList">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contacts View -->
+            <section id="contactsView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Gestão de Contatos</h1>
+                        <p class="view-subtitle">Gerencie leads de tráfego pago, envie propostas e organize dados.</p>
+                    </div>
+                    <div class="header-filters">
+                        <select class="form-control select-filter" id="filterStatus">
+                            <option value="all">Todos os Estágios</option>
+                            <option value="lead">Novo Lead</option>
+                            <option value="contacted">Contatado</option>
+                            <option value="proposal">Proposta Enviada</option>
+                            <option value="negotiating">Em Negociação</option>
+                            <option value="won">Ganho (Won)</option>
+                            <option value="lost">Perdido (Lost)</option>
+                        </select>
+                        <button class="btn btn-primary" id="btnAddContact">
+                            <i data-lucide="plus"></i>
+                            <span>Adicionar Contato</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-container">
+                        <table class="data-table" id="contactsTable">
+                            <thead>
+                                <tr>
+                                    <th>Contato</th>
+                                    <th>Empresa</th>
+                                    <th>Email/Telefone</th>
+                                    <th>Valor Estimado</th>
+                                    <th>Estágio</th>
+                                    <th>Última Interação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contactsTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-empty-state hidden" id="contactsEmptyState">
+                        <i data-lucide="users-round" class="empty-icon"></i>
+                        <h3>Nenhum contato encontrado</h3>
+                        <p>Tente ajustar a sua busca ou adicione um novo contato para começar.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Kanban View -->
+            <section id="kanbanView" class="view-section">
+                <div class="view-header">
+                    <div>
+                        <h1 class="view-title">Pipeline de Vendas</h1>
+                        <p class="view-subtitle">Arraste os cards para alterar o status da venda na Web Co.</p>
+                    </div>
+                </div>
+
+                <div class="kanban-board">
+                    <div class="kanban-column" data-status="lead">
+                        <div class="kanban-column-header">
+                            <span class="column-title">Novo Lead</span>
+                            <span class="column-count" id="count-lead">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-lead"></div>
+                    </div>
+                    <div class="kanban-column" data-status="contacted">
+                        <div class="kanban-column-header">
+                            <span class="column-title">Contatado</span>
+                            <span class="column-count" id="count-contacted">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-contacted"></div>
+                    </div>
+                    <div class="kanban-column" data-status="proposal">
+                        <div class="kanban-column-header">
+                            <span class="column-title">Proposta Enviada</span>
+                            <span class="column-count" id="count-proposal">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-proposal"></div>
+                    </div>
+                    <div class="kanban-column" data-status="negotiating">
+                        <div class="kanban-column-header">
+                            <span class="column-title">Em Negociação</span>
+                            <span class="column-count" id="count-negotiating">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-negotiating"></div>
+                    </div>
+                    <div class="kanban-column column-won" data-status="won">
+                        <div class="kanban-column-header">
+                            <span class="column-title">Ganho (Won)</span>
+                            <span class="column-count" id="count-won">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-won"></div>
+                    </div>
+                    <div class="kanban-column column-lost" data-status="lost">
+                        <div class="kanban-column-header">
+                            <span class="column-title">Perdido (Lost)</span>
+                            <span class="column-count" id="count-lost">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-lost"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customers View -->
+            <section id="customersView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Clientes e Recorrência</h1>
+                        <p class="view-subtitle">Acompanhe as mensalidades ativas (Google Ads/Suporte) e faturamento de clientes.</p>
+                    </div>
+                </div>
+
+                <!-- Customer Financial Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper sales" style="background: rgba(99, 102, 241, 0.1); color: var(--color-primary);">
+                                <i data-lucide="gem"></i>
+                            </div>
+                            <span class="kpi-badge info">Assinaturas</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Recorrência Mensal (MRR)</span>
+                            <span class="kpi-value" id="kpiMRR">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper conversion" style="background: rgba(16, 185, 129, 0.1); color: var(--color-success);">
+                                <i data-lucide="dollar-sign"></i>
+                            </div>
+                            <span class="kpi-badge positive">Histórico</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Faturamento Acumulado (LTV)</span>
+                            <span class="kpi-value" id="kpiCustomerLTV">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper tasks" style="background: rgba(6, 182, 212, 0.1); color: var(--color-teal);">
+                                <i data-lucide="users"></i>
+                            </div>
+                            <span class="kpi-badge info">Ativos</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Clientes Ativos</span>
+                            <span class="kpi-value" id="kpiActiveCustomers">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-container">
+                        <table class="data-table" id="customersTable">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Empresa</th>
+                                    <th>Produto Adquirido</th>
+                                    <th>Tipo de Cobrança</th>
+                                    <th>Valor do Contrato</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-empty-state hidden" id="customersEmptyState">
+                        <i data-lucide="gem" class="empty-icon"></i>
+                        <h3>Nenhum cliente cadastrado</h3>
+                        <p>Marque um lead como "Ganho" ou configure um produto para começar a gerar receita.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products View -->
+            <section id="productsView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Produtos e Serviços</h1>
+                        <p class="view-subtitle">Cadastre os pacotes de sites e assinaturas de tráfego pago da Web Co.</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnCreateProduct">
+                        <i data-lucide="plus"></i>
+                        <span>Adicionar Produto</span>
+                    </button>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-container">
+                        <table class="data-table" id="productsTable">
+                            <thead>
+                                <tr>
+                                    <th>Nome do Produto</th>
+                                    <th>Descrição</th>
+                                    <th>Preço Padrão</th>
+                                    <th>Faturamento</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-empty-state hidden" id="productsEmptyState">
+                        <i data-lucide="package" class="empty-icon"></i>
+                        <h3>Nenhum produto cadastrado</h3>
+                        <p>Adicione itens para criar um catálogo e facilitar a qualificação dos seus leads.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tasks View -->
+            <section id="tasksView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Tarefas & Lembretes</h1>
+                        <p class="view-subtitle">Organize sua rotina comercial interna na Web Co.</p>
+                    </div>
+                    <div class="header-filters">
+                        <button class="btn btn-primary" id="btnAddTask">
+                            <i data-lucide="plus"></i>
+                            <span>Adicionar Tarefa</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tasks-container">
+                    <div class="tasks-sidebar">
+                        <div class="tasks-menu-card">
+                            <ul class="tasks-filters">
+                                <li class="active" data-task-filter="all">
+                                    <i data-lucide="list-todo"></i>
+                                    <span>Todas</span>
+                                    <span class="badge" id="tasksBadgeAll">0</span>
+                                </li>
+                                <li data-task-filter="pending">
+                                    <i data-lucide="clock"></i>
+                                    <span>Pendentes</span>
+                                    <span class="badge warning" id="tasksBadgePending">0</span>
+                                </li>
+                                <li data-task-filter="completed">
+                                    <i data-lucide="check-check"></i>
+                                    <span>Concluídas</span>
+                                    <span class="badge success" id="tasksBadgeCompleted">0</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tasks-list-panel">
+                        <div class="tasks-list" id="tasksListContainer"></div>
+                        <div class="table-empty-state hidden" id="tasksEmptyState">
+                            <i data-lucide="clipboard-list" class="empty-icon"></i>
+                            <h3>Tudo limpo por aqui!</h3>
+                            <p>Crie novas tarefas para organizar seu fluxo de trabalho.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL: ADD / EDIT CONTACT -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="contactModalTitle">Adicionar Contato</h3>
+                <button class="btn-close" id="btnCloseContactModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="contactForm">
+                <input type="hidden" id="contactId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactName">Nome Completo *</label>
+                            <input type="text" id="contactName" class="form-control" placeholder="Ex: João Silva" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactCompany">Empresa</label>
+                            <input type="text" id="contactCompany" class="form-control" placeholder="Ex: Inova Tech">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactEmail">E-mail *</label>
+                            <input type="email" id="contactEmail" class="form-control" placeholder="joao@empresa.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactPhone">Telefone</label>
+                            <input type="tel" id="contactPhone" class="form-control" placeholder="(11) 98765-4321">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactValue">Valor Estimado (R$)</label>
+                            <input type="number" id="contactValue" class="form-control" min="0" step="0.01" placeholder="Ex: 3500">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactStatus">Estágio Inicial *</label>
+                            <select id="contactStatus" class="form-control" required>
+                                <option value="lead">Novo Lead</option>
+                                <option value="contacted">Contatado</option>
+                                <option value="proposal">Proposta Enviada</option>
+                                <option value="negotiating">Em Negociação</option>
+                                <option value="won">Ganho (Won)</option>
+                                <option value="lost">Perdido (Lost)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactNotes">Notas Iniciais</label>
+                        <textarea id="contactNotes" class="form-control" rows="3" placeholder="Informações relevantes sobre o contato..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelContactModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Contato</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CONTACT DETAILS & TIMELINE -->
+    <div class="modal" id="contactDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Detalhes do Cliente</h3>
+                <button class="btn-close" id="btnCloseDetailsModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body details-body">
+                <div class="details-left-panel">
+                    <div class="profile-summary">
+                        <div class="profile-initials" id="detailInitials">JS</div>
+                        <h2 id="detailName">João Silva</h2>
+                        <span class="badge" id="detailBadgeStatus">Novo Lead</span>
+                    </div>
+                    <div class="profile-details-list">
+                        <div class="detail-item">
+                            <i data-lucide="briefcase"></i>
+                            <div>
+                                <span class="label">Empresa</span>
+                                <span class="val" id="detailCompany">Inova Tech</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i data-lucide="mail"></i>
+                            <div>
+                                <span class="label">E-mail</span>
+                                <span class="val" id="detailEmail">joao@empresa.com</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i data-lucide="phone"></i>
+                            <div>
+                                <span class="label">Telefone</span>
+                                <span class="val" id="detailPhone">(11) 98765-4321</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i data-lucide="dollar-sign"></i>
+                            <div>
+                                <span class="label">Valor Estimado</span>
+                                <span class="val" id="detailValue">R$ 5.000,00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="details-right-panel">
+                    <div class="activity-log-form">
+                        <h4>Registrar Nova Interação</h4>
+                        <form id="activityForm">
+                            <input type="hidden" id="activityContactId">
+                            <div class="form-row compact-row">
+                                <select id="activityType" class="form-control" required>
+                                    <option value="call">📞 Ligação</option>
+                                    <option value="email">✉️ E-mail</option>
+                                    <option value="meeting">🤝 Reunião</option>
+                                    <option value="note">📝 Nota Geral</option>
+                                </select>
+                                <input type="text" id="activityDescription" class="form-control" placeholder="Ex: Ligação para alinhar..." required>
+                                <button type="submit" class="btn btn-primary btn-sm">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="timeline-wrapper">
+                        <h4>Linha do Tempo de Atividades</h4>
+                        <div class="timeline" id="contactTimeline"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT PRODUCT -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Adicionar Produto</h3>
+                <button class="btn-close" id="btnCloseProductModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="productName">Nome do Produto/Serviço *</label>
+                        <input type="text" id="productName" class="form-control" placeholder="Ex: Google Ads Mensal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">Descrição</label>
+                        <textarea id="productDescription" class="form-control" rows="2" placeholder="O que está incluído no serviço..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productPrice">Preço Base (R$) *</label>
+                            <input type="number" id="productPrice" class="form-control" min="0" step="0.01" placeholder="1200" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productType">Tipo de Cobrança *</label>
+                            <select id="productType" class="form-control" required>
+                                <option value="single">Taxa Única</option>
+                                <option value="monthly">Recorrente Mensal</option>
+                                <option value="yearly">Recorrente Anual</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelProductModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CONVERT LEAD TO CUSTOMER (ON WON) -->
+    <div class="modal" id="conversionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Venda Concluída! 🎉</h3>
+                <button class="btn-close" id="btnCloseConversionModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="conversionForm">
+                <input type="hidden" id="conversionContactId">
+                <div class="modal-body">
+                    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">
+                        Parabéns pelo fechamento! Escolha o produto/serviço vendido para registrar o faturamento na aba de clientes da Web Co.
+                    </p>
+                    <div class="form-group">
+                        <label for="conversionProduct">Produto/Serviço Vendido *</label>
+                        <select id="conversionProduct" class="form-control" required>
+                            <!-- Dynamic populated -->
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="conversionPrice">Valor Final Acordado (R$) *</label>
+                            <input type="number" id="conversionPrice" class="form-control" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="conversionType">Tipo de Faturamento *</label>
+                            <select id="conversionType" class="form-control" required>
+                                <option value="single">Taxa Única</option>
+                                <option value="monthly">Recorrente Mensal</option>
+                                <option value="yearly">Recorrente Anual</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelConversionModal">Pular</button>
+                    <button type="submit" class="btn btn-primary">Adicionar a Clientes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: IMPORT LEADS -->
+    <div class="modal" id="importModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Importar Leads</h3>
+                <button class="btn-close" id="btnCloseImportModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="gap:20px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                    <div class="form-group">
+                        <label for="importText">Copiar e colar CSV *</label>
+                        <textarea id="importText" class="form-control" rows="8" placeholder="Nome,Empresa,Email,Telefone,Valor,Notas&#10;Thiago Santos,InFocus,thiago@infocus.com,(11) 98888-1111,3500,Demonstrou interesse no site&#10;Amanda Lima,,amanda@email.com,(11) 97777-2222,1200,Lead vindo do Google Ads"></textarea>
+                        <span style="font-size:11px;color:var(--text-muted);margin-top:4px;">Separar colunas por vírgula. Primeira linha deve ser o cabeçalho.</span>
+                    </div>
+                    <div class="form-group" style="justify-content:center;border:2px dashed var(--border-color);border-radius:var(--radius-sm);padding:20px;text-align:center;">
+                        <i data-lucide="file-spreadsheet" class="empty-icon" style="width:36px;height:36px;margin:0 auto 12px;"></i>
+                        <h4 style="font-size:13px;margin-bottom:8px;">Importar arquivo JSON ou CSV</h4>
+                        <input type="file" id="importFile" accept=".json,.csv" style="display:none;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">Escolher Arquivo</button>
+                        <span id="importFileName" style="display:block;font-size:11px;color:var(--text-muted);margin-top:8px;">Nenhum arquivo selecionado</span>
+                    </div>
+                </div>
+                
+                <div class="import-logs-panel hidden" id="importLogsPanel" style="display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--border-color);padding-top:16px;">
+                    <h4 style="font-size:13px;font-weight:600;">Log de Resultados da Importação</h4>
+                    <div class="table-container" style="max-height:200px;overflow-y:auto;border:1px solid var(--border-color);border-radius:var(--radius-sm);">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="padding:8px 12px;font-size:11px;">Linha / Registro</th>
+                                    <th style="padding:8px 12px;font-size:11px;">Status</th>
+                                    <th style="padding:8px 12px;font-size:11px;">Detalhes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="importLogsTableBody">
+                                <!-- Logs dynamic -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnCancelImportModal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnExecuteImport">Processar Importação</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD TASK -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Adicionar Nova Tarefa</h3>
+                <button class="btn-close" id="btnCloseTaskModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="taskForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="taskTitle">Descrição da Tarefa *</label>
+                        <input type="text" id="taskTitle" class="form-control" placeholder="Ex: Ligar para alinhar a proposta" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskContact">Vincular a um Contato</label>
+                            <select id="taskContact" class="form-control">
+                                <option value="">Nenhum Contato</option>
+                                <!-- Populate dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskDueDate">Data de Vencimento *</label>
+                            <input type="date" id="taskDueDate" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Prioridade</label>
+                        <select id="taskPriority" class="form-control">
+                            <option value="low">Baixa</option>
+                            <option value="medium" selected>Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelTaskModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar Tarefa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module" src="/src/app.js"></script>
+</body>
+</html>
