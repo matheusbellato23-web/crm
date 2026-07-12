@@ -1,20 +1,22 @@
 // Centralized State Management with Multi-Tenancy for Nexus CRM
 let state = {
-    currentEnv: "", // Set after login
-    privacyMode: false, // Privacy mode toggle
-    calendarDate: new Date("2026-07-12"), // Default calendar date
-    environments: {} // Tenant data
+    currentEnv: "", // Central login env
+    privacyMode: false,
+    calendarDate: new Date("2026-07-12"),
+    pipelineViewMode: "kanban", // "kanban" or "funnel"
+    activeFunnelSegment: "top", // "top", "mid", "bottom"
+    environments: {}
 };
 
 // Default Catalogs
 const defaultProducts = [
-    { id: "p1", name: "Criação de Site Profissional", description: "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.", price: 3500.00, type: "single", suggestedAddons: ["p5", "p6"], role: "main" },
-    { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, type: "single", suggestedAddons: ["p3", "p5", "p6"], role: "main" },
-    { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, type: "monthly", suggestedAddons: [], role: "main" },
-    { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, type: "single", suggestedAddons: [], role: "main" },
-    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, type: "monthly", suggestedAddons: [], role: "sub" },
-    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, type: "monthly", suggestedAddons: [], role: "sub" },
-    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, type: "monthly", suggestedAddons: [], role: "sub" }
+    { id: "p1", name: "Criação de Site Profissional", description: "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.", price: 3500.00, type: "single", suggestedAddons: ["p5", "p6"] },
+    { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, type: "single", suggestedAddons: ["p3", "p5", "p6"] },
+    { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, type: "monthly", suggestedAddons: [] },
+    { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, type: "single", suggestedAddons: [] },
+    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, type: "monthly", suggestedAddons: [] },
+    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, type: "monthly", suggestedAddons: [] },
+    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, type: "monthly", suggestedAddons: [] }
 ];
 
 const defaultContacts = [
@@ -624,6 +626,151 @@ function renderKanban() {
         document.getElementById("funnelConversionRate").innerText = `${conversionRate.toFixed(1)}%`;
     }
 
+    // Toggle containers based on active mode
+    const kanbanBoard = document.querySelector(".kanban-board");
+    const funnelContainer = document.getElementById("pipelineFunnelViewContainer");
+    
+    // Toggle active classes on buttons
+    const btnKanban = document.getElementById("btnPipelineModeKanban");
+    const btnFunnel = document.getElementById("btnPipelineModeFunnel");
+    if (btnKanban && btnFunnel) {
+        if (state.pipelineViewMode === "funnel") {
+            btnKanban.classList.remove("active");
+            btnFunnel.classList.add("active");
+            if (kanbanBoard) kanbanBoard.classList.add("hidden");
+            if (funnelContainer) funnelContainer.classList.remove("hidden");
+        } else {
+            btnKanban.classList.add("active");
+            btnFunnel.classList.remove("active");
+            if (kanbanBoard) kanbanBoard.classList.remove("hidden");
+            if (funnelContainer) funnelContainer.classList.add("hidden");
+        }
+    }
+
+    if (state.pipelineViewMode === "funnel") {
+        // Update Graphic counts and values
+        if (document.getElementById("funnelTopCountGraphic")) {
+            document.getElementById("funnelTopCountGraphic").innerText = `${topCount} Leads`;
+            document.getElementById("funnelTopValGraphic").innerText = `${formatCurrency(topValue)} est.`;
+        }
+        if (document.getElementById("funnelMidCountGraphic")) {
+            document.getElementById("funnelMidCountGraphic").innerText = `${midCount} Leads`;
+            document.getElementById("funnelMidValGraphic").innerText = `${formatCurrency(midValue)} est.`;
+        }
+        if (document.getElementById("funnelBottomCountGraphic")) {
+            document.getElementById("funnelBottomCountGraphic").innerText = `${bottomCount} Clientes`;
+            document.getElementById("funnelBottomValGraphic").innerText = `${formatCurrency(bottomValue)} fat.`;
+        }
+
+        // Pass rate arrows calculations
+        const passRate1 = topCount > 0 ? (midCount / topCount) * 100 : 0;
+        const passRate2 = midCount > 0 ? (bottomCount / midCount) * 100 : 0;
+
+        if (document.getElementById("funnelPassRate1")) {
+            document.getElementById("funnelPassRate1").innerText = `${passRate1.toFixed(0)}% de avanço`;
+        }
+        if (document.getElementById("funnelPassRate2")) {
+            document.getElementById("funnelPassRate2").innerText = `${passRate2.toFixed(0)}% de avanço`;
+        }
+
+        // Selected segment styles
+        const stgTop = document.getElementById("funnelStageTop");
+        const stgMid = document.getElementById("funnelStageMid");
+        const stgBottom = document.getElementById("funnelStageBottom");
+
+        [stgTop, stgMid, stgBottom].forEach(el => {
+            if (el) {
+                el.style.transform = "";
+                el.style.boxShadow = "";
+                el.style.borderWidth = "1px";
+                el.style.borderColor = "var(--border-color)";
+                el.style.background = "";
+            }
+        });
+
+        let activeLeads = [];
+        let segmentTitle = "";
+        let segmentColor = "";
+
+        if (state.activeFunnelSegment === "top") {
+            activeLeads = topLeads;
+            segmentTitle = "Contatos no Topo do Funil (Novos)";
+            segmentColor = "var(--color-primary)";
+            if (stgTop) {
+                stgTop.style.transform = "scale(1.02)";
+                stgTop.style.boxShadow = "0 4px 12px rgba(0, 140, 255, 0.15)";
+                stgTop.style.borderWidth = "2px";
+                stgTop.style.borderColor = "var(--color-primary)";
+                stgTop.style.background = "rgba(0, 140, 255, 0.08)";
+            }
+        } else if (state.activeFunnelSegment === "mid") {
+            activeLeads = midLeads;
+            segmentTitle = "Contatos no Meio do Funil (Orçamentos)";
+            segmentColor = "var(--color-warning)";
+            if (stgMid) {
+                stgMid.style.transform = "scale(1.02)";
+                stgMid.style.boxShadow = "0 4px 12px rgba(250, 180, 0, 0.15)";
+                stgMid.style.borderWidth = "2px";
+                stgMid.style.borderColor = "var(--color-warning)";
+                stgMid.style.background = "rgba(250, 180, 0, 0.08)";
+            }
+        } else {
+            activeLeads = bottomLeads;
+            segmentTitle = "Contatos no Fundo do Funil (Fechados)";
+            segmentColor = "var(--color-teal)";
+            if (stgBottom) {
+                stgBottom.style.transform = "scale(1.02)";
+                stgBottom.style.boxShadow = "0 4px 12px rgba(13, 242, 201, 0.15)";
+                stgBottom.style.borderWidth = "2px";
+                stgBottom.style.borderColor = "var(--color-teal)";
+                stgBottom.style.background = "rgba(13, 242, 201, 0.08)";
+            }
+        }
+
+        // Render segment title and count
+        const titleEl = document.getElementById("funnelSegmentTitle");
+        if (titleEl) {
+            titleEl.innerText = segmentTitle;
+            titleEl.style.color = segmentColor;
+        }
+        if (document.getElementById("funnelSegmentBadgeCount")) {
+            document.getElementById("funnelSegmentBadgeCount").innerText = `${activeLeads.length} contatos`;
+        }
+
+        // Render active leads in right panel
+        const container = document.getElementById("funnelSegmentLeadsContainer");
+        if (container) {
+            container.innerHTML = "";
+            if (activeLeads.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+                        <p style="font-size:11px;">Nenhum lead nesta etapa com as configurações filtradas.</p>
+                    </div>
+                `;
+            } else {
+                activeLeads.forEach(c => {
+                    const card = document.createElement("div");
+                    card.style = "background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition: all 0.2s;";
+                    card.innerHTML = `
+                        <div>
+                            <strong style="color:var(--text-primary); font-size:12px;">${c.name}</strong>
+                            <div style="font-size:10px; color:var(--text-muted);">${c.company || "Sem Empresa"} • ${c.niche || "Outro"}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <strong style="color:var(--color-primary); font-size:11px;">${formatCurrency(c.value)}</strong>
+                            <div style="font-size:9px; color:var(--text-secondary);">${c.status === 'lead' ? 'Novo' : c.status === 'contacted' ? 'Contatado' : c.status === 'proposal' ? 'Proposta' : c.status === 'negotiating' ? 'Em Negociação' : 'Ganho'}</div>
+                        </div>
+                    `;
+                    // Hover effect
+                    card.onmouseenter = () => { card.style.borderColor = "var(--color-primary)"; card.style.background = "var(--bg-card-hover)"; };
+                    card.onmouseleave = () => { card.style.borderColor = "var(--border-color)"; card.style.background = "var(--bg-app)"; };
+                    card.onclick = () => openContactDetails(c.id);
+                    container.appendChild(card);
+                });
+            }
+        }
+    }
+
     // Render columns
     stages.forEach(stage => {
         const columnContainer = document.getElementById(`kanban-${stage}`);
@@ -815,6 +962,7 @@ function deleteCustomer(id) {
 }
 
 // 5. Products Management Render
+// 5. Products Management Render
 function renderProducts() {
     const env = getEnv();
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
@@ -840,21 +988,14 @@ function renderProducts() {
         document.getElementById("productsTable").classList.remove("hidden");
 
         filtered.forEach(p => {
-            const role = p.role || "main";
-            
             // Build main row
             const tr = document.createElement("tr");
-            tr.className = `product-row-${role}`;
             
             // Expand button if it has suggested addons
             const hasAddons = p.suggestedAddons && p.suggestedAddons.length > 0;
-            const expandBtn = (role === 'main' && hasAddons)
+            const expandBtn = hasAddons
                 ? `<button class="btn-icon-only btn-expand-subproducts" style="margin-right:8px; cursor:pointer;" data-id="${p.id}"><i data-lucide="chevron-right" style="width:14px; height:14px; vertical-align:middle;"></i></button>`
                 : `<span style="display:inline-block; width:22px; margin-right:8px;"></span>`;
-
-            const roleBadge = role === 'main'
-                ? `<span style="font-size: 8px; background: rgba(0, 140, 255, 0.1); border: 1px solid rgba(0, 140, 255, 0.2); border-radius: 4px; padding: 1px 4px; color: var(--color-primary); font-weight: 600; vertical-align:middle; margin-left: 6px;">Principal</span>`
-                : `<span style="font-size: 8px; background: rgba(13, 242, 201, 0.1); border: 1px solid rgba(13, 242, 201, 0.2); border-radius: 4px; padding: 1px 4px; color: var(--color-teal); font-weight: 600; vertical-align:middle; margin-left: 6px;">Subproduto / Adicional</span>`;
 
             tr.innerHTML = `
                 <td>
@@ -862,7 +1003,6 @@ function renderProducts() {
                         ${expandBtn}
                         <div>
                             <strong style="font-size:12px; color:var(--text-primary);">${p.name}</strong>
-                            ${roleBadge}
                         </div>
                     </div>
                 </td>
@@ -886,8 +1026,8 @@ function renderProducts() {
 
             tbody.appendChild(tr);
 
-            // If main product and has addons, create the nested subproducts row
-            if (role === 'main' && hasAddons) {
+            // If it has addons, create the nested subproducts row
+            if (hasAddons) {
                 const subTr = document.createElement("tr");
                 subTr.id = `subproducts-row-${p.id}`;
                 subTr.className = "hidden";
@@ -952,22 +1092,13 @@ function openEditProduct(id) {
     document.getElementById("productPrice").value = p.price;
     document.getElementById("productType").value = p.type;
 
-    const roleSelect = document.getElementById("productRole");
-    if (roleSelect) {
-        roleSelect.value = p.role || "main";
-    }
-
     // Load suggested addons checkboxes
     populateProductAddons(p.id);
 
-    // Toggle addons display based on role value
+    // Make sure addons container is visible
     const addonsGroup = document.getElementById("productAddonsFormGroup");
     if (addonsGroup) {
-        if (roleSelect && roleSelect.value === "sub") {
-            addonsGroup.classList.add("hidden");
-        } else {
-            addonsGroup.classList.remove("hidden");
-        }
+        addonsGroup.classList.remove("hidden");
     }
 
     document.getElementById("productModalTitle").innerText = "Editar Produto";
@@ -1126,9 +1257,7 @@ function populateConversionProductsDropdown() {
     if (!select) return;
     select.innerHTML = "";
     
-    // Only show main products in select dropdown
-    const mainProducts = env.products.filter(p => (p.role || "main") === "main");
-    mainProducts.forEach(p => {
+    env.products.forEach(p => {
         const option = document.createElement("option");
         option.value = p.id;
         option.innerText = `${p.name} (Ref: ${formatCurrency(p.price)})`;
@@ -1141,8 +1270,8 @@ function populateConversionProductsDropdown() {
         if (!container) return;
         container.innerHTML = "";
 
-        // Only show subproducts as addons
-        const addonCandidates = env.products.filter(p => (p.role || "main") === "sub" && p.id !== selectedId);
+        // Show all other products as potential addons
+        const addonCandidates = env.products.filter(p => p.id !== selectedId);
         if (addonCandidates.length === 0) {
             container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum serviço adicional disponível</span>`;
             return;
@@ -1177,8 +1306,8 @@ function populateConversionProductsDropdown() {
     });
 
     // Run initially
-    if (mainProducts.length > 0) {
-        const firstProd = mainProducts[0];
+    if (env.products.length > 0) {
+        const firstProd = env.products[0];
         document.getElementById("conversionPrice").value = firstProd.price;
         document.getElementById("conversionType").value = firstProd.type;
     }
@@ -1300,7 +1429,6 @@ function renderTimeline(contact) {
 document.getElementById("btnCreateProduct").addEventListener("click", () => {
     document.getElementById("productForm").reset();
     document.getElementById("productId").value = "";
-    document.getElementById("productRole").value = "main";
     
     const group = document.getElementById("productAddonsFormGroup");
     if (group) group.classList.remove("hidden");
@@ -1316,17 +1444,6 @@ document.getElementById("btnCancelProductModal").addEventListener("click", () =>
     document.getElementById("productModal").classList.remove("active");
 });
 
-document.getElementById("productRole").addEventListener("change", (e) => {
-    const group = document.getElementById("productAddonsFormGroup");
-    if (group) {
-        if (e.target.value === "sub") {
-            group.classList.add("hidden");
-        } else {
-            group.classList.remove("hidden");
-        }
-    }
-});
-
 document.getElementById("productForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const env = getEnv();
@@ -1335,11 +1452,8 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
     const description = document.getElementById("productDescription").value;
     const price = parseFloat(document.getElementById("productPrice").value) || 0;
     const type = document.getElementById("productType").value;
-    const role = document.getElementById("productRole").value;
 
-    const suggestedAddons = role === "main" 
-        ? Array.from(document.querySelectorAll(".product-addon-checkbox:checked")).map(cb => cb.value)
-        : [];
+    const suggestedAddons = Array.from(document.querySelectorAll(".product-addon-checkbox:checked")).map(cb => cb.value);
 
     if (id) {
         const p = env.products.find(x => x.id === id);
@@ -1348,7 +1462,6 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             p.description = description;
             p.price = price;
             p.type = type;
-            p.role = role;
             p.suggestedAddons = suggestedAddons;
         }
     } else {
@@ -1358,7 +1471,6 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             description,
             price,
             type,
-            role,
             suggestedAddons
         };
         env.products.push(newProd);
@@ -2101,11 +2213,10 @@ function populateProposalDropdowns() {
         cSelect.appendChild(opt);
     });
 
-    // Products select - only show main products
+    // Products select - show all products
     const pSelect = document.getElementById("proposalProductSelect");
     pSelect.innerHTML = `<option value="custom">-- Serviço Customizado --</option>`;
-    const mainProducts = env.products.filter(p => (p.role || "main") === "main");
-    mainProducts.forEach(p => {
+    env.products.forEach(p => {
         const opt = document.createElement("option");
         opt.value = p.id;
         opt.innerText = p.name;
@@ -2117,8 +2228,8 @@ function populateProposalDropdowns() {
         const container = document.getElementById("proposalAddonsContainer");
         container.innerHTML = "";
 
-        // Only show subproducts as addons
-        const addonCandidates = env.products.filter(p => (p.role || "main") === "sub" && p.id !== selectedId);
+        // Show all other products as potential addons
+        const addonCandidates = env.products.filter(p => p.id !== selectedId);
         if (addonCandidates.length === 0) {
             container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum serviço adicional disponível</span>`;
             return;
@@ -3283,4 +3394,43 @@ window.addEventListener("DOMContentLoaded", () => {
     if (kfn) kfn.onchange = renderKanban;
     const kfp = document.getElementById("kanbanFilterPeriod");
     if (kfp) kfp.onchange = renderKanban;
+
+    // View Mode Switchers
+    const btnKanban = document.getElementById("btnPipelineModeKanban");
+    if (btnKanban) {
+        btnKanban.onclick = () => {
+            state.pipelineViewMode = "kanban";
+            renderKanban();
+        };
+    }
+    const btnFunnel = document.getElementById("btnPipelineModeFunnel");
+    if (btnFunnel) {
+        btnFunnel.onclick = () => {
+            state.pipelineViewMode = "funnel";
+            renderKanban();
+        };
+    }
+
+    // Funnel Stage Clicks
+    const stgTop = document.getElementById("funnelStageTop");
+    if (stgTop) {
+        stgTop.onclick = () => {
+            state.activeFunnelSegment = "top";
+            renderKanban();
+        };
+    }
+    const stgMid = document.getElementById("funnelStageMid");
+    if (stgMid) {
+        stgMid.onclick = () => {
+            state.activeFunnelSegment = "mid";
+            renderKanban();
+        };
+    }
+    const stgBottom = document.getElementById("funnelStageBottom");
+    if (stgBottom) {
+        stgBottom.onclick = () => {
+            state.activeFunnelSegment = "bottom";
+            renderKanban();
+        };
+    }
 });

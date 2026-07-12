@@ -340,10 +340,14 @@
 
             <!-- Kanban View -->
             <section id="kanbanView" class="view-section">
-                <div class="view-header">
+                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <h1 class="view-title">Pipeline de Vendas</h1>
                         <p class="view-subtitle">Arraste os cards para alterar o status da venda na Web Co.</p>
+                    </div>
+                    <div class="view-toggle-group" style="display:flex; border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow:hidden;">
+                        <button type="button" class="btn btn-secondary btn-sm active" id="btnPipelineModeKanban" style="border-radius:0; border:none; padding: 6px 12px; font-size: 11px; display:flex; align-items:center; gap:4px;"><i data-lucide="kanban" style="width:12px; height:12px;"></i> Quadro Kanban</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="btnPipelineModeFunnel" style="border-radius:0; border:none; padding: 6px 12px; font-size: 11px; display:flex; align-items:center; gap:4px;"><i data-lucide="filter" style="width:12px; height:12px;"></i> Modo Funil</button>
                     </div>
                 </div>
 
@@ -448,6 +452,63 @@
                             <span class="column-count" id="count-lost">0</span>
                         </div>
                         <div class="kanban-cards-container" id="kanban-lost"></div>
+                    </div>
+                </div>
+
+                <!-- Funnel Mode Container (hidden by default) -->
+                <div id="pipelineFunnelViewContainer" class="hidden">
+                    <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; margin-top: 16px;">
+                        <!-- Left Panel: Funnel Graphic -->
+                        <div class="funnel-graphic-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 400px; box-shadow: var(--shadow-sm);">
+                            <h3 style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); margin-bottom:24px; text-align:center;">Fluxo de Conversão do Funil</h3>
+                            
+                            <div class="funnel-container" style="display:flex; flex-direction:column; align-items:center; width:100%; max-width:320px; gap:8px;">
+                                <!-- Top Step -->
+                                <div class="funnel-stage funnel-stage-top active" id="funnelStageTop" style="width:100%; height:75px; background:rgba(0, 140, 255, 0.08); border:2px solid var(--color-primary); border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0, 140, 255, 0.15); transform: scale(1.02);">
+                                    <strong style="font-size:10px; color:var(--color-primary); text-transform:uppercase; letter-spacing:0.5px;">1. TOPO (Novos Leads)</strong>
+                                    <span style="font-size:18px; font-weight:700; color:var(--text-primary);" id="funnelTopCountGraphic">0 Leads</span>
+                                    <span style="font-size:10px; color:var(--text-secondary);" id="funnelTopValGraphic">R$ 0,00</span>
+                                </div>
+                                
+                                <!-- Pass 1 arrow -->
+                                <div style="display:flex; flex-direction:column; align-items:center; color:var(--text-muted); font-size:10px; gap: 2px;">
+                                    <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+                                    <span id="funnelPassRate1" style="font-weight:600;">0% de avanço</span>
+                                </div>
+
+                                <!-- Mid Step -->
+                                <div class="funnel-stage funnel-stage-mid" id="funnelStageMid" style="width:85%; height:75px; background:rgba(250, 180, 0, 0.04); border:1px solid var(--border-color); border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition: all 0.2s;">
+                                    <strong style="font-size:10px; color:var(--color-warning); text-transform:uppercase; letter-spacing:0.5px;">2. MEIO (Orçamentos)</strong>
+                                    <span style="font-size:18px; font-weight:700; color:var(--text-primary);" id="funnelMidCountGraphic">0 Leads</span>
+                                    <span style="font-size:10px; color:var(--text-secondary);" id="funnelMidValGraphic">R$ 0,00</span>
+                                </div>
+                                
+                                <!-- Pass 2 arrow -->
+                                <div style="display:flex; flex-direction:column; align-items:center; color:var(--text-muted); font-size:10px; gap: 2px;">
+                                    <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+                                    <span id="funnelPassRate2" style="font-weight:600;">0% de avanço</span>
+                                </div>
+
+                                <!-- Bottom Step -->
+                                <div class="funnel-stage funnel-stage-bottom" id="funnelStageBottom" style="width:70%; height:75px; background:rgba(13, 242, 201, 0.04); border:1px solid var(--border-color); border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition: all 0.2s;">
+                                    <strong style="font-size:10px; color:var(--color-teal); text-transform:uppercase; letter-spacing:0.5px;">3. FUNDO (Fechados)</strong>
+                                    <span style="font-size:18px; font-weight:700; color:var(--text-primary);" id="funnelBottomCountGraphic">0 Clientes</span>
+                                    <span style="font-size:10px; color:var(--text-secondary);" id="funnelBottomValGraphic">R$ 0,00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Leads list of selected segment -->
+                        <div class="funnel-leads-list-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px; display:flex; flex-direction:column; min-height: 400px; box-shadow: var(--shadow-sm);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-bottom:16px;">
+                                <h3 style="font-size:12px; font-weight:600; text-transform:uppercase; color:var(--text-primary);" id="funnelSegmentTitle">Contatos no Topo do Funil</h3>
+                                <span style="font-size:10px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:4px; padding:2px 8px; font-weight:600; color:var(--text-secondary);" id="funnelSegmentBadgeCount">0 leads</span>
+                            </div>
+                            
+                            <div style="flex:1; overflow-y:auto; max-height: 350px; display:flex; flex-direction:column; gap:10px;" id="funnelSegmentLeadsContainer">
+                                <!-- Dynamic contacts cards -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1483,14 +1544,6 @@
                     <div class="form-group">
                         <label for="productName">Nome do Produto/Serviço *</label>
                         <input type="text" id="productName" class="form-control" placeholder="Ex: Google Ads Mensal" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="productRole">Classificação do Produto *</label>
-                        <select id="productRole" class="form-control" required>
-                            <option value="main">Produto Principal (pode ter subprodutos vinculados)</option>
-                            <option value="sub">Subproduto / Adicional (serviço complementar de upsell)</option>
-                        </select>
-                    </div>
                     <div class="form-group">
                         <label for="productDescription">Descrição</label>
                         <textarea id="productDescription" class="form-control" rows="2" placeholder="O que está incluído no serviço..."></textarea>
