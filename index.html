@@ -87,9 +87,17 @@
                 <!-- Produção Section -->
                 <div class="nav-section-title">Produção</div>
                 <ul>
+                    <li class="nav-item" data-view="contracts">
+                        <i data-lucide="shield-check"></i>
+                        <span>Contratos</span>
+                    </li>
                     <li class="nav-item" data-view="tasks">
                         <i data-lucide="check-square"></i>
                         <span>Tarefas Comerciais</span>
+                    </li>
+                    <li class="nav-item" data-view="calendar">
+                        <i data-lucide="calendar"></i>
+                        <span>Agenda & Reuniões</span>
                     </li>
                 </ul>
 
@@ -98,7 +106,11 @@
                 <ul>
                     <li class="nav-item" data-view="customers">
                         <i data-lucide="gem"></i>
-                        <span>Clientes (Faturamento)</span>
+                        <span>Clientes Ativos</span>
+                    </li>
+                    <li class="nav-item" data-view="finance">
+                        <i data-lucide="dollar-sign"></i>
+                        <span>Controle Financeiro</span>
                     </li>
                 </ul>
             </nav>
@@ -713,7 +725,449 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Contracts View -->
+            <section id="contractsView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Contratos Comerciais</h1>
+                        <p class="view-subtitle">Gerencie contratos de prestação de serviços emitidos automaticamente a partir de propostas ganhas.</p>
+                    </div>
+                </div>
+
+                <!-- List View -->
+                <div class="proposals-content-wrapper" id="contractsListWrapper">
+                    <div class="table-card">
+                        <div class="table-container">
+                            <table class="data-table" id="contractsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Contrato / Cliente</th>
+                                        <th>Serviço Contratado</th>
+                                        <th>Valor do Contrato</th>
+                                        <th>Início da Vigência</th>
+                                        <th>Término da Vigência</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contractsTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-empty-state hidden" id="contractsEmptyState">
+                            <i data-lucide="shield-alert" class="empty-icon"></i>
+                            <h3>Nenhum contrato ativo ou rascunho</h3>
+                            <p>Gere uma proposta, marque-a como "Aprovada (Ganho)" e o contrato será gerado automaticamente aqui.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Viewer / Printer Panel (Virtual A4 Page) -->
+                <div class="proposals-builder-wrapper hidden" id="contractViewerWrapper">
+                    <div class="builder-actions-header">
+                        <button class="btn btn-secondary" id="btnBackToContractsList">
+                            <i data-lucide="arrow-left"></i> Voltar à Lista
+                        </button>
+                        <div style="display:flex;gap:10px;">
+                            <button class="btn btn-secondary" id="btnPrintContract">
+                                <i data-lucide="printer"></i> Imprimir / Salvar PDF
+                            </button>
+                            <button class="btn btn-primary" id="btnActivateContract">
+                                <i data-lucide="check"></i> Ativar Contrato
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="builder-columns" style="grid-template-columns: 1fr;">
+                        <div class="builder-preview-panel" style="padding: 40px 0;">
+                            <div class="paper-preview" id="contractPrintArea" style="font-family: 'Inter', sans-serif; max-width: 750px; font-size: 11px; color: #1e293b; padding: 60px; line-height: 1.8;">
+                                <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #008cff; padding-bottom: 15px;">
+                                    <div>
+                                        <h2 style="font-size: 16px; text-transform: uppercase; font-weight: 700; color: #0f172a; margin: 0;">Contrato de Prestação de Serviços Digitais</h2>
+                                        <p style="margin: 2px 0 0; color: #64748b; font-size: 10px;">CONTRATO Nº <span id="cPreviewId">0000</span></p>
+                                    </div>
+                                    <div style="font-weight: 700; font-size: 14px; color: #008cff; font-family: 'Outfit';">Web Co. Labs</div>
+                                </div>
+
+                                <div style="margin-top: 20px;">
+                                    <p><strong>CONTRATANTE:</strong> <span id="cPreviewClientName" style="text-transform: uppercase; font-weight: 600;">Nome do Cliente</span>, doravante denominada simplesmente CONTRATANTE, com dados cadastrados sob o e-mail <span id="cPreviewClientEmail">email@cliente.com</span>, associada à empresa <span id="cPreviewClientCompany" style="font-weight: 600;">Empresa</span>.</p>
+                                    <p><strong>CONTRATADA:</strong> <strong>Web Co. Labs</strong>, agência de tecnologia e marketing digital, doravante denominada simplesmente CONTRATADA.</p>
+                                    <p>As partes acima identificadas têm, entre si, justo e acertado o presente Contrato de Prestação de Serviços, que se regerá pelas cláusulas seguintes.</p>
+                                </div>
+
+                                <div style="margin-top: 15px;">
+                                    <h4 style="font-size: 11px; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">Cláusula 1ª - Do Objeto</h4>
+                                    <p>O presente contrato tem como objeto a prestação, pela CONTRATADA à CONTRATANTE, de serviços de tecnologia no escopo do pacote <strong><span id="cPreviewProductName">Nome do Produto</span></strong>.</p>
+                                </div>
+
+                                <div style="margin-top: 15px;">
+                                    <h4 style="font-size: 11px; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">Cláusula 2ª - Do Investimento e Faturamento</h4>
+                                    <p>Pela prestação dos serviços acertados, a CONTRATANTE pagará à CONTRATADA o valor líquido de <strong><span id="cPreviewValue">R$ 0,00</span></strong>, cobrado de forma <strong><span id="cPreviewRecurrence">Taxa Única</span></strong>.</p>
+                                    <p>Os pagamentos serão liquidados via boleto bancário ou PIX conforme o cronograma emitido pela assessoria financeira da CONTRATADA.</p>
+                                </div>
+
+                                <div style="margin-top: 15px;">
+                                    <h4 style="font-size: 11px; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">Cláusula 3ª - Da Vigência</h4>
+                                    <p>Este contrato entra em vigor a partir de <strong><span id="cPreviewStartDate">12/07/2026</span></strong> com término previsto em <strong><span id="cPreviewEndDate">12/07/2027</span></strong>, podendo ser rescindido mediante aviso prévio de 30 dias por qualquer uma das partes sem ônus adicionais.</p>
+                                </div>
+
+                                <div style="margin-top: 15px;">
+                                    <h4 style="font-size: 11px; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">Cláusula 4ª - Do Foro</h4>
+                                    <p>Para dirimir quaisquer controvérsias oriundas do presente contrato, as partes elegem o foro da Comarca da sede da CONTRATADA.</p>
+                                </div>
+
+                                <div style="display:flex; justify-content: space-between; margin-top: 50px; gap: 40px; text-align: center;">
+                                    <div style="flex:1;">
+                                        <div style="border-top: 1px solid #94a3b8; width: 80%; margin: 0 auto 5px;"></div>
+                                        <p style="font-size: 9px; font-weight: 700; color: #0f172a; margin: 0;">Web Co. Labs</p>
+                                        <p style="font-size: 8px; color: #64748b; margin: 0;">CONTRATADA</p>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <div style="border-top: 1px solid #94a3b8; width: 80%; margin: 0 auto 5px;"></div>
+                                        <p style="font-size: 9px; font-weight: 700; color: #0f172a; margin: 0;" id="cPreviewSignatureClient">Nome do Cliente</p>
+                                        <p style="font-size: 8px; color: #64748b; margin: 0;">CONTRATANTE</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calendar View -->
+            <section id="calendarView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Agenda & Reuniões</h1>
+                        <p class="view-subtitle">Monitore reuniões agendadas, marcos de entrega e vencimentos comerciais da Web Co.</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnCreateEvent">
+                        <i data-lucide="plus"></i>
+                        <span>Agendar Reunião</span>
+                    </button>
+                </div>
+
+                <div class="calendar-layout-wrapper">
+                    <!-- Calendar Header Controls -->
+                    <div class="calendar-header-controls" style="display:flex; align-items:center; gap:20px; margin-bottom:16px;">
+                        <button class="btn btn-secondary btn-icon-only" id="btnPrevMonth"><i data-lucide="chevron-left" style="width:14px;height:14px;"></i></button>
+                        <h2 class="calendar-current-month" id="calendarCurrentMonthText" style="font-family:var(--font-heading); font-size:16px; font-weight:600; width:150px; text-align:center; color:var(--text-primary);">Julho 2026</h2>
+                        <button class="btn btn-secondary btn-icon-only" id="btnNextMonth"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button>
+                    </div>
+
+                    <!-- Calendar Main Grid -->
+                    <div class="calendar-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px; overflow-x:auto;">
+                        <div class="calendar-grid-header" style="display:grid; grid-template-columns: repeat(7, 1fr); text-align:center; font-weight:600; font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px;">
+                            <div>Dom</div>
+                            <div>Seg</div>
+                            <div>Ter</div>
+                            <div>Qua</div>
+                            <div>Qui</div>
+                            <div>Sex</div>
+                            <div>Sáb</div>
+                        </div>
+                        <div class="calendar-grid-body" id="calendarGridBody" style="display:grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: minmax(100px, auto); gap:6px;">
+                            <!-- Dynamic Day Cells -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Finance View -->
+            <section id="financeView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Controle Financeiro</h1>
+                        <p class="view-subtitle">Acompanhe fluxo de caixa, despesas, faturamento de faturas e margens de lucro operacionais.</p>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-secondary" id="btnCreateExpense">
+                            <i data-lucide="minus-circle"></i>
+                            <span>Lançar Despesa</span>
+                        </button>
+                        <button class="btn btn-primary" id="btnCreateInvoice">
+                            <i data-lucide="plus-circle"></i>
+                            <span>Lançar Receita</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Advanced Profitability KPIs -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper sales" style="background: rgba(16, 185, 129, 0.1); color: var(--color-success);">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                            <span class="kpi-badge positive">Bruto</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Receita Bruta</span>
+                            <span class="kpi-value" id="finKpiTotalRevenue">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper conversion" style="background: rgba(239, 68, 68, 0.1); color: var(--color-danger);">
+                                <i data-lucide="trending-down"></i>
+                            </div>
+                            <span class="kpi-badge negative">Saídas</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Despesas Operacionais</span>
+                            <span class="kpi-value" id="finKpiTotalExpenses">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper pipeline" style="background: rgba(0, 140, 255, 0.1); color: var(--color-primary);">
+                                <i data-lucide="dollar-sign"></i>
+                            </div>
+                            <span class="kpi-badge info">Sobras</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Lucro Líquido</span>
+                            <span class="kpi-value" id="finKpiNetProfit">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper tasks" style="background: rgba(13, 148, 136, 0.1); color: var(--color-teal);">
+                                <i data-lucide="percent"></i>
+                            </div>
+                            <span class="kpi-badge positive" id="finKpiMarginBadge">Excelente</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Margem de Lucro</span>
+                            <span class="kpi-value" id="finKpiMargin">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Charts Layout -->
+                <div class="dashboard-grid" style="margin-top:20px;">
+                    <div class="chart-card">
+                        <h3>Fluxo de Caixa (Recorrente vs Pontual)</h3>
+                        <div class="chart-container" style="position:relative; height:180px;">
+                            <canvas id="cashFlowChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Receitas por Nicho Comercial</h3>
+                        <div class="chart-container" style="position:relative; height:180px;">
+                            <canvas id="revenueByNicheChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Tables Tabs -->
+                <div class="tasks-container" style="margin-top:20px;">
+                    <div class="tasks-sidebar">
+                        <div class="tasks-menu-card">
+                            <ul class="finance-filters" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:4px;">
+                                <li class="active-tab-li active" id="tabInvoices" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
+                                    <i data-lucide="receipt" style="width:14px;height:14px;"></i> <span>Faturas (Receitas)</span>
+                                </li>
+                                <li class="active-tab-li" id="tabExpenses" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
+                                    <i data-lucide="minus-square" style="width:14px;height:14px;"></i> <span>Despesas Operacionais</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tasks-list-panel" style="flex:1;">
+                        <!-- Invoices Panel -->
+                        <div class="table-card" id="panelInvoices">
+                            <div class="table-container">
+                                <table class="data-table" id="invoicesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Fatura</th>
+                                            <th>Cliente</th>
+                                            <th>Nicho</th>
+                                            <th>Vencimento</th>
+                                            <th>Valor</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoicesTableBody">
+                                        <!-- Dynamic faturas -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Expenses Panel -->
+                        <div class="table-card hidden" id="panelExpenses">
+                            <div class="table-container">
+                                <table class="data-table" id="expensesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Descrição da Despesa</th>
+                                            <th>Categoria</th>
+                                            <th>Data Lançamento</th>
+                                            <th>Valor</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="expensesTableBody">
+                                        <!-- Dynamic despesas -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
+    </div>
+
+    <!-- MODAL: ADD INVOICE (RECEITA) -->
+    <div class="modal" id="invoiceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Lançar Receita / Fatura Avulsa</h3>
+                <button class="btn-close" id="btnCloseInvoiceModal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="invoiceForm">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceCustomer">Nome do Cliente *</label>
+                            <input type="text" id="invoiceCustomer" class="form-control" placeholder="Ex: Maria Santos" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceCompany">Empresa</label>
+                            <input type="text" id="invoiceCompany" class="form-control" placeholder="Ex: Santos Digital">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceNiche">Nicho do Cliente *</label>
+                            <select id="invoiceNiche" class="form-control" required>
+                                <option value="Negócio Local">Negócio Local</option>
+                                <option value="E-commerce">E-commerce</option>
+                                <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
+                                <option value="SaaS / Startup">SaaS / Startup</option>
+                                <option value="Serviços B2B">Serviços B2B</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceProduct">Produto/Serviço *</label>
+                            <input type="text" id="invoiceProduct" class="form-control" placeholder="Ex: Site Institucional" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceValue">Valor Faturado (R$) *</label>
+                            <input type="number" id="invoiceValue" class="form-control" min="0" step="0.01" placeholder="3500.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceDueDate">Data de Vencimento *</label>
+                            <input type="date" id="invoiceDueDate" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelInvoiceModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Lançar Fatura</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD EXPENSE (DESPESA) -->
+    <div class="modal" id="expenseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Lançar Despesa Operacional</h3>
+                <button class="btn-close" id="btnCloseExpenseModal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="expenseForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="expenseDescription">Descrição do Custo *</label>
+                        <input type="text" id="expenseDescription" class="form-control" placeholder="Ex: Hospedagem AWS" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expenseCategory">Categoria *</label>
+                            <select id="expenseCategory" class="form-control" required>
+                                <option value="Infraestrutura">Infraestrutura / Servidores</option>
+                                <option value="Marketing">Marketing / Tráfego Pago</option>
+                                <option value="Comissões">Comissões Comerciais</option>
+                                <option value="Ferramentas">Ferramentas & Softwares</option>
+                                <option value="Outros">Outras Despesas</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseValue">Valor da Despesa (R$) *</label>
+                            <input type="number" id="expenseValue" class="form-control" min="0" step="0.01" placeholder="150.00" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseDate">Data de Pagamento *</label>
+                        <input type="date" id="expenseDate" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelExpenseModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Lançar Despesa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD EVENT (AGENDA) -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Agendar Reunião / Evento</h3>
+                <button class="btn-close" id="btnCloseEventModal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="eventForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="eventTitle">Título da Reunião / Evento *</label>
+                        <input type="text" id="eventTitle" class="form-control" placeholder="Ex: Alinhamento de Escopo" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventContact">Vincular a Lead / Contato</label>
+                            <select id="eventContact" class="form-control">
+                                <option value="">Nenhum</option>
+                                <!-- Dynamic -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventDate">Data *</label>
+                            <input type="date" id="eventDate" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventTime">Horário *</label>
+                            <input type="time" id="eventTime" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <!-- spacer -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Notas e Observações</label>
+                        <textarea id="eventDescription" class="form-control" rows="2" placeholder="Detalhes sobre a reunião..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelEventModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Agendamento</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- MODAL: ADD / EDIT CONTACT -->

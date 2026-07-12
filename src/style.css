@@ -1844,3 +1844,118 @@ textarea.form-control {
         print-color-adjust: exact;
     }
 }
+
+/* Calendar grid styling */
+.calendar-day-cell {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-card);
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.calendar-day-cell:hover {
+    background-color: var(--bg-card-hover);
+}
+
+.calendar-day-cell.inactive-month {
+    opacity: 0.4;
+    background-color: var(--bg-app);
+}
+
+.calendar-day-cell.today {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-glow);
+}
+
+.calendar-day-number {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    align-self: flex-end;
+}
+
+.calendar-day-cell.today .calendar-day-number {
+    color: var(--color-primary);
+}
+
+.calendar-events-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow-y: auto;
+    flex: 1;
+    max-height: 80px;
+}
+
+.calendar-event-badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    cursor: pointer;
+}
+
+.calendar-event-badge.task {
+    background-color: var(--color-primary-glow);
+    color: var(--color-primary);
+    border-left: 2px solid var(--color-primary);
+}
+
+.calendar-event-badge.meeting {
+    background-color: var(--color-teal-glow);
+    color: var(--color-teal);
+    border-left: 2px solid var(--color-teal);
+}
+
+.calendar-event-badge.contract {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+    border-left: 2px solid var(--color-success);
+}
+
+/* Active tab styles for sub-tabs */
+.active-tab-li {
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.active-tab-li:hover {
+    background-color: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.active-tab-li.active {
+    background-color: var(--color-primary-glow);
+    color: var(--color-primary);
+}
+
+/* Printing Contract details */
+@media print {
+    #contractPrintArea,
+    #contractPrintArea * {
+        visibility: visible !important;
+    }
+    #contractPrintArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+}
+

@@ -2,6 +2,7 @@
 let state = {
     currentEnv: "", // Set after login
     privacyMode: false, // Privacy mode toggle
+    calendarDate: new Date("2026-07-12"), // Default calendar date
     environments: {} // Tenant data
 };
 
@@ -27,8 +28,29 @@ const defaultCustomers = [
 ];
 
 const defaultTasks = [
-    { id: "t1", title: "Enviar escopo do site para João Silva", contactId: "c1", dueDate: "2026-07-14", priority: "high", completed: false },
+    { id: "t1", title: "Enviar escopo do site para João Silva", contactId: "c1", dueDate: "2026-07-13", priority: "high", completed: false },
     { id: "t2", title: "Ligar para Carlos Souza sobre proposta", contactId: "c3", dueDate: "2026-07-15", priority: "medium", completed: false }
+];
+
+const defaultExpenses = [
+    { id: "exp1", description: "Hospedagem AWS & CDN Cloudflare", category: "Infraestrutura", value: 250.00, date: "2026-07-01" },
+    { id: "exp2", description: "Campanha Tráfego Pago Web Co.", category: "Marketing", value: 1200.00, date: "2026-07-05" },
+    { id: "exp3", description: "Assinatura Figma & Canva Pro", category: "Ferramentas", value: 180.00, date: "2026-07-08" }
+];
+
+const defaultInvoices = [
+    { id: "FAT-1001", customerName: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Desenvolvimento E-commerce", value: 7500.00, dueDate: "2026-07-10", status: "paid" },
+    { id: "FAT-1002", customerName: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Gestão de Google Ads", value: 1200.00, dueDate: "2026-07-12", status: "paid" },
+    { id: "FAT-1003", customerName: "João Silva", company: "Inova Tech", niche: "SaaS / Startup", productName: "Criação de Site Profissional", value: 3500.00, dueDate: "2026-07-14", status: "pending" }
+];
+
+const defaultContractsList = [
+    { id: "CONTR-1001", contactId: "c2", proposalId: "PROP-mock1", clientName: "Maria Oliveira", company: "Giga Corp", productName: "Desenvolvimento E-commerce", value: 7500.00, recurrence: "single", startDate: "2026-07-09", endDate: "2026-08-09", status: "active" }
+];
+
+const defaultEvents = [
+    { id: "evt1", title: "Reunião de Escopo - João Silva", contactId: "c1", date: "2026-07-13", time: "14:00", description: "Alinhamento do briefing de criação do site profissional." },
+    { id: "evt2", title: "Apresentação da Proposta - Carlos Souza", contactId: "c3", date: "2026-07-15", time: "16:30", description: "Demonstração e negociação de Google Ads." }
 ];
 
 // Dynamic Proposal Scope Templates
@@ -70,7 +92,7 @@ const defaultScopes = {
         "Atualizações recorrentes de plugins, temas e núcleo da plataforma WordPress",
         "Monitoramento de estabilidade e uptime 24/7 (garantia de site no ar)",
         "Suporte técnico prioritário de até 5 horas mensais para alterações de conteúdo",
-        "Correções rápidas de bugs e problemas de layout pós-atualizações",
+        "Correções rápida de bugs e problemas de layout pós-atualizações",
         "Canal exclusivo de atendimento via WhatsApp comercial"
     ]
 };
@@ -96,12 +118,19 @@ function getEnv() {
             tasks: [...defaultTasks],
             products: [...defaultProducts],
             customers: [...defaultCustomers],
-            proposals: []
+            proposals: [],
+            invoices: [...defaultInvoices],
+            expenses: [...defaultExpenses],
+            contracts: [...defaultContractsList],
+            events: [...defaultEvents]
         };
     }
-    if (!state.environments[env].proposals) {
-        state.environments[env].proposals = [];
-    }
+    // Dynamic schema checks for users upgrading state
+    if (!state.environments[env].proposals) state.environments[env].proposals = [];
+    if (!state.environments[env].invoices) state.environments[env].invoices = [...defaultInvoices];
+    if (!state.environments[env].expenses) state.environments[env].expenses = [...defaultExpenses];
+    if (!state.environments[env].contracts) state.environments[env].contracts = [...defaultContractsList];
+    if (!state.environments[env].events) state.environments[env].events = [...defaultEvents];
     return state.environments[env];
 }
 
@@ -115,6 +144,11 @@ function init() {
     // Privacy Mode setup
     if (state.privacyMode === undefined) {
         state.privacyMode = false;
+    }
+    if (!state.calendarDate) {
+        state.calendarDate = new Date("2026-07-12");
+    } else {
+        state.calendarDate = new Date(state.calendarDate);
     }
     updatePrivacyIcon();
     
@@ -143,6 +177,8 @@ function saveState() {
 // Chart Instances
 let salesChart = null;
 let pipelineChart = null;
+let cashFlowChart = null;
+let revenueByNicheChart = null;
 
 // Helpers & Formatting
 const formatCurrency = (value) => {
@@ -179,8 +215,12 @@ function renderAll() {
     renderProducts();
     renderTasks();
     renderProposals();
+    renderContracts();
+    renderCalendar();
+    renderFinance();
     populateContactDropdowns();
     populateConversionProductsDropdown();
+    populateEventContactsDropdown();
     lucide.createIcons();
 }
 
@@ -873,6 +913,21 @@ function populateConversionProductsDropdown() {
     });
 }
 
+function populateEventContactsDropdown() {
+    const env = getEnv();
+    const select = document.getElementById("eventContact");
+    if (!select) return;
+    select.innerHTML = `<option value="">Nenhum</option>`;
+    
+    const sorted = [...env.contacts].sort((a,b) => a.name.localeCompare(b.name));
+    sorted.forEach(c => {
+        const option = document.createElement("option");
+        option.value = c.id;
+        option.innerText = `${c.name} (${c.company || "Sem Empresa"})`;
+        select.appendChild(option);
+    });
+}
+
 // 7. Modals Toggles and Actions
 // Contact forms
 function openAddContact() {
@@ -1095,6 +1150,35 @@ document.getElementById("conversionForm").addEventListener("submit", (e) => {
             createdAt: new Date().toISOString()
         };
         env.customers.push(newCust);
+
+        // Auto-generate invoice
+        const newInvoice = {
+            id: "FAT-" + Date.now().toString().substring(8),
+            customerName: contact.name,
+            company: contact.company || "-",
+            niche: contact.niche || "Outro",
+            productName: product.name,
+            value: finalPrice,
+            dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "pending"
+        };
+        env.invoices.push(newInvoice);
+
+        // Auto-generate contract draft
+        const newCon = {
+            id: "CONTR-" + Date.now().toString().substring(8),
+            contactId: contact.id,
+            proposalId: "DIRECT-CONV-" + Date.now().toString().substring(8),
+            clientName: contact.name,
+            company: contact.company || "Pessoa Física",
+            productName: product.name,
+            value: finalPrice,
+            recurrence: billingType,
+            startDate: new Date().toISOString().split("T")[0],
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "draft"
+        };
+        env.contracts.push(newCon);
 
         saveState();
     }
@@ -1344,15 +1428,10 @@ searchInput.addEventListener("input", () => {
     else if (activeTab === "dashboard") renderDashboard();
     else if (activeTab === "customers") renderCustomers();
     else if (activeTab === "products") renderProducts();
+    else if (activeTab === "proposals") renderProposals();
+    else if (activeTab === "contracts") renderContracts();
+    else if (activeTab === "finance") renderFinance();
 });
-
-// Contacts filter dropdown listener
-const filterStatus = document.getElementById("filterStatus");
-if (filterStatus) {
-    filterStatus.addEventListener("change", () => {
-        renderContacts();
-    });
-}
 
 // Modals Trigger Handlers
 document.getElementById("btnQuickAddContact").addEventListener("click", openAddContact);
@@ -1378,6 +1457,14 @@ document.getElementById("btnCloseTaskModal").addEventListener("click", () => {
 document.getElementById("btnCancelTaskModal").addEventListener("click", () => {
     document.getElementById("taskModal").classList.remove("active");
 });
+
+// Contacts filter dropdown listener
+const filterStatus = document.getElementById("filterStatus");
+if (filterStatus) {
+    filterStatus.addEventListener("change", () => {
+        renderContacts();
+    });
+}
 
 // Task Filter Tabs Navigation
 document.querySelectorAll(".tasks-filters li").forEach(tab => {
@@ -1766,6 +1853,8 @@ function saveProposal() {
         if (prod) productName = prod.name;
     }
 
+    let savedProp = null;
+
     if (id) {
         // Edit existing proposal
         const prop = env.proposals.find(p => p.id === id);
@@ -1776,6 +1865,7 @@ function saveProposal() {
             prop.value = finalVal;
             prop.recurrence = recurrence;
             prop.status = status;
+            savedProp = prop;
         }
     } else {
         // Create new proposal
@@ -1790,6 +1880,12 @@ function saveProposal() {
             date: new Date().toISOString()
         };
         env.proposals.push(newProp);
+        savedProp = newProp;
+    }
+
+    // Integrated Contracts & Invoices generation if proposal is WON
+    if (savedProp && savedProp.status === "accepted") {
+        triggerProposalWonFlow(savedProp);
     }
 
     saveState();
@@ -1801,6 +1897,64 @@ function saveProposal() {
     renderAll();
 }
 
+function triggerProposalWonFlow(proposal) {
+    const env = getEnv();
+    const contact = env.contacts.find(c => c.id === proposal.contactId);
+    
+    // 1. Create contract if not already exists
+    const contractExists = env.contracts.some(con => con.proposalId === proposal.id);
+    if (!contractExists) {
+        const newCon = {
+            id: "CONTR-" + Date.now().toString().substring(8),
+            contactId: proposal.contactId,
+            proposalId: proposal.id,
+            clientName: contact ? contact.name : "Nenhum",
+            company: contact ? (contact.company || "Pessoa Física") : "Pessoa Física",
+            productName: proposal.productName,
+            value: proposal.value,
+            recurrence: proposal.recurrence,
+            startDate: new Date().toISOString().split("T")[0],
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "draft"
+        };
+        env.contracts.push(newCon);
+    }
+
+    // 2. Create invoice
+    const invoiceExists = env.invoices.some(inv => inv.id === "FAT-" + proposal.id.substring(5));
+    if (!invoiceExists) {
+        const newInv = {
+            id: "FAT-" + Date.now().toString().substring(8),
+            customerName: contact ? contact.name : "Nenhum",
+            company: contact ? (contact.company || "-") : "-",
+            niche: contact ? (contact.niche || "Outro") : "Outro",
+            productName: proposal.productName,
+            value: proposal.value,
+            dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "pending"
+        };
+        env.invoices.push(newInv);
+    }
+
+    // 3. Create active customer
+    const customerExists = env.customers.some(cust => cust.contactId === proposal.contactId && cust.productName === proposal.productName);
+    if (!customerExists) {
+        const newCust = {
+            id: "cust_" + Date.now(),
+            contactId: proposal.contactId,
+            name: contact ? contact.name : "Nenhum",
+            company: contact ? (contact.company || "-") : "-",
+            niche: contact ? (contact.niche || "Outro") : "Outro",
+            productName: proposal.productName,
+            value: proposal.value,
+            type: proposal.recurrence,
+            status: "active",
+            createdAt: new Date().toISOString()
+        };
+        env.customers.push(newCust);
+    }
+}
+
 function deleteProposal(id) {
     if (confirm("Tem certeza que deseja excluir esta proposta comercial?")) {
         const env = getEnv();
@@ -1808,6 +1962,424 @@ function deleteProposal(id) {
         saveState();
         renderAll();
     }
+}
+
+// 9. Contracts Management
+function renderContracts() {
+    const env = getEnv();
+    const searchVal = document.getElementById("globalSearch").value.toLowerCase();
+    
+    let filtered = [...env.contracts];
+
+    if (searchVal) {
+        filtered = filtered.filter(con => 
+            con.clientName.toLowerCase().includes(searchVal) || 
+            con.productName.toLowerCase().includes(searchVal) ||
+            con.company.toLowerCase().includes(searchVal)
+        );
+    }
+
+    const tbody = document.getElementById("contractsTableBody");
+    const emptyState = document.getElementById("contractsEmptyState");
+    tbody.innerHTML = "";
+
+    if (filtered.length === 0) {
+        emptyState.classList.remove("hidden");
+        document.getElementById("contractsTable").classList.add("hidden");
+    } else {
+        emptyState.classList.add("hidden");
+        document.getElementById("contractsTable").classList.remove("hidden");
+
+        filtered.forEach(con => {
+            const tr = document.createElement("tr");
+            
+            let statusText = "Rascunho";
+            let statusBadge = "warning";
+            if (con.status === "active") { statusText = "Ativo"; statusBadge = "active"; }
+            else if (con.status === "expired") { statusText = "Encerrado"; statusBadge = "inactive"; }
+
+            tr.innerHTML = `
+                <td><strong>${con.clientName}</strong><br><small style="color:var(--text-muted)">${con.company}</small></td>
+                <td>${con.productName}</td>
+                <td><strong>${formatCurrency(con.value)}</strong> <small style="color:var(--text-muted)">(${con.recurrence === 'monthly' ? 'Mensal' : con.recurrence === 'yearly' ? 'Anual' : 'Único'})</small></td>
+                <td>${formatDate(con.startDate)}</td>
+                <td>${formatDate(con.endDate)}</td>
+                <td><span class="badge-status ${statusBadge}">${statusText}</span></td>
+                <td>
+                    <div class="kanban-card-actions">
+                        <button class="btn-icon-only btn-view-contract" title="Visualizar Contrato"><i data-lucide="file-text" style="width:14px;height:14px;"></i></button>
+                        <button class="btn-icon-only btn-delete-contract" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                    </div>
+                </td>
+            `;
+
+            tr.querySelector(".btn-view-contract").addEventListener("click", () => openViewContract(con.id));
+            tr.querySelector(".btn-delete-contract").addEventListener("click", () => deleteContract(con.id));
+
+            tbody.appendChild(tr);
+        });
+    }
+}
+
+function openViewContract(id) {
+    const env = getEnv();
+    const con = env.contracts.find(c => c.id === id);
+    if (!con) return;
+
+    const contact = env.contacts.find(c => c.id === con.contactId);
+
+    // Populate A4 Contract Print Area
+    document.getElementById("cPreviewId").innerText = con.id;
+    document.getElementById("cPreviewClientName").innerText = con.clientName;
+    document.getElementById("cPreviewClientEmail").innerText = contact ? contact.email : "Não cadastrado";
+    document.getElementById("cPreviewClientCompany").innerText = con.company;
+    document.getElementById("cPreviewProductName").innerText = con.productName;
+    document.getElementById("cPreviewValue").innerText = formatCurrency(con.value);
+    document.getElementById("cPreviewRecurrence").innerText = con.recurrence === 'monthly' ? 'Mensal recorrente' : con.recurrence === 'yearly' ? 'Anual recorrente' : 'Taxa Única';
+    document.getElementById("cPreviewStartDate").innerText = formatDate(con.startDate);
+    document.getElementById("cPreviewEndDate").innerText = formatDate(con.endDate);
+    document.getElementById("cPreviewSignatureClient").innerText = con.clientName;
+
+    // Show/hide activate button based on status
+    const actBtn = document.getElementById("btnActivateContract");
+    if (con.status === "draft") {
+        actBtn.classList.remove("hidden");
+        actBtn.onclick = () => {
+            con.status = "active";
+            saveState();
+            renderAll();
+            alert("Contrato ativado comercialmente com sucesso!");
+            document.getElementById("contractViewerWrapper").classList.add("hidden");
+            document.getElementById("contractsListWrapper").classList.remove("hidden");
+        };
+    } else {
+        actBtn.classList.add("hidden");
+    }
+
+    // Toggle panels
+    document.getElementById("contractsListWrapper").classList.add("hidden");
+    document.getElementById("contractViewerWrapper").classList.remove("hidden");
+}
+
+function deleteContract(id) {
+    if (confirm("Deseja realmente remover este contrato?")) {
+        const env = getEnv();
+        env.contracts = env.contracts.filter(c => c.id !== id);
+        saveState();
+        renderAll();
+    }
+}
+
+// 10. Calendar/Agenda Management
+function renderCalendar() {
+    const env = getEnv();
+    const grid = document.getElementById("calendarGridBody");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const currDate = state.calendarDate;
+    const year = currDate.getFullYear();
+    const month = currDate.getMonth();
+
+    // Set month title
+    const monthsLocale = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    document.getElementById("calendarCurrentMonthText").innerText = `${monthsLocale[month]} ${year}`;
+
+    // Get first day of the month
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const totalDaysPrev = new Date(year, month, 0).getDate();
+
+    // Render cells of previous month (offset offset)
+    for (let x = firstDayIndex; x > 0; x--) {
+        const prevDay = totalDaysPrev - x + 1;
+        const cell = document.createElement("div");
+        cell.className = "calendar-day-cell inactive-month";
+        cell.innerHTML = `<span class="calendar-day-number">${prevDay}</span>`;
+        grid.appendChild(cell);
+    }
+
+    // Render current month days
+    for (let day = 1; day <= totalDays; day++) {
+        const cell = document.createElement("div");
+        cell.className = "calendar-day-cell";
+        
+        const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        // Check if today
+        if (year === 2026 && month === 6 && day === 12) { // Default mock environment anchor date
+            cell.classList.add("today");
+        }
+
+        cell.innerHTML = `
+            <span class="calendar-day-number">${day}</span>
+            <div class="calendar-events-container" id="events-${dateString}"></div>
+        `;
+
+        grid.appendChild(cell);
+
+        // Bind quick event adder doubleclick
+        cell.addEventListener("dblclick", () => {
+            document.getElementById("eventForm").reset();
+            document.getElementById("eventDate").value = dateString;
+            document.getElementById("eventModal").classList.add("active");
+        });
+    }
+
+    // Populate events, tasks, and contracts into calendar cells
+    // Events
+    env.events.forEach(evt => {
+        const container = document.getElementById(`events-${evt.date}`);
+        if (container) {
+            const badge = document.createElement("span");
+            badge.className = "calendar-event-badge meeting";
+            badge.innerText = `🤝 ${evt.time} - ${evt.title}`;
+            badge.title = evt.description || "";
+            badge.onclick = (e) => {
+                e.stopPropagation();
+                alert(`Reunião: ${evt.title}\nHorário: ${evt.time}\nDescrição: ${evt.description || "Sem notas"}`);
+            };
+            container.appendChild(badge);
+        }
+    });
+
+    // Tasks
+    env.tasks.forEach(task => {
+        if (task.dueDate && !task.completed) {
+            const container = document.getElementById(`events-${task.dueDate}`);
+            if (container) {
+                const badge = document.createElement("span");
+                badge.className = "calendar-event-badge task";
+                badge.innerText = `📝 Tarefa: ${task.title}`;
+                badge.onclick = (e) => {
+                    e.stopPropagation();
+                    document.querySelector('[data-view="tasks"]').click();
+                };
+                container.appendChild(badge);
+            }
+        }
+    });
+
+    // Contracts
+    env.contracts.forEach(con => {
+        if (con.startDate) {
+            const container = document.getElementById(`events-${con.startDate}`);
+            if (container) {
+                const badge = document.createElement("span");
+                badge.className = "calendar-event-badge contract";
+                badge.innerText = `💼 Início Contrato: ${con.clientName}`;
+                badge.onclick = (e) => {
+                    e.stopPropagation();
+                    openViewContract(con.id);
+                };
+                container.appendChild(badge);
+            }
+        }
+    });
+}
+
+// 11. Finance View Control
+function renderFinance() {
+    const env = getEnv();
+    
+    // Sub-tab toggling
+    document.getElementById("tabInvoices").onclick = () => {
+        document.getElementById("tabInvoices").classList.add("active");
+        document.getElementById("tabExpenses").classList.remove("active");
+        document.getElementById("panelInvoices").classList.remove("hidden");
+        document.getElementById("panelExpenses").classList.add("hidden");
+    };
+
+    document.getElementById("tabExpenses").onclick = () => {
+        document.getElementById("tabExpenses").classList.add("active");
+        document.getElementById("tabInvoices").classList.remove("active");
+        document.getElementById("panelExpenses").classList.remove("hidden");
+        document.getElementById("panelInvoices").classList.add("hidden");
+    };
+
+    // Calculate Profitability Metrics
+    const totalRevenue = env.invoices.reduce((sum, inv) => sum + inv.value, 0);
+    const totalExpenses = env.expenses.reduce((sum, exp) => sum + exp.value, 0);
+    const netProfit = totalRevenue - totalExpenses;
+    const margin = totalRevenue > 0 ? Math.round((netProfit / totalRevenue) * 100) : 0;
+
+    // Update DOM KPIs
+    document.getElementById("finKpiTotalRevenue").innerText = formatCurrency(totalRevenue);
+    document.getElementById("finKpiTotalExpenses").innerText = formatCurrency(totalExpenses);
+    document.getElementById("finKpiNetProfit").innerText = formatCurrency(netProfit);
+    document.getElementById("finKpiMargin").innerText = `${margin}%`;
+
+    const marginBadge = document.getElementById("finKpiMarginBadge");
+    if (margin >= 50) {
+        marginBadge.innerText = "Excelente";
+        marginBadge.className = "kpi-badge positive";
+    } else if (margin >= 20) {
+        marginBadge.innerText = "Saudável";
+        marginBadge.className = "kpi-badge positive";
+    } else {
+        marginBadge.innerText = "Atenção Margem";
+        marginBadge.className = "kpi-badge warning";
+    }
+
+    // Render Invoices Table
+    const invoicesTbody = document.getElementById("invoicesTableBody");
+    invoicesTbody.innerHTML = "";
+    env.invoices.forEach(inv => {
+        const tr = document.createElement("tr");
+        
+        let statusText = "Pendente";
+        let statusBadge = "warning";
+        if (inv.status === "paid") { statusText = "Recebido"; statusBadge = "active"; }
+        else if (inv.status === "overdue") { statusText = "Atrasada"; statusBadge = "inactive"; }
+
+        tr.innerHTML = `
+            <td><strong>${inv.id}</strong></td>
+            <td>${inv.customerName}<br><small style="color:var(--text-muted)">${inv.company}</small></td>
+            <td><span style="font-size:11px; background:var(--bg-app); padding:2px 6px; border-radius:4px;">${inv.niche}</span></td>
+            <td>${formatDate(inv.dueDate)}</td>
+            <td><strong>${formatCurrency(inv.value)}</strong></td>
+            <td><span class="badge-status ${statusBadge}">${statusText}</span></td>
+            <td>
+                <div class="kanban-card-actions">
+                    ${inv.status !== 'paid' ? `<button class="btn-icon-only btn-pay-invoice" title="Confirmar Recebimento"><i data-lucide="check" style="width:14px;height:14px;"></i></button>` : ''}
+                    <button class="btn-icon-only btn-delete-invoice" title="Remover"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                </div>
+            </td>
+        `;
+
+        if (inv.status !== 'paid') {
+            tr.querySelector(".btn-pay-invoice").onclick = () => {
+                inv.status = "paid";
+                saveState();
+                renderAll();
+                alert("Fatura liquidada com sucesso!");
+            };
+        }
+        tr.querySelector(".btn-delete-invoice").onclick = () => {
+            if (confirm("Remover esta fatura?")) {
+                env.invoices = env.invoices.filter(i => i.id !== inv.id);
+                saveState();
+                renderAll();
+            }
+        };
+
+        invoicesTbody.appendChild(tr);
+    });
+
+    // Render Expenses Table
+    const expensesTbody = document.getElementById("expensesTableBody");
+    expensesTbody.innerHTML = "";
+    env.expenses.forEach(exp => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td><strong>${exp.description}</strong></td>
+            <td><span class="badge-recurrence single">${exp.category}</span></td>
+            <td>${formatDate(exp.date)}</td>
+            <td style="color:var(--color-danger);"><strong>- ${formatCurrency(exp.value)}</strong></td>
+            <td>
+                <button class="btn-icon-only btn-delete-expense" title="Remover"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+            </td>
+        `;
+
+        tr.querySelector(".btn-delete-expense").onclick = () => {
+            if (confirm("Deseja realmente excluir este custo operacional?")) {
+                env.expenses = env.expenses.filter(e => e.id !== exp.id);
+                saveState();
+                renderAll();
+            }
+        };
+
+        expensesTbody.appendChild(tr);
+    });
+
+    renderFinanceCharts(env);
+}
+
+function renderFinanceCharts(env) {
+    if (cashFlowChart) cashFlowChart.destroy();
+    if (revenueByNicheChart) revenueByNicheChart.destroy();
+
+    const isDark = document.body.classList.contains('dark-theme');
+    const chartLabelColor = isDark ? '#9ca3af' : '#4b5563';
+    const gridColor = isDark ? '#2a2a40' : '#e5e7eb';
+
+    // 1. Recurrent vs Pontual calculations
+    // Lookup product in catalog to check if monthly
+    const recurrentRevenue = env.invoices
+        .filter(inv => {
+            const prod = defaultProducts.find(p => p.name === inv.productName);
+            return prod ? prod.type === "monthly" : false;
+        })
+        .reduce((sum, inv) => sum + inv.value, 0);
+
+    const singleRevenue = env.invoices
+        .filter(inv => {
+            const prod = defaultProducts.find(p => p.name === inv.productName);
+            return prod ? prod.type !== "monthly" : true; // Fallback to single if not found
+        })
+        .reduce((sum, inv) => sum + inv.value, 0);
+
+    const ctxCash = document.getElementById("cashFlowChart").getContext("2d");
+    cashFlowChart = new Chart(ctxCash, {
+        type: 'bar',
+        data: {
+            labels: ['Recorrente (SaaS/Avença)', 'Pontual (Taxas/Projetos)'],
+            datasets: [{
+                data: [recurrentRevenue, singleRevenue],
+                backgroundColor: ['rgba(13, 148, 136, 0.75)', 'rgba(0, 140, 255, 0.75)'],
+                borderColor: ['#0d9488', '#008cff'],
+                borderWidth: 1.5,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: chartLabelColor } },
+                y: { grid: { color: gridColor }, ticks: { color: chartLabelColor, callback: (v) => formatCurrency(v) } }
+            }
+        }
+    });
+
+    // 2. Revenue by Niche calculations
+    const niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Outro"];
+    const nicheSums = niches.map(n => {
+        return env.invoices
+            .filter(inv => inv.niche === n)
+            .reduce((sum, inv) => sum + inv.value, 0);
+    });
+
+    const ctxNiche = document.getElementById("revenueByNicheChart").getContext("2d");
+    revenueByNicheChart = new Chart(ctxNiche, {
+        type: 'doughnut',
+        data: {
+            labels: niches,
+            datasets: [{
+                data: nicheSums,
+                backgroundColor: [
+                    'rgba(0, 140, 255, 0.75)',
+                    'rgba(13, 148, 136, 0.75)',
+                    'rgba(245, 158, 11, 0.75)',
+                    'rgba(154, 52, 18, 0.75)',
+                    'rgba(107, 114, 128, 0.75)',
+                    'rgba(71, 85, 105, 0.75)'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: { color: chartLabelColor, font: { size: 9 } }
+                }
+            }
+        }
+    });
 }
 
 // Boot Setup
@@ -1843,4 +2415,133 @@ window.addEventListener("DOMContentLoaded", () => {
     });
     document.getElementById("proposalFinalValue").addEventListener("input", updateProposalPreview);
     document.getElementById("proposalRecurrence").addEventListener("change", updateProposalPreview);
+
+    // Bind Contracts Actions
+    document.getElementById("btnBackToContractsList").onclick = () => {
+        document.getElementById("contractViewerWrapper").classList.add("hidden");
+        document.getElementById("contractsListWrapper").classList.remove("hidden");
+    };
+    document.getElementById("btnPrintContract").onclick = () => {
+        window.print();
+    };
+
+    // Bind Calendar Navigation
+    document.getElementById("btnPrevMonth").onclick = () => {
+        const d = state.calendarDate;
+        state.calendarDate = new Date(d.getFullYear(), d.getMonth() - 1, 1);
+        renderCalendar();
+    };
+    document.getElementById("btnNextMonth").onclick = () => {
+        const d = state.calendarDate;
+        state.calendarDate = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+        renderCalendar();
+    };
+
+    // Calendar Modal trigger & Save
+    document.getElementById("btnCreateEvent").onclick = () => {
+        document.getElementById("eventForm").reset();
+        document.getElementById("eventDate").value = new Date().toISOString().split("T")[0];
+        document.getElementById("eventModal").classList.add("active");
+    };
+    document.getElementById("btnCloseEventModal").onclick = () => {
+        document.getElementById("eventModal").classList.remove("active");
+    };
+    document.getElementById("btnCancelEventModal").onclick = () => {
+        document.getElementById("eventModal").classList.remove("active");
+    };
+
+    document.getElementById("eventForm").onsubmit = (e) => {
+        e.preventDefault();
+        const env = getEnv();
+        const title = document.getElementById("eventTitle").value;
+        const contactId = document.getElementById("eventContact").value;
+        const date = document.getElementById("eventDate").value;
+        const time = document.getElementById("eventTime").value;
+        const description = document.getElementById("eventDescription").value;
+
+        const newEvt = {
+            id: "evt_" + Date.now(),
+            title,
+            contactId,
+            date,
+            time,
+            description
+        };
+        env.events.push(newEvt);
+        saveState();
+        renderAll();
+        document.getElementById("eventModal").classList.remove("active");
+    };
+
+    // Finance Modals Triggers
+    document.getElementById("btnCreateInvoice").onclick = () => {
+        document.getElementById("invoiceForm").reset();
+        document.getElementById("invoiceDueDate").value = new Date().toISOString().split("T")[0];
+        document.getElementById("invoiceModal").classList.add("active");
+    };
+    document.getElementById("btnCloseInvoiceModal").onclick = () => {
+        document.getElementById("invoiceModal").classList.remove("active");
+    };
+    document.getElementById("btnCancelInvoiceModal").onclick = () => {
+        document.getElementById("invoiceModal").classList.remove("active");
+    };
+
+    document.getElementById("invoiceForm").onsubmit = (e) => {
+        e.preventDefault();
+        const env = getEnv();
+        const customerName = document.getElementById("invoiceCustomer").value;
+        const company = document.getElementById("invoiceCompany").value || "-";
+        const niche = document.getElementById("invoiceNiche").value;
+        const productName = document.getElementById("invoiceProduct").value;
+        const value = parseFloat(document.getElementById("invoiceValue").value) || 0;
+        const dueDate = document.getElementById("invoiceDueDate").value;
+
+        const newInv = {
+            id: "FAT-" + Date.now().toString().substring(8),
+            customerName,
+            company,
+            niche,
+            productName,
+            value,
+            dueDate,
+            status: "pending"
+        };
+        env.invoices.push(newInv);
+        saveState();
+        renderAll();
+        document.getElementById("invoiceModal").classList.remove("active");
+    };
+
+    document.getElementById("btnCreateExpense").onclick = () => {
+        document.getElementById("expenseForm").reset();
+        document.getElementById("expenseDate").value = new Date().toISOString().split("T")[0];
+        document.getElementById("expenseModal").classList.add("active");
+    };
+    document.getElementById("btnCloseExpenseModal").onclick = () => {
+        document.getElementById("expenseModal").classList.remove("active");
+    };
+    document.getElementById("btnCancelExpenseModal").onclick = () => {
+        document.getElementById("expenseModal").classList.remove("active");
+    };
+
+    document.getElementById("expenseForm").onsubmit = (e) => {
+        e.preventDefault();
+        const env = getEnv();
+        const description = document.getElementById("expenseDescription").value;
+        const category = document.getElementById("expenseCategory").value;
+        const value = parseFloat(document.getElementById("expenseValue").value) || 0;
+        const date = document.getElementById("expenseDate").value;
+
+        const newExp = {
+            id: "exp_" + Date.now(),
+            description,
+            category,
+            value,
+            date
+        };
+        env.expenses.push(newExp);
+        saveState();
+        renderAll();
+        document.getElementById("expenseModal").classList.remove("active");
+    };
 });
