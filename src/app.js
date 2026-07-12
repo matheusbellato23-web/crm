@@ -8,13 +8,13 @@ let state = {
 
 // Default Catalogs
 const defaultProducts = [
-    { id: "p1", name: "Criação de Site Profissional", description: "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.", price: 3500.00, type: "single" },
-    { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, type: "single" },
-    { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, type: "monthly" },
-    { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, type: "single" },
-    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, type: "monthly" },
-    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, type: "monthly" },
-    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, type: "monthly" }
+    { id: "p1", name: "Criação de Site Profissional", description: "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.", price: 3500.00, type: "single", suggestedAddons: ["p5", "p6"] },
+    { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, type: "single", suggestedAddons: ["p3", "p5", "p6"] },
+    { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, type: "monthly", suggestedAddons: [] },
+    { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, type: "single", suggestedAddons: [] },
+    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, type: "monthly", suggestedAddons: [] },
+    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, type: "monthly", suggestedAddons: [] },
+    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, type: "monthly", suggestedAddons: [] }
 ];
 
 const defaultContacts = [
@@ -752,9 +752,26 @@ function renderProducts() {
         document.getElementById("productsTable").classList.remove("hidden");
 
         filtered.forEach(p => {
+            // Build subproducts names for display
+            let subproductsText = "";
+            if (p.suggestedAddons && p.suggestedAddons.length > 0) {
+                const names = p.suggestedAddons
+                    .map(aid => env.products.find(x => x.id === aid)?.name)
+                    .filter(Boolean);
+                if (names.length > 0) {
+                    subproductsText = `<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">
+                        <span style="font-size: 9px; color: var(--text-muted); font-weight: 500;">Subprodutos Sugeridos:</span>
+                        ${names.map(n => `<span style="font-size: 8px; background: var(--bg-app); border: 1px solid var(--border-color); border-radius: 4px; padding: 1px 4px; color: var(--text-secondary); font-weight: 600;">${n}</span>`).join('')}
+                    </div>`;
+                }
+            }
+
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td><strong>${p.name}</strong></td>
+                <td>
+                    <strong>${p.name}</strong>
+                    ${subproductsText}
+                </td>
                 <td>${p.description || "-"}</td>
                 <td>${formatCurrency(p.price)}</td>
                 <td>
@@ -789,8 +806,44 @@ function openEditProduct(id) {
     document.getElementById("productPrice").value = p.price;
     document.getElementById("productType").value = p.type;
 
+    // Load suggested addons checkboxes
+    populateProductAddons(p.id);
+
     document.getElementById("productModalTitle").innerText = "Editar Produto";
     document.getElementById("productModal").classList.add("active");
+}
+
+function populateProductAddons(selectedProductId = "") {
+    const env = getEnv();
+    const container = document.getElementById("productAddonsContainer");
+    if (!container) return;
+    container.innerHTML = "";
+
+    // Show all OTHER products
+    const addonCandidates = env.products.filter(p => p.id !== selectedProductId);
+    if (addonCandidates.length === 0) {
+        container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum outro serviço disponível no catálogo para vincular</span>`;
+        return;
+    }
+
+    // Get current product's suggested addons
+    const currentProduct = env.products.find(p => p.id === selectedProductId);
+    const linkedAddons = currentProduct ? (currentProduct.suggestedAddons || []) : [];
+
+    addonCandidates.forEach(p => {
+        const div = document.createElement("div");
+        div.style = "display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom: 2px;";
+        div.innerHTML = `
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; width:100%;">
+                <input type="checkbox" class="product-addon-checkbox" value="${p.id}">
+                <span style="flex:1;">${p.name}</span>
+                <strong style="color:var(--text-secondary);">${formatCurrency(p.price)}${p.type === 'monthly' ? '/mês' : ''}</strong>
+            </label>
+        `;
+        const cb = div.querySelector("input");
+        cb.checked = linkedAddons.includes(p.id);
+        container.appendChild(div);
+    });
 }
 
 function deleteProduct(id) {
@@ -1078,6 +1131,7 @@ function renderTimeline(contact) {
 document.getElementById("btnCreateProduct").addEventListener("click", () => {
     document.getElementById("productForm").reset();
     document.getElementById("productId").value = "";
+    populateProductAddons(""); // Populate empty addons list
     document.getElementById("productModalTitle").innerText = "Adicionar Produto";
     document.getElementById("productModal").classList.add("active");
 });
@@ -1097,6 +1151,8 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
     const price = parseFloat(document.getElementById("productPrice").value) || 0;
     const type = document.getElementById("productType").value;
 
+    const suggestedAddons = Array.from(document.querySelectorAll(".product-addon-checkbox:checked")).map(cb => cb.value);
+
     if (id) {
         const p = env.products.find(x => x.id === id);
         if (p) {
@@ -1104,6 +1160,7 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             p.description = description;
             p.price = price;
             p.type = type;
+            p.suggestedAddons = suggestedAddons;
         }
     } else {
         const newProd = {
@@ -1111,7 +1168,8 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             name,
             description,
             price,
-            type
+            type,
+            suggestedAddons
         };
         env.products.push(newProd);
     }
