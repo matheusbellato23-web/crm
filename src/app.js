@@ -678,15 +678,25 @@ function renderKanban() {
         const stgMid = document.getElementById("funnelStageMid");
         const stgBottom = document.getElementById("funnelStageBottom");
 
-        [stgTop, stgMid, stgBottom].forEach(el => {
-            if (el) {
-                el.style.transform = "";
-                el.style.boxShadow = "";
-                el.style.borderWidth = "1px";
-                el.style.borderColor = "var(--border-color)";
-                el.style.background = "";
-            }
-        });
+        // Reset all SVG polygons to inactive state
+        if (stgTop) {
+            stgTop.setAttribute("fill", "rgba(0, 140, 255, 0.03)");
+            stgTop.setAttribute("stroke", "var(--border-color)");
+            stgTop.setAttribute("stroke-width", "1");
+            stgTop.style.filter = "";
+        }
+        if (stgMid) {
+            stgMid.setAttribute("fill", "rgba(250, 180, 0, 0.02)");
+            stgMid.setAttribute("stroke", "var(--border-color)");
+            stgMid.setAttribute("stroke-width", "1");
+            stgMid.style.filter = "";
+        }
+        if (stgBottom) {
+            stgBottom.setAttribute("fill", "rgba(13, 242, 201, 0.02)");
+            stgBottom.setAttribute("stroke", "var(--border-color)");
+            stgBottom.setAttribute("stroke-width", "1");
+            stgBottom.style.filter = "";
+        }
 
         let activeLeads = [];
         let segmentTitle = "";
@@ -697,33 +707,30 @@ function renderKanban() {
             segmentTitle = "Contatos no Topo do Funil (Novos)";
             segmentColor = "var(--color-primary)";
             if (stgTop) {
-                stgTop.style.transform = "scale(1.02)";
-                stgTop.style.boxShadow = "0 4px 12px rgba(0, 140, 255, 0.15)";
-                stgTop.style.borderWidth = "2px";
-                stgTop.style.borderColor = "var(--color-primary)";
-                stgTop.style.background = "rgba(0, 140, 255, 0.08)";
+                stgTop.setAttribute("fill", "rgba(0, 140, 255, 0.1)");
+                stgTop.setAttribute("stroke", "var(--color-primary)");
+                stgTop.setAttribute("stroke-width", "2");
+                stgTop.style.filter = "url(#shadow-top)";
             }
         } else if (state.activeFunnelSegment === "mid") {
             activeLeads = midLeads;
             segmentTitle = "Contatos no Meio do Funil (Orçamentos)";
             segmentColor = "var(--color-warning)";
             if (stgMid) {
-                stgMid.style.transform = "scale(1.02)";
-                stgMid.style.boxShadow = "0 4px 12px rgba(250, 180, 0, 0.15)";
-                stgMid.style.borderWidth = "2px";
-                stgMid.style.borderColor = "var(--color-warning)";
-                stgMid.style.background = "rgba(250, 180, 0, 0.08)";
+                stgMid.setAttribute("fill", "rgba(250, 180, 0, 0.1)");
+                stgMid.setAttribute("stroke", "var(--color-warning)");
+                stgMid.setAttribute("stroke-width", "2");
+                stgMid.style.filter = "url(#shadow-mid)";
             }
         } else {
             activeLeads = bottomLeads;
             segmentTitle = "Contatos no Fundo do Funil (Fechados)";
             segmentColor = "var(--color-teal)";
             if (stgBottom) {
-                stgBottom.style.transform = "scale(1.02)";
-                stgBottom.style.boxShadow = "0 4px 12px rgba(13, 242, 201, 0.15)";
-                stgBottom.style.borderWidth = "2px";
-                stgBottom.style.borderColor = "var(--color-teal)";
-                stgBottom.style.background = "rgba(13, 242, 201, 0.08)";
+                stgBottom.setAttribute("fill", "rgba(13, 242, 201, 0.1)");
+                stgBottom.setAttribute("stroke", "var(--color-teal)");
+                stgBottom.setAttribute("stroke-width", "2");
+                stgBottom.style.filter = "url(#shadow-bottom)";
             }
         }
 
