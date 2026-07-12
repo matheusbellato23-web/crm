@@ -8,13 +8,13 @@ let state = {
 
 // Default Catalogs
 const defaultProducts = [
-    { id: "p1", name: "Criação de Site Profissional", description: "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.", price: 3500.00, type: "single", suggestedAddons: ["p5", "p6"] },
-    { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, type: "single", suggestedAddons: ["p3", "p5", "p6"] },
-    { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, type: "monthly", suggestedAddons: [] },
-    { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, type: "single", suggestedAddons: [] },
-    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, type: "monthly", suggestedAddons: [] },
-    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, type: "monthly", suggestedAddons: [] },
-    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, type: "monthly", suggestedAddons: [] }
+    { id: "p1", name: "Criação de Site Profissional", description: "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.", price: 3500.00, type: "single", suggestedAddons: ["p5", "p6"], role: "main" },
+    { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, type: "single", suggestedAddons: ["p3", "p5", "p6"], role: "main" },
+    { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, type: "monthly", suggestedAddons: [], role: "main" },
+    { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, type: "single", suggestedAddons: [], role: "main" },
+    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, type: "monthly", suggestedAddons: [], role: "sub" },
+    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, type: "monthly", suggestedAddons: [], role: "sub" },
+    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, type: "monthly", suggestedAddons: [], role: "sub" }
 ];
 
 const defaultContacts = [
@@ -840,28 +840,34 @@ function renderProducts() {
         document.getElementById("productsTable").classList.remove("hidden");
 
         filtered.forEach(p => {
-            // Build subproducts names for display
-            let subproductsText = "";
-            if (p.suggestedAddons && p.suggestedAddons.length > 0) {
-                const names = p.suggestedAddons
-                    .map(aid => env.products.find(x => x.id === aid)?.name)
-                    .filter(Boolean);
-                if (names.length > 0) {
-                    subproductsText = `<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">
-                        <span style="font-size: 9px; color: var(--text-muted); font-weight: 500;">Subprodutos Sugeridos:</span>
-                        ${names.map(n => `<span style="font-size: 8px; background: var(--bg-app); border: 1px solid var(--border-color); border-radius: 4px; padding: 1px 4px; color: var(--text-secondary); font-weight: 600;">${n}</span>`).join('')}
-                    </div>`;
-                }
-            }
-
+            const role = p.role || "main";
+            
+            // Build main row
             const tr = document.createElement("tr");
+            tr.className = `product-row-${role}`;
+            
+            // Expand button if it has suggested addons
+            const hasAddons = p.suggestedAddons && p.suggestedAddons.length > 0;
+            const expandBtn = (role === 'main' && hasAddons)
+                ? `<button class="btn-icon-only btn-expand-subproducts" style="margin-right:8px; cursor:pointer;" data-id="${p.id}"><i data-lucide="chevron-right" style="width:14px; height:14px; vertical-align:middle;"></i></button>`
+                : `<span style="display:inline-block; width:22px; margin-right:8px;"></span>`;
+
+            const roleBadge = role === 'main'
+                ? `<span style="font-size: 8px; background: rgba(0, 140, 255, 0.1); border: 1px solid rgba(0, 140, 255, 0.2); border-radius: 4px; padding: 1px 4px; color: var(--color-primary); font-weight: 600; vertical-align:middle; margin-left: 6px;">Principal</span>`
+                : `<span style="font-size: 8px; background: rgba(13, 242, 201, 0.1); border: 1px solid rgba(13, 242, 201, 0.2); border-radius: 4px; padding: 1px 4px; color: var(--color-teal); font-weight: 600; vertical-align:middle; margin-left: 6px;">Subproduto / Adicional</span>`;
+
             tr.innerHTML = `
                 <td>
-                    <strong>${p.name}</strong>
-                    ${subproductsText}
+                    <div style="display:flex; align-items:center;">
+                        ${expandBtn}
+                        <div>
+                            <strong style="font-size:12px; color:var(--text-primary);">${p.name}</strong>
+                            ${roleBadge}
+                        </div>
+                    </div>
                 </td>
-                <td>${p.description || "-"}</td>
-                <td>${formatCurrency(p.price)}</td>
+                <td><span style="font-size:11px; color:var(--text-secondary);">${p.description || "-"}</span></td>
+                <td><strong style="font-size:11px;">${formatCurrency(p.price)}</strong></td>
                 <td>
                     <span class="badge-recurrence ${p.type}">
                         ${p.type === 'monthly' ? 'Recorrente Mensal' : p.type === 'yearly' ? 'Recorrente Anual' : 'Cobrança Única'}
@@ -879,7 +885,59 @@ function renderProducts() {
             tr.querySelector(".btn-delete-product").addEventListener("click", () => deleteProduct(p.id));
 
             tbody.appendChild(tr);
+
+            // If main product and has addons, create the nested subproducts row
+            if (role === 'main' && hasAddons) {
+                const subTr = document.createElement("tr");
+                subTr.id = `subproducts-row-${p.id}`;
+                subTr.className = "hidden";
+                subTr.style.background = "var(--bg-app)";
+                
+                // Get addons data
+                const addonItems = p.suggestedAddons
+                    .map(aid => env.products.find(x => x.id === aid))
+                    .filter(Boolean);
+
+                const addonsListHtml = addonItems.map(item => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; border-bottom:1px solid var(--border-color); font-size:11px;">
+                        <span style="color:var(--text-primary); font-weight:500;">🔗 ${item.name}</span>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <span class="badge-recurrence ${item.type}" style="font-size:8px; padding:1px 4px;">${item.type === 'monthly' ? 'Mensal' : 'Único'}</span>
+                            <strong style="color:var(--text-secondary);">${formatCurrency(item.price)}</strong>
+                        </div>
+                    </div>
+                `).join('');
+
+                subTr.innerHTML = `
+                    <td colspan="5" style="padding: 0 0 12px 40px; border-top:none;">
+                        <div style="border-left:3px solid var(--color-primary); background:var(--bg-card); border-radius: var(--radius-sm); border-top:1px solid var(--border-color); border-right:1px solid var(--border-color); border-bottom:1px solid var(--border-color); padding: 8px 0; margin-top: 4px; box-shadow: var(--shadow-sm);">
+                            <div style="padding: 4px 12px 8px 12px; font-weight:600; font-size:10px; text-transform:uppercase; color:var(--text-muted); border-bottom:1px solid var(--border-color);">Subprodutos recomendados vinculados:</div>
+                            ${addonsListHtml}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(subTr);
+
+                // Add click listener to toggle the subproducts row
+                const toggleBtn = tr.querySelector(".btn-expand-subproducts");
+                if (toggleBtn) {
+                    toggleBtn.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        const row = document.getElementById(`subproducts-row-${p.id}`);
+                        const icon = toggleBtn.querySelector("i");
+                        if (row.classList.contains("hidden")) {
+                            row.classList.remove("hidden");
+                            icon.setAttribute("data-lucide", "chevron-down");
+                        } else {
+                            row.classList.add("hidden");
+                            icon.setAttribute("data-lucide", "chevron-right");
+                        }
+                        lucide.createIcons();
+                    });
+                }
+            }
         });
+        lucide.createIcons();
     }
 }
 
@@ -894,8 +952,23 @@ function openEditProduct(id) {
     document.getElementById("productPrice").value = p.price;
     document.getElementById("productType").value = p.type;
 
+    const roleSelect = document.getElementById("productRole");
+    if (roleSelect) {
+        roleSelect.value = p.role || "main";
+    }
+
     // Load suggested addons checkboxes
     populateProductAddons(p.id);
+
+    // Toggle addons display based on role value
+    const addonsGroup = document.getElementById("productAddonsFormGroup");
+    if (addonsGroup) {
+        if (roleSelect && roleSelect.value === "sub") {
+            addonsGroup.classList.add("hidden");
+        } else {
+            addonsGroup.classList.remove("hidden");
+        }
+    }
 
     document.getElementById("productModalTitle").innerText = "Editar Produto";
     document.getElementById("productModal").classList.add("active");
@@ -1053,7 +1126,9 @@ function populateConversionProductsDropdown() {
     if (!select) return;
     select.innerHTML = "";
     
-    env.products.forEach(p => {
+    // Only show main products in select dropdown
+    const mainProducts = env.products.filter(p => (p.role || "main") === "main");
+    mainProducts.forEach(p => {
         const option = document.createElement("option");
         option.value = p.id;
         option.innerText = `${p.name} (Ref: ${formatCurrency(p.price)})`;
@@ -1066,11 +1141,15 @@ function populateConversionProductsDropdown() {
         if (!container) return;
         container.innerHTML = "";
 
-        const addonCandidates = env.products.filter(p => p.id !== selectedId);
+        // Only show subproducts as addons
+        const addonCandidates = env.products.filter(p => (p.role || "main") === "sub" && p.id !== selectedId);
         if (addonCandidates.length === 0) {
             container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum serviço adicional disponível</span>`;
             return;
         }
+
+        const coreProd = env.products.find(p => p.id === selectedId);
+        const suggested = coreProd ? (coreProd.suggestedAddons || []) : [];
 
         addonCandidates.forEach(p => {
             const div = document.createElement("div");
@@ -1082,6 +1161,8 @@ function populateConversionProductsDropdown() {
                     <strong style="color:var(--text-secondary);">${formatCurrency(p.price)}${p.type === 'monthly' ? '/mês' : ''}</strong>
                 </label>
             `;
+            const cb = div.querySelector("input");
+            cb.checked = suggested.includes(p.id);
             container.appendChild(div);
         });
     };
@@ -1096,8 +1177,8 @@ function populateConversionProductsDropdown() {
     });
 
     // Run initially
-    if (env.products.length > 0) {
-        const firstProd = env.products[0];
+    if (mainProducts.length > 0) {
+        const firstProd = mainProducts[0];
         document.getElementById("conversionPrice").value = firstProd.price;
         document.getElementById("conversionType").value = firstProd.type;
     }
@@ -1219,6 +1300,11 @@ function renderTimeline(contact) {
 document.getElementById("btnCreateProduct").addEventListener("click", () => {
     document.getElementById("productForm").reset();
     document.getElementById("productId").value = "";
+    document.getElementById("productRole").value = "main";
+    
+    const group = document.getElementById("productAddonsFormGroup");
+    if (group) group.classList.remove("hidden");
+
     populateProductAddons(""); // Populate empty addons list
     document.getElementById("productModalTitle").innerText = "Adicionar Produto";
     document.getElementById("productModal").classList.add("active");
@@ -1230,6 +1316,17 @@ document.getElementById("btnCancelProductModal").addEventListener("click", () =>
     document.getElementById("productModal").classList.remove("active");
 });
 
+document.getElementById("productRole").addEventListener("change", (e) => {
+    const group = document.getElementById("productAddonsFormGroup");
+    if (group) {
+        if (e.target.value === "sub") {
+            group.classList.add("hidden");
+        } else {
+            group.classList.remove("hidden");
+        }
+    }
+});
+
 document.getElementById("productForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const env = getEnv();
@@ -1238,8 +1335,11 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
     const description = document.getElementById("productDescription").value;
     const price = parseFloat(document.getElementById("productPrice").value) || 0;
     const type = document.getElementById("productType").value;
+    const role = document.getElementById("productRole").value;
 
-    const suggestedAddons = Array.from(document.querySelectorAll(".product-addon-checkbox:checked")).map(cb => cb.value);
+    const suggestedAddons = role === "main" 
+        ? Array.from(document.querySelectorAll(".product-addon-checkbox:checked")).map(cb => cb.value)
+        : [];
 
     if (id) {
         const p = env.products.find(x => x.id === id);
@@ -1248,6 +1348,7 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             p.description = description;
             p.price = price;
             p.type = type;
+            p.role = role;
             p.suggestedAddons = suggestedAddons;
         }
     } else {
@@ -1257,6 +1358,7 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             description,
             price,
             type,
+            role,
             suggestedAddons
         };
         env.products.push(newProd);
@@ -1999,10 +2101,11 @@ function populateProposalDropdowns() {
         cSelect.appendChild(opt);
     });
 
-    // Products select
+    // Products select - only show main products
     const pSelect = document.getElementById("proposalProductSelect");
     pSelect.innerHTML = `<option value="custom">-- Serviço Customizado --</option>`;
-    env.products.forEach(p => {
+    const mainProducts = env.products.filter(p => (p.role || "main") === "main");
+    mainProducts.forEach(p => {
         const opt = document.createElement("option");
         opt.value = p.id;
         opt.innerText = p.name;
@@ -2014,11 +2117,15 @@ function populateProposalDropdowns() {
         const container = document.getElementById("proposalAddonsContainer");
         container.innerHTML = "";
 
-        const addonCandidates = env.products.filter(p => p.id !== selectedId);
+        // Only show subproducts as addons
+        const addonCandidates = env.products.filter(p => (p.role || "main") === "sub" && p.id !== selectedId);
         if (addonCandidates.length === 0) {
             container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum serviço adicional disponível</span>`;
             return;
         }
+
+        const coreProd = env.products.find(p => p.id === selectedId);
+        const suggested = coreProd ? (coreProd.suggestedAddons || []) : [];
 
         addonCandidates.forEach(p => {
             const div = document.createElement("div");
@@ -2030,7 +2137,9 @@ function populateProposalDropdowns() {
                     <strong style="color:var(--text-secondary);">${formatCurrency(p.price)}${p.type === 'monthly' ? '/mês' : ''}</strong>
                 </label>
             `;
-            div.querySelector("input").addEventListener("change", updateProposalPreview);
+            const cb = div.querySelector("input");
+            cb.checked = suggested.includes(p.id);
+            cb.addEventListener("change", updateProposalPreview);
             container.appendChild(div);
         });
         updateProposalPreview();

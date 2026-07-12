@@ -1485,6 +1485,13 @@
                         <input type="text" id="productName" class="form-control" placeholder="Ex: Google Ads Mensal" required>
                     </div>
                     <div class="form-group">
+                        <label for="productRole">Classificação do Produto *</label>
+                        <select id="productRole" class="form-control" required>
+                            <option value="main">Produto Principal (pode ter subprodutos vinculados)</option>
+                            <option value="sub">Subproduto / Adicional (serviço complementar de upsell)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="productDescription">Descrição</label>
                         <textarea id="productDescription" class="form-control" rows="2" placeholder="O que está incluído no serviço..."></textarea>
                     </div>
@@ -1502,7 +1509,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-top:12px;">
+                    <div class="form-group" id="productAddonsFormGroup" style="margin-top:12px;">
                         <label style="font-weight:600; margin-bottom:8px; display:block;">Vincular Subprodutos / Serviços Recomendados (Upsell)</label>
                         <div id="productAddonsContainer" style="display:flex; flex-direction:column; gap:8px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:12px;">
                             <!-- Checkboxes populated dynamically from other catalog items -->
