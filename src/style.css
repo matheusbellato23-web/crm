@@ -1851,7 +1851,11 @@ textarea.form-control {
     padding: 8px;
     border-radius: var(--radius-sm);
     background-color: var(--bg-card);
-    min-height: 100px;
+    height: 110px;
+    min-height: 110px;
+    max-height: 110px;
+    overflow: hidden;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
     gap: 4px;

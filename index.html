@@ -606,6 +606,12 @@
                                         <option value="declined">Recusada</option>
                                     </select>
                                 </div>
+                                <div class="form-group" style="margin-top:12px;">
+                                    <label style="font-weight:600; margin-bottom:8px; display:block;">Serviços Conectados / Adicionais (Upsell)</label>
+                                    <div id="proposalAddonsContainer" style="display:flex; flex-direction:column; gap:8px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:12px;">
+                                        <!-- Checkboxes populated dynamically from catalog -->
+                                    </div>
+                                </div>
                             </form>
                         </div>
 
@@ -656,12 +662,8 @@
                                                 <th>Valor do Investimento</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td id="previewFinancialProduct">Nome do Produto</td>
-                                                <td id="previewFinancialRecurrence">Mensal</td>
-                                                <td id="previewFinancialValue">R$ 0,00</td>
-                                            </tr>
+                                        <tbody id="previewFinancialTableBody">
+                                            <!-- Dynamic rows populated from JS -->
                                         </tbody>
                                     </table>
                                     <div class="proposal-payment-notes">
@@ -1230,6 +1232,25 @@
         </div>
     </div>
 
+    <!-- MODAL: CALENDAR DAY PREVIEW -->
+    <div class="modal" id="dayPreviewModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Agenda do Dia: <span id="dayPreviewDateText">12/07/2026</span></h3>
+                <button class="btn-close" id="btnCloseDayPreviewModal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding-top: 10px;">
+                <div id="dayPreviewContent" style="display:flex; flex-direction:column; gap:16px;">
+                    <!-- Dynamic segments will render here -->
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:space-between;">
+                <button type="button" class="btn btn-secondary" id="btnQuickAddEventFromPreview"><i data-lucide="plus" style="width:14px;height:14px;margin-right:4px;"></i> Nova Reunião</button>
+                <button type="button" class="btn btn-primary" id="btnCloseDayPreviewOk">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: ADD / EDIT CONTACT -->
     <div class="modal" id="contactModal">
         <div class="modal-content">
@@ -1464,6 +1485,12 @@
                                 <option value="monthly">Recorrente Mensal</option>
                                 <option value="yearly">Recorrente Anual</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label style="font-weight:600; margin-bottom:8px; display:block;">Serviços Conectados / Adicionais (Upsell)</label>
+                        <div id="conversionAddonsContainer" style="display:flex; flex-direction:column; gap:8px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:12px;">
+                            <!-- Checkboxes populated dynamically from catalog -->
                         </div>
                     </div>
                 </div>

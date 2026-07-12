@@ -12,7 +12,9 @@ const defaultProducts = [
     { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, type: "single" },
     { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, type: "monthly" },
     { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, type: "single" },
-    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 3500.00, type: "monthly" }
+    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, type: "monthly" },
+    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, type: "monthly" },
+    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, type: "monthly" }
 ];
 
 const defaultContacts = [
@@ -907,6 +909,7 @@ function populateContactDropdowns() {
 function populateConversionProductsDropdown() {
     const env = getEnv();
     const select = document.getElementById("conversionProduct");
+    if (!select) return;
     select.innerHTML = "";
     
     env.products.forEach(p => {
@@ -915,14 +918,49 @@ function populateConversionProductsDropdown() {
         option.innerText = `${p.name} (Ref: ${formatCurrency(p.price)})`;
         select.appendChild(option);
     });
-    
+
+    const updateAddons = () => {
+        const selectedId = select.value;
+        const container = document.getElementById("conversionAddonsContainer");
+        if (!container) return;
+        container.innerHTML = "";
+
+        const addonCandidates = env.products.filter(p => p.id !== selectedId);
+        if (addonCandidates.length === 0) {
+            container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum serviço adicional disponível</span>`;
+            return;
+        }
+
+        addonCandidates.forEach(p => {
+            const div = document.createElement("div");
+            div.style = "display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom: 2px;";
+            div.innerHTML = `
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; width:100%;">
+                    <input type="checkbox" class="conversion-addon-checkbox" value="${p.id}">
+                    <span style="flex:1;">${p.name}</span>
+                    <strong style="color:var(--text-secondary);">${formatCurrency(p.price)}${p.type === 'monthly' ? '/mês' : ''}</strong>
+                </label>
+            `;
+            container.appendChild(div);
+        });
+    };
+
     select.addEventListener("change", (e) => {
         const prod = env.products.find(p => p.id === e.target.value);
         if (prod) {
             document.getElementById("conversionPrice").value = prod.price;
             document.getElementById("conversionType").value = prod.type;
         }
+        updateAddons();
     });
+
+    // Run initially
+    if (env.products.length > 0) {
+        const firstProd = env.products[0];
+        document.getElementById("conversionPrice").value = firstProd.price;
+        document.getElementById("conversionType").value = firstProd.type;
+    }
+    updateAddons();
 }
 
 function populateEventContactsDropdown() {
@@ -1138,59 +1176,83 @@ document.getElementById("conversionForm").addEventListener("submit", (e) => {
     const product = env.products.find(p => p.id === productId);
 
     if (contact && product) {
-        const oldStatus = contact.status;
         contact.status = "won";
         contact.value = finalPrice;
+        
+        // Build descriptions for addons too
+        const checkedAddonNames = [];
+        document.querySelectorAll(".conversion-addon-checkbox:checked").forEach(cb => {
+            const addProd = env.products.find(p => p.id === cb.value);
+            if (addProd) checkedAddonNames.push(`${addProd.name} (${formatCurrency(addProd.price)})`);
+        });
+
+        const noteText = `Venda concluída! Produto Principal: ${product.name} (${formatCurrency(finalPrice)}).` + 
+            (checkedAddonNames.length > 0 ? ` Adicionais: ${checkedAddonNames.join(", ")}.` : "");
+
         contact.timeline.push({
             id: "act_" + Date.now(),
             type: "note",
-            description: `Venda concluída! Produto: ${product.name}. Valor acordado: ${formatCurrency(finalPrice)}.`,
+            description: noteText,
             timestamp: new Date().toISOString()
         });
 
-        // Add to Customers list (with carrying over Niche!)
-        const newCust = {
-            id: "cust_" + Date.now(),
-            contactId: contact.id,
-            name: contact.name,
-            company: contact.company,
-            niche: contact.niche || "Outro",
-            productName: product.name,
-            value: finalPrice,
-            type: billingType,
-            status: "active",
-            createdAt: new Date().toISOString()
-        };
-        env.customers.push(newCust);
+        // Helper to register billing, invoice and contract
+        const registerItem = (prodName, val, rec, suffix = "") => {
+            // Add to Customers list
+            const newCust = {
+                id: "cust_" + Date.now() + suffix,
+                contactId: contact.id,
+                name: contact.name,
+                company: contact.company,
+                niche: contact.niche || "Outro",
+                productName: prodName,
+                value: val,
+                type: rec,
+                status: "active",
+                createdAt: new Date().toISOString()
+            };
+            env.customers.push(newCust);
 
-        // Auto-generate invoice
-        const newInvoice = {
-            id: "FAT-" + Date.now().toString().substring(8),
-            customerName: contact.name,
-            company: contact.company || "-",
-            niche: contact.niche || "Outro",
-            productName: product.name,
-            value: finalPrice,
-            dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-            status: "pending"
-        };
-        env.invoices.push(newInvoice);
+            // Auto-generate invoice
+            const newInvoice = {
+                id: "FAT-" + Date.now().toString().substring(8) + suffix,
+                customerName: contact.name,
+                company: contact.company || "-",
+                niche: contact.niche || "Outro",
+                productName: prodName,
+                value: val,
+                dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+                status: "pending"
+            };
+            env.invoices.push(newInvoice);
 
-        // Auto-generate contract draft
-        const newCon = {
-            id: "CONTR-" + Date.now().toString().substring(8),
-            contactId: contact.id,
-            proposalId: "DIRECT-CONV-" + Date.now().toString().substring(8),
-            clientName: contact.name,
-            company: contact.company || "Pessoa Física",
-            productName: product.name,
-            value: finalPrice,
-            recurrence: billingType,
-            startDate: new Date().toISOString().split("T")[0],
-            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-            status: "draft"
+            // Auto-generate contract draft
+            const newCon = {
+                id: "CONTR-" + Date.now().toString().substring(8) + suffix,
+                contactId: contact.id,
+                proposalId: "DIRECT-CONV-" + Date.now().toString().substring(8),
+                clientName: contact.name,
+                company: contact.company || "Pessoa Física",
+                productName: prodName,
+                value: val,
+                recurrence: rec,
+                startDate: new Date().toISOString().split("T")[0],
+                endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+                status: "draft"
+            };
+            env.contracts.push(newCon);
         };
-        env.contracts.push(newCon);
+
+        // Core
+        registerItem(product.name, finalPrice, billingType, "-core");
+
+        // Addons
+        document.querySelectorAll(".conversion-addon-checkbox:checked").forEach((cb, idx) => {
+            const addProd = env.products.find(p => p.id === cb.value);
+            if (addProd) {
+                registerItem(addProd.name, addProd.price, addProd.type, `-add${idx}`);
+            }
+        });
 
         saveState();
     }
@@ -1763,6 +1825,13 @@ function openViewProposal(id) {
     document.getElementById("proposalRecurrence").value = prop.recurrence;
     document.getElementById("proposalStatusSelect").value = prop.status;
 
+    // Restore checkbox addons state
+    if (prop.addons && Array.isArray(prop.addons)) {
+        document.querySelectorAll(".proposal-addon-checkbox").forEach(cb => {
+            cb.checked = prop.addons.includes(cb.value);
+        });
+    }
+
     // Show Builder, Hide List
     document.getElementById("proposalsListWrapper").classList.add("hidden");
     document.getElementById("proposalBuilderWrapper").classList.remove("hidden");
@@ -1793,6 +1862,42 @@ function populateProposalDropdowns() {
         opt.innerText = p.name;
         pSelect.appendChild(opt);
     });
+
+    const updateProposalAddons = () => {
+        const selectedId = pSelect.value;
+        const container = document.getElementById("proposalAddonsContainer");
+        container.innerHTML = "";
+
+        const addonCandidates = env.products.filter(p => p.id !== selectedId);
+        if (addonCandidates.length === 0) {
+            container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum serviço adicional disponível</span>`;
+            return;
+        }
+
+        addonCandidates.forEach(p => {
+            const div = document.createElement("div");
+            div.style = "display:flex; align-items:center; gap:8px; font-size:12px;";
+            div.innerHTML = `
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; width:100%;">
+                    <input type="checkbox" class="proposal-addon-checkbox" value="${p.id}">
+                    <span style="flex:1;">${p.name}</span>
+                    <strong style="color:var(--text-secondary);">${formatCurrency(p.price)}${p.type === 'monthly' ? '/mês' : ''}</strong>
+                </label>
+            `;
+            div.querySelector("input").addEventListener("change", updateProposalPreview);
+            container.appendChild(div);
+        });
+        updateProposalPreview();
+    };
+
+    pSelect.addEventListener("change", updateProposalAddons);
+    
+    // Also trigger preview updates when main selectors change
+    cSelect.addEventListener("change", updateProposalPreview);
+    document.getElementById("proposalFinalValue").addEventListener("input", updateProposalPreview);
+    document.getElementById("proposalRecurrence").addEventListener("change", updateProposalPreview);
+
+    updateProposalAddons();
 }
 
 function updateProposalPreview() {
@@ -1833,7 +1938,6 @@ function updateProposalPreview() {
     }
 
     document.getElementById("previewProductName").innerText = productName;
-    document.getElementById("previewFinancialProduct").innerText = productName;
 
     // Fill scope list in preview
     const scopeContainer = document.getElementById("previewProductScope");
@@ -1847,9 +1951,35 @@ function updateProposalPreview() {
     scopeContainer.appendChild(ul);
 
     // Format financial table recurrence & value
-    const recText = recurrence === 'monthly' ? 'Mensalidade Recorrente' : recurrence === 'yearly' ? 'Anualidade Recorrente' : 'Taxa Única de Configuração';
-    document.getElementById("previewFinancialRecurrence").innerText = recText;
-    document.getElementById("previewFinancialValue").innerText = formatCurrency(finalVal);
+    const tableBody = document.getElementById("previewFinancialTableBody");
+    if (tableBody) {
+        tableBody.innerHTML = "";
+
+        // Core row
+        const coreTr = document.createElement("tr");
+        const recText = recurrence === 'monthly' ? 'Mensalidade Recorrente' : recurrence === 'yearly' ? 'Anualidade Recorrente' : 'Taxa Única';
+        coreTr.innerHTML = `
+            <td><strong>${productName}</strong> <span style="font-size: 9px; color: var(--text-muted);">(Produto Principal)</span></td>
+            <td>${recText}</td>
+            <td><strong>${formatCurrency(finalVal)}</strong></td>
+        `;
+        tableBody.appendChild(coreTr);
+
+        // Addons rows
+        document.querySelectorAll(".proposal-addon-checkbox:checked").forEach(cb => {
+            const prod = env.products.find(p => p.id === cb.value);
+            if (prod) {
+                const addTr = document.createElement("tr");
+                const addRecText = prod.type === 'monthly' ? 'Mensalidade Recorrente' : prod.type === 'yearly' ? 'Anualidade Recorrente' : 'Taxa Única';
+                addTr.innerHTML = `
+                    <td><strong>${prod.name}</strong> <span style="font-size: 9px; color: var(--text-muted);">(Adicional/Conectado)</span></td>
+                    <td>${addRecText}</td>
+                    <td><strong>${formatCurrency(prod.price)}</strong></td>
+                `;
+                tableBody.appendChild(addTr);
+            }
+        });
+    }
 }
 
 function saveProposal() {
@@ -1869,6 +1999,7 @@ function saveProposal() {
     }
 
     let savedProp = null;
+    const checkedAddons = Array.from(document.querySelectorAll(".proposal-addon-checkbox:checked")).map(cb => cb.value);
 
     if (id) {
         // Edit existing proposal
@@ -1880,6 +2011,7 @@ function saveProposal() {
             prop.value = finalVal;
             prop.recurrence = recurrence;
             prop.status = status;
+            prop.addons = checkedAddons;
             savedProp = prop;
         }
     } else {
@@ -1892,6 +2024,7 @@ function saveProposal() {
             value: finalVal,
             recurrence,
             status,
+            addons: checkedAddons,
             date: new Date().toISOString()
         };
         env.proposals.push(newProp);
@@ -2133,11 +2266,9 @@ function renderCalendar() {
 
         grid.appendChild(cell);
 
-        // Bind quick event adder doubleclick
-        cell.addEventListener("dblclick", () => {
-            document.getElementById("eventForm").reset();
-            document.getElementById("eventDate").value = dateString;
-            document.getElementById("eventModal").classList.add("active");
+        // Single click opens day preview modal
+        cell.addEventListener("click", () => {
+            openDayPreview(dateString);
         });
     }
 
@@ -2148,12 +2279,8 @@ function renderCalendar() {
         if (container) {
             const badge = document.createElement("span");
             badge.className = "calendar-event-badge meeting";
-            badge.innerText = `🤝 ${evt.time} - ${evt.title}`;
-            badge.title = evt.description || "";
-            badge.onclick = (e) => {
-                e.stopPropagation();
-                alert(`Reunião: ${evt.title}\nHorário: ${evt.time}\nDescrição: ${evt.description || "Sem notas"}`);
-            };
+            badge.innerText = `🤝 ${evt.time} ${evt.title.substring(0, 10)}${evt.title.length > 10 ? '...' : ''}`;
+            badge.title = evt.title;
             container.appendChild(badge);
         }
     });
@@ -2165,11 +2292,8 @@ function renderCalendar() {
             if (container) {
                 const badge = document.createElement("span");
                 badge.className = "calendar-event-badge task";
-                badge.innerText = `📝 Tarefa: ${task.title}`;
-                badge.onclick = (e) => {
-                    e.stopPropagation();
-                    document.querySelector('[data-view="tasks"]').click();
-                };
+                badge.innerText = `📝 ${task.title.substring(0, 12)}${task.title.length > 12 ? '...' : ''}`;
+                badge.title = task.title;
                 container.appendChild(badge);
             }
         }
@@ -2182,15 +2306,137 @@ function renderCalendar() {
             if (container) {
                 const badge = document.createElement("span");
                 badge.className = "calendar-event-badge contract";
-                badge.innerText = `💼 Início Contrato: ${con.clientName}`;
-                badge.onclick = (e) => {
-                    e.stopPropagation();
-                    openViewContract(con.id);
-                };
+                badge.innerText = `💼 ${con.clientName.substring(0, 12)}${con.clientName.length > 12 ? '...' : ''}`;
+                badge.title = con.clientName;
                 container.appendChild(badge);
             }
         }
     });
+}
+
+function openDayPreview(dateString) {
+    const env = getEnv();
+    
+    // Parse date for visual title
+    const d = new Date(dateString + "T00:00:00");
+    const formattedDateText = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+    document.getElementById("dayPreviewDateText").innerText = formattedDateText;
+    
+    // Set target date for Quick Add Event from preview
+    const quickAddBtn = document.getElementById("btnQuickAddEventFromPreview");
+    quickAddBtn.onclick = () => {
+        document.getElementById("dayPreviewModal").classList.remove("active");
+        document.getElementById("eventForm").reset();
+        document.getElementById("eventDate").value = dateString;
+        document.getElementById("eventModal").classList.add("active");
+    };
+
+    const container = document.getElementById("dayPreviewContent");
+    container.innerHTML = "";
+
+    // Find all items on this date
+    const dailyEvents = env.events.filter(e => e.date === dateString);
+    const dailyTasks = env.tasks.filter(t => t.dueDate === dateString && !t.completed);
+    const dailyContracts = env.contracts.filter(c => c.startDate === dateString);
+
+    if (dailyEvents.length === 0 && dailyTasks.length === 0 && dailyContracts.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:30px 10px; color:var(--text-muted);">
+                <i data-lucide="calendar" style="width:36px; height:36px; opacity:0.5; margin-bottom:8px; display:inline-block;"></i>
+                <p style="font-size:12px; margin:0;">Nenhum compromisso agendado para este dia.</p>
+            </div>
+        `;
+        lucide.createIcons();
+        document.getElementById("dayPreviewModal").classList.add("active");
+        return;
+    }
+
+    // Render Meetings Group
+    if (dailyEvents.length > 0) {
+        const group = document.createElement("div");
+        group.innerHTML = `<h4 style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">🤝 Reuniões & Compromissos</h4>`;
+        dailyEvents.forEach(evt => {
+            const item = document.createElement("div");
+            item.style = "background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px; margin-bottom:6px;";
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <strong style="font-size:12px; color:var(--text-primary);">${evt.title}</strong>
+                    <span style="font-size:11px; font-weight:600; color:var(--color-teal);">${evt.time}</span>
+                </div>
+                <p style="font-size:11px; color:var(--text-secondary); margin:0 0 4px 0;">${evt.description || "Sem notas descritivas."}</p>
+                <div style="display:flex; justify-content:flex-end; gap:6px;">
+                    <button class="btn btn-secondary btn-xs btn-del-event" style="padding:2px 6px; font-size:8px; color:var(--color-danger); border-color:var(--color-danger-glow);">Excluir</button>
+                </div>
+            `;
+            item.querySelector(".btn-del-event").onclick = () => {
+                if (confirm("Remover este compromisso da agenda?")) {
+                    env.events = env.events.filter(e => e.id !== evt.id);
+                    saveState();
+                    renderAll();
+                    openDayPreview(dateString); // reload preview
+                }
+            };
+            group.appendChild(item);
+        });
+        container.appendChild(group);
+    }
+
+    // Render Tasks Group
+    if (dailyTasks.length > 0) {
+        const group = document.createElement("div");
+        group.innerHTML = `<h4 style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">📝 Tarefas Comerciais</h4>`;
+        dailyTasks.forEach(task => {
+            const item = document.createElement("div");
+            item.style = "background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px; margin-bottom:6px;";
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <strong style="font-size:12px; color:var(--text-primary);">${task.title}</strong>
+                    <span class="task-priority-badge ${task.priority}" style="font-size:8px; padding:1px 4px; border-radius:2px;">${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}</span>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:6px;">
+                    <button class="btn btn-primary btn-xs btn-check-task" style="padding:2px 6px; font-size:8px;">Concluir</button>
+                </div>
+            `;
+            item.querySelector(".btn-check-task").onclick = () => {
+                task.completed = true;
+                saveState();
+                renderAll();
+                openDayPreview(dateString); // reload preview
+            };
+            group.appendChild(item);
+        });
+        container.appendChild(group);
+    }
+
+    // Render Contracts Group
+    if (dailyContracts.length > 0) {
+        const group = document.createElement("div");
+        group.innerHTML = `<h4 style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">💼 Início de Contratos</h4>`;
+        dailyContracts.forEach(con => {
+            const item = document.createElement("div");
+            item.style = "background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px; margin-bottom:6px;";
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <strong style="font-size:12px; color:var(--text-primary);">${con.clientName} (${con.company})</strong>
+                    <span style="font-size:10px; font-weight:600; color:var(--color-success);">${formatCurrency(con.value)}</span>
+                </div>
+                <p style="font-size:11px; color:var(--text-secondary); margin:0 0 4px 0;">Serviço: ${con.productName} (${con.recurrence === 'monthly' ? 'Mensal' : 'Único'})</p>
+                <div style="display:flex; justify-content:flex-end; gap:6px;">
+                    <button class="btn btn-secondary btn-xs btn-view-con" style="padding:2px 6px; font-size:8px;">Ver Contrato</button>
+                </div>
+            `;
+            item.querySelector(".btn-view-con").onclick = () => {
+                document.getElementById("dayPreviewModal").classList.remove("active");
+                document.querySelector('[data-view="contracts"]').click();
+                openViewContract(con.id);
+            };
+            group.appendChild(item);
+        });
+        container.appendChild(group);
+    }
+
+    document.getElementById("dayPreviewModal").classList.add("active");
+    lucide.createIcons();
 }
 
 // 11. Finance View Control
@@ -2768,4 +3014,12 @@ window.addEventListener("DOMContentLoaded", () => {
             renderMarketingAssets();
         };
     });
+
+    // Calendar Day Preview Modal Binds
+    document.getElementById("btnCloseDayPreviewModal").onclick = () => {
+        document.getElementById("dayPreviewModal").classList.remove("active");
+    };
+    document.getElementById("btnCloseDayPreviewOk").onclick = () => {
+        document.getElementById("dayPreviewModal").classList.remove("active");
+    };
 });
