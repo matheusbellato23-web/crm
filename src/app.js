@@ -1033,10 +1033,17 @@ function renderCustomers() {
         return sum + (cust.type === "single" ? cust.value : 0);
     }, 0);
 
+    // Calculate unique active clients (by company name, or contact name if no company)
+    const uniqueActiveClients = new Set();
+    activeCustomers.forEach(c => {
+        const nameKey = (c.company || c.name || "").trim().toLowerCase();
+        if (nameKey) uniqueActiveClients.add(nameKey);
+    });
+
     // Update DOM
     document.getElementById("kpiMRR").innerText = formatCurrency(mrrTotal);
     document.getElementById("kpiCustomerLTV").innerText = formatCurrency(ltvTotal);
-    document.getElementById("kpiActiveCustomers").innerText = activeCustomers.length;
+    document.getElementById("kpiActiveCustomers").innerText = uniqueActiveClients.size;
 
     const tbody = document.getElementById("customersTableBody");
     const emptyState = document.getElementById("customersEmptyState");
@@ -1049,44 +1056,105 @@ function renderCustomers() {
         emptyState.classList.add("hidden");
         document.getElementById("customersTable").classList.remove("hidden");
 
+        // Group services by client company (or name if no company)
+        const grouped = [];
         filtered.forEach(cust => {
+            const key = (cust.company || cust.name || "").trim();
+            let existing = grouped.find(g => (g.company || g.clientName || "").trim() === key);
+            if (!existing) {
+                existing = {
+                    clientName: cust.name,
+                    company: cust.company,
+                    niche: cust.niche,
+                    services: [],
+                    status: "inactive"
+                };
+                grouped.push(existing);
+            }
+            existing.services.push(cust);
+            if (cust.status === "active") {
+                existing.status = "active";
+            }
+        });
+
+        grouped.forEach(group => {
             const tr = document.createElement("tr");
+            
+            // Build the services list HTML
+            let servicesHtml = '<div style="display: flex; flex-direction: column; gap: 6px;">';
+            group.services.forEach(s => {
+                const badgeText = s.type === 'monthly' ? 'Mensal' : s.type === 'yearly' ? 'Anual' : 'Único';
+                
+                servicesHtml += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 10px; background: rgba(248, 250, 252, 0.6); border: 1px solid var(--border-color); border-radius: 6px;">
+                        <span style="font-size: 12px; font-weight: 500; color: var(--text-primary);">${s.productName}</span>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="badge-recurrence ${s.type}" style="margin: 0; font-size: 10px; padding: 2px 6px;">${badgeText}</span>
+                            <span style="font-size: 12px; font-weight: 600; color: var(--text-primary); min-width: 80px; text-align: right;">${formatCurrency(s.value)}</span>
+                            <span class="badge-status ${s.status}" style="margin: 0; font-size: 10px; padding: 2px 6px;">${s.status === 'active' ? 'Ativo' : 'Inativo'}</span>
+                            <div style="display: flex; gap: 4px; border-left: 1px solid var(--border-color); padding-left: 8px;">
+                                <button class="btn-icon-only btn-sm btn-edit-customer" data-id="${s.id}" title="Editar" style="width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center;"><i data-lucide="edit-2" style="width:12px;height:12px;"></i></button>
+                                <button class="btn-icon-only btn-sm btn-toggle-status" data-id="${s.id}" title="Alternar Status" style="width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center;"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i></button>
+                                <button class="btn-icon-only btn-sm btn-delete-customer" data-id="${s.id}" title="Excluir" style="width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center;"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            servicesHtml += '</div>';
+
             tr.innerHTML = `
                 <td>
                     <div class="col-contact-info">
-                        <div class="contact-avatar">${getInitials(cust.name)}</div>
-                        <span>${cust.name}</span>
+                        <div class="contact-avatar">${getInitials(group.clientName)}</div>
+                        <span>${group.clientName}</span>
                     </div>
                 </td>
-                <td>${cust.company || "-"}</td>
-                <td><span style="font-size: 11px; color: var(--text-secondary); background: var(--bg-app); padding: 2px 6px; border-radius: 4px;">${cust.niche || "Outro"}</span></td>
-                <td>${cust.productName}</td>
+                <td>${group.company || "-"}</td>
+                <td><span style="font-size: 11px; color: var(--text-secondary); background: var(--bg-app); padding: 2px 6px; border-radius: 4px;">${group.niche || "Outro"}</span></td>
+                <td colspan="3">${servicesHtml}</td>
                 <td>
-                    <span class="badge-recurrence ${cust.type}">
-                        ${cust.type === 'monthly' ? 'Mensal' : cust.type === 'yearly' ? 'Anual' : 'Único'}
-                    </span>
-                </td>
-                <td><strong>${formatCurrency(cust.value)}</strong></td>
-                <td>
-                    <span class="badge-status ${cust.status}">
-                        ${cust.status === 'active' ? 'Ativo' : 'Inativo'}
+                    <span class="badge-status ${group.status}">
+                        ${group.status === 'active' ? 'Ativo' : 'Inativo'}
                     </span>
                 </td>
                 <td>
                     <div class="kanban-card-actions">
-                        <button class="btn-icon-only btn-edit-customer" title="Editar"><i data-lucide="edit-2" style="width:14px;height:14px;"></i></button>
-                        <button class="btn-icon-only btn-toggle-status" title="Alternar Status"><i data-lucide="refresh-cw" style="width:14px;height:14px;"></i></button>
-                        <button class="btn-icon-only btn-delete-customer" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                        <button class="btn btn-secondary btn-xs btn-add-service-to-client" style="font-size: 10px; padding: 4px 8px; display: flex; align-items: center; gap: 4px; border-radius: 4px; border: 1px solid var(--border-color); background: transparent; color: var(--text-primary); font-weight: 500; cursor: pointer;">
+                            <i data-lucide="plus" style="width:10px;height:10px;"></i> Contratar
+                        </button>
                     </div>
                 </td>
             `;
 
-            tr.querySelector(".btn-edit-customer").addEventListener("click", () => openEditCustomer(cust.id));
-            tr.querySelector(".btn-toggle-status").addEventListener("click", () => toggleCustomerStatus(cust.id));
-            tr.querySelector(".btn-delete-customer").addEventListener("click", () => deleteCustomer(cust.id));
+            // Bind actions for each service inline buttons
+            tr.querySelectorAll(".btn-edit-customer").forEach(btn => {
+                const id = btn.getAttribute("data-id");
+                btn.onclick = () => openEditCustomer(id);
+            });
+            tr.querySelectorAll(".btn-toggle-status").forEach(btn => {
+                const id = btn.getAttribute("data-id");
+                btn.onclick = () => toggleCustomerStatus(id);
+            });
+            tr.querySelectorAll(".btn-delete-customer").forEach(btn => {
+                const id = btn.getAttribute("data-id");
+                btn.onclick = () => deleteCustomer(id);
+            });
+
+            // Bind quick add service button
+            tr.querySelector(".btn-add-service-to-client").onclick = () => {
+                openAddCustomer({
+                    contactId: group.services[0].contactId,
+                    name: group.clientName,
+                    company: group.company,
+                    niche: group.niche
+                });
+            };
 
             tbody.appendChild(tr);
         });
+        
+        lucide.createIcons();
     }
 }
 
@@ -1603,12 +1671,21 @@ function renderTimeline(contact) {
 }
 
 // Customers form modal controls
-function openAddCustomer() {
+function openAddCustomer(preFill = null) {
     document.getElementById("customerForm").reset();
     document.getElementById("customerId").value = "";
-    document.getElementById("customerContactId").value = "";
     
-    document.getElementById("customerNiche").value = "Negócio Local";
+    if (preFill) {
+        document.getElementById("customerContactId").value = preFill.contactId || "";
+        document.getElementById("customerName").value = preFill.name || "";
+        document.getElementById("customerCompany").value = preFill.company || "";
+        document.getElementById("customerNiche").value = preFill.niche || "Negócio Local";
+    } else {
+        document.getElementById("customerContactId").value = "";
+        document.getElementById("customerName").value = "";
+        document.getElementById("customerCompany").value = "";
+        document.getElementById("customerNiche").value = "Negócio Local";
+    }
     
     const env = getEnv();
     const select = document.getElementById("customerProduct");
