@@ -23,12 +23,21 @@ const defaultContacts = [
     { id: "c1", name: "João Silva", company: "Inova Tech", email: "joao@inovatech.com.br", phone: "(11) 98765-4321", value: 3500.00, status: "negotiating", niche: "SaaS / Startup", notes: "Interessado em Criação de Site e SEO.", createdAt: "2026-07-05T14:30:00.000Z", timeline: [{ id: "act1", type: "note", description: "Contato cadastrado no sistema.", timestamp: "2026-07-05T14:30:00.000Z" }] },
     { id: "c2", name: "Maria Oliveira", company: "Giga Corp", email: "maria.oliveira@gigacorp.com", phone: "(21) 99888-7766", value: 8700.00, status: "won", niche: "E-commerce", notes: "Compra fechada de Site + Google Ads.", createdAt: "2026-07-01T09:15:00.000Z", timeline: [{ id: "act2", type: "note", description: "Lead convertido em cliente.", timestamp: "2026-07-09T18:12:00.000Z" }] },
     { id: "c3", name: "Carlos Souza", company: "Acme Ltda", email: "carlos@acmelimitada.com", phone: "(31) 97777-6655", value: 1200.00, status: "proposal", niche: "Negócio Local", notes: "Aguardando resposta da proposta de Google Ads.", createdAt: "2026-07-08T11:00:00.000Z", timeline: [] },
-    { id: "c4", name: "Ana Costa", company: "Tech Soluções", email: "ana@techsolucoes.tech", phone: "(11) 96543-2109", value: 3200.00, status: "lead", niche: "Serviços B2B", notes: "Lead do Google Ads. Quer fazer site novo.", createdAt: "2026-07-12T10:00:00.000Z", timeline: [] }
+    { id: "c4", name: "Ana Costa", company: "Tech Soluções", email: "ana@techsolucoes.tech", phone: "(11) 96543-2109", value: 3200.00, status: "lead", niche: "Serviços B2B", notes: "Lead do Google Ads. Quer fazer site novo.", createdAt: "2026-07-12T10:00:00.000Z", timeline: [] },
+    { id: "c_parana_ecoturismo", name: "Marcio", company: "Paraná Ecoturismo", email: "marcio@paranaecoturismo.com.br", phone: "41 96252186", value: 1540.00, status: "won", niche: "Turismo", notes: "Localizado em Morretes. Representante: Marcio", createdAt: "2026-04-13T12:00:00.000Z", timeline: [
+        { id: "act_parana_1", type: "note", description: "Cadastrado no sistema. Ramo: Turismo. Representante: Marcio.", timestamp: "2026-04-13T12:00:00.000Z" },
+        { id: "act_parana_2", type: "note", description: "Compra fechada de Criação de Site por R$ 400.", timestamp: "2026-04-13T12:30:00.000Z" },
+        { id: "act_parana_3", type: "note", description: "Pagamento efetuado: R$ 500 por atualização do site após 3 meses.", timestamp: "2026-07-13T10:00:00.000Z" }
+    ] }
 ];
 
 const defaultCustomers = [
     { id: "cust1", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Desenvolvimento E-commerce", value: 7500.00, type: "single", status: "active", createdAt: "2026-07-09T18:12:00.000Z" },
-    { id: "cust2", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Gestão de Google Ads", value: 1200.00, type: "monthly", status: "active", createdAt: "2026-07-09T18:12:00.000Z" }
+    { id: "cust2", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Gestão de Google Ads", value: 1200.00, type: "monthly", status: "active", createdAt: "2026-07-09T18:12:00.000Z" },
+    { id: "cust_parana_site", contactId: "c_parana_ecoturismo", name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Criação de Site", value: 400.00, type: "single", status: "active", createdAt: "2026-04-13T12:00:00.000Z" },
+    { id: "cust_parana_update", contactId: "c_parana_ecoturismo", name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Atualização de Site", value: 500.00, type: "single", status: "active", createdAt: "2026-07-13T10:00:00.000Z" },
+    { id: "cust_parana_maint", contactId: "c_parana_ecoturismo", name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Manutenção do Site (Anual)", value: 240.00, type: "yearly", status: "active", createdAt: "2026-07-13T12:00:00.000Z" },
+    { id: "cust_parana_ads", contactId: "c_parana_ecoturismo", name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Gestão de Google Ads", value: 400.00, type: "monthly", status: "active", createdAt: "2026-07-13T12:00:00.000Z" }
 ];
 
 const defaultTasks = [
@@ -45,11 +54,19 @@ const defaultExpenses = [
 const defaultInvoices = [
     { id: "FAT-1001", customerName: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Desenvolvimento E-commerce", value: 7500.00, dueDate: "2026-07-10", status: "paid" },
     { id: "FAT-1002", customerName: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Gestão de Google Ads", value: 1200.00, dueDate: "2026-07-12", status: "paid" },
-    { id: "FAT-1003", customerName: "João Silva", company: "Inova Tech", niche: "SaaS / Startup", productName: "Criação de Site Profissional", value: 3500.00, dueDate: "2026-07-14", status: "pending" }
+    { id: "FAT-1003", customerName: "João Silva", company: "Inova Tech", niche: "SaaS / Startup", productName: "Criação de Site Profissional", value: 3500.00, dueDate: "2026-07-14", status: "pending" },
+    { id: "FAT-PARANA-1", customerName: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Criação de Site", value: 400.00, dueDate: "2026-04-15", status: "paid" },
+    { id: "FAT-PARANA-2", customerName: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Atualização de Site", value: 500.00, dueDate: "2026-07-13", status: "paid" },
+    { id: "FAT-PARANA-3", customerName: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Manutenção do Site (Anual)", value: 240.00, dueDate: "2026-07-20", status: "pending" },
+    { id: "FAT-PARANA-4", customerName: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Gestão de Google Ads", value: 400.00, dueDate: "2026-07-31", status: "pending" }
 ];
 
 const defaultContractsList = [
-    { id: "CONTR-1001", contactId: "c2", proposalId: "PROP-mock1", clientName: "Maria Oliveira", company: "Giga Corp", productName: "Desenvolvimento E-commerce", value: 7500.00, recurrence: "single", startDate: "2026-07-09", endDate: "2026-08-09", status: "active" }
+    { id: "CONTR-1001", contactId: "c2", proposalId: "PROP-mock1", clientName: "Maria Oliveira", company: "Giga Corp", productName: "Desenvolvimento E-commerce", value: 7500.00, recurrence: "single", startDate: "2026-07-09", endDate: "2026-08-09", status: "active" },
+    { id: "CONTR-PARANA-1", contactId: "c_parana_ecoturismo", proposalId: "DIRECT-PARANA-1", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Criação de Site", value: 400.00, recurrence: "single", startDate: "2026-04-13", endDate: "2026-05-13", status: "active" },
+    { id: "CONTR-PARANA-2", contactId: "c_parana_ecoturismo", proposalId: "DIRECT-PARANA-2", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Atualização de Site", value: 500.00, recurrence: "single", startDate: "2026-07-13", endDate: "2026-08-13", status: "active" },
+    { id: "CONTR-PARANA-3", contactId: "c_parana_ecoturismo", proposalId: "DIRECT-PARANA-3", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Manutenção do Site (Anual)", value: 240.00, recurrence: "yearly", startDate: "2026-07-13", endDate: "2027-07-13", status: "active" },
+    { id: "CONTR-PARANA-4", contactId: "c_parana_ecoturismo", proposalId: "DIRECT-PARANA-4", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Gestão de Google Ads", value: 400.00, recurrence: "monthly", startDate: "2026-07-13", endDate: "2026-08-13", status: "active" }
 ];
 
 const defaultEvents = [
@@ -147,11 +164,138 @@ function getEnv() {
     return state.environments[env];
 }
 
+function ensureParanaEcoturismo() {
+    const envName = state.currentEnv || "webco";
+    if (!state.environments) state.environments = {};
+    if (!state.environments[envName]) {
+        state.environments[envName] = {
+            contacts: [...defaultContacts],
+            tasks: [...defaultTasks],
+            products: [...defaultProducts],
+            customers: [...defaultCustomers],
+            proposals: [],
+            invoices: [...defaultInvoices],
+            expenses: [...defaultExpenses],
+            contracts: [...defaultContractsList],
+            events: [...defaultEvents],
+            marketingAssets: [...defaultMarketingAssets]
+        };
+    }
+    const env = state.environments[envName];
+    if (!env.contacts) env.contacts = [...defaultContacts];
+    if (!env.customers) env.customers = [...defaultCustomers];
+    if (!env.invoices) env.invoices = [...defaultInvoices];
+    if (!env.contracts) env.contracts = [...defaultContractsList];
+
+    const exists = env.customers.some(c => c.company === "Paraná Ecoturismo");
+    if (!exists) {
+        const contactId = "c_parana_ecoturismo";
+        
+        // Add Contact
+        const newContact = {
+            id: contactId,
+            name: "Marcio",
+            company: "Paraná Ecoturismo",
+            email: "marcio@paranaecoturismo.com.br",
+            phone: "41 96252186",
+            value: 1540.00,
+            status: "won",
+            niche: "Turismo",
+            notes: "Localizado em Morretes. Representante: Marcio",
+            createdAt: "2026-04-13T12:00:00.000Z",
+            timeline: [
+                { id: "act_parana_1", type: "note", description: "Cadastrado no sistema. Ramo: Turismo. Representante: Marcio.", timestamp: "2026-04-13T12:00:00.000Z" },
+                { id: "act_parana_2", type: "note", description: "Compra fechada de Criação de Site por R$ 400.", timestamp: "2026-04-13T12:30:00.000Z" },
+                { id: "act_parana_3", type: "note", description: "Pagamento efetuado: R$ 500 por atualização do site após 3 meses.", timestamp: "2026-07-13T10:00:00.000Z" }
+            ]
+        };
+        env.contacts.push(newContact);
+
+        // Add Customers
+        env.customers.push(
+            { id: "cust_parana_site", contactId: contactId, name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Criação de Site", value: 400.00, type: "single", status: "active", createdAt: "2026-04-13T12:00:00.000Z" },
+            { id: "cust_parana_update", contactId: contactId, name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Atualização de Site", value: 500.00, type: "single", status: "active", createdAt: "2026-07-13T10:00:00.000Z" },
+            { id: "cust_parana_maint", contactId: contactId, name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Manutenção do Site (Anual)", value: 240.00, type: "yearly", status: "active", createdAt: "2026-07-13T12:00:00.000Z" },
+            { id: "cust_parana_ads", contactId: contactId, name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Gestão de Google Ads", value: 400.00, type: "monthly", status: "active", createdAt: "2026-07-13T12:00:00.000Z" }
+        );
+
+        // Add Invoices
+        env.invoices.push(
+            { id: "FAT-PARANA-1", customerName: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Criação de Site", value: 400.00, dueDate: "2026-04-15", status: "paid" },
+            { id: "FAT-PARANA-2", customerName: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Atualização de Site", value: 500.00, dueDate: "2026-07-13", status: "paid" },
+            { id: "FAT-PARANA-3", customerName: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Manutenção do Site (Anual)", value: 240.00, dueDate: "2026-07-20", status: "pending" },
+            { id: "FAT-PARANA-4", customerName: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Gestão de Google Ads", value: 400.00, dueDate: "2026-07-31", status: "pending" }
+        );
+
+        // Add Contracts
+        env.contracts.push(
+            { id: "CONTR-PARANA-1", contactId: contactId, proposalId: "DIRECT-PARANA-1", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Criação de Site", value: 400.00, recurrence: "single", startDate: "2026-04-13", endDate: "2026-05-13", status: "active" },
+            { id: "CONTR-PARANA-2", contactId: contactId, proposalId: "DIRECT-PARANA-2", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Atualização de Site", value: 500.00, recurrence: "single", startDate: "2026-07-13", endDate: "2026-08-13", status: "active" },
+            { id: "CONTR-PARANA-3", contactId: contactId, proposalId: "DIRECT-PARANA-3", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Manutenção do Site (Anual)", value: 240.00, recurrence: "yearly", startDate: "2026-07-13", endDate: "2027-07-13", status: "active" },
+            { id: "CONTR-PARANA-4", contactId: contactId, proposalId: "DIRECT-PARANA-4", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Gestão de Google Ads", value: 400.00, recurrence: "monthly", startDate: "2026-07-13", endDate: "2026-08-13", status: "active" }
+        );
+
+        saveState();
+    }
+}
+
+function updateSyncIndicator(isSync) {
+    const dot = document.getElementById("syncDot");
+    const text = document.getElementById("syncText");
+    if (dot && text) {
+        if (isSync) {
+            dot.style.background = "#10b981"; // Emerald green
+            text.innerText = "Nuvem Sincronizada";
+        } else {
+            dot.style.background = "#f59e0b"; // Amber orange
+            text.innerText = "Armazenamento Local";
+        }
+    }
+}
+
+async function saveStateToServer() {
+    try {
+        const response = await fetch('/api/state', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(state)
+        });
+        if (response.ok) {
+            updateSyncIndicator(true);
+        } else {
+            updateSyncIndicator(false);
+        }
+    } catch (e) {
+        console.warn("Offline: Salvo apenas localmente.", e);
+        updateSyncIndicator(false);
+    }
+}
+
 // Initialize & Load
-function init() {
-    const savedState = localStorage.getItem("nexus_crm_multitenant_state");
-    if (savedState) {
-        state = JSON.parse(savedState);
+async function init() {
+    let loadedFromServer = false;
+    try {
+        const response = await fetch('/api/state');
+        if (response.ok) {
+            const data = await response.json();
+            if (data) {
+                state = data;
+                loadedFromServer = true;
+                updateSyncIndicator(true);
+            }
+        }
+    } catch (e) {
+        console.warn("Servidor offline ao iniciar. Usando dados locais.", e);
+    }
+
+    if (!loadedFromServer) {
+        const savedState = localStorage.getItem("nexus_crm_multitenant_state");
+        if (savedState) {
+            state = JSON.parse(savedState);
+        }
+        updateSyncIndicator(false);
     }
     
     // Privacy Mode setup
@@ -171,6 +315,7 @@ function init() {
     
     if (loggedIn === "true" && loggedEnv) {
         state.currentEnv = loggedEnv;
+        ensureParanaEcoturismo();
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("appContainer").classList.remove("hidden");
         document.getElementById("appContainer").classList.add("logged-in");
@@ -187,6 +332,7 @@ function init() {
 
 function saveState() {
     localStorage.setItem("nexus_crm_multitenant_state", JSON.stringify(state));
+    saveStateToServer();
 }
 
 // Chart Instances
@@ -222,6 +368,7 @@ const getDaysSince = (dateStr) => {
 // UI Rendering Functions
 function renderAll() {
     if (!state.currentEnv) return;
+    ensureParanaEcoturismo();
     
     renderDashboard();
     renderContacts();
@@ -1507,15 +1654,24 @@ function openEditCustomer(id) {
     document.getElementById("customerModal").classList.add("active");
 }
 
-document.getElementById("btnCreateCustomer").addEventListener("click", () => {
-    openAddCustomer();
-});
-document.getElementById("btnCloseCustomerModal").addEventListener("click", () => {
-    document.getElementById("customerModal").classList.remove("active");
-});
-document.getElementById("btnCancelCustomerModal").addEventListener("click", () => {
-    document.getElementById("customerModal").classList.remove("active");
-});
+const btnCreateCustomer = document.getElementById("btnCreateCustomer");
+if (btnCreateCustomer) {
+    btnCreateCustomer.addEventListener("click", () => {
+        openAddCustomer();
+    });
+}
+const btnCloseCustomerModal = document.getElementById("btnCloseCustomerModal");
+if (btnCloseCustomerModal) {
+    btnCloseCustomerModal.addEventListener("click", () => {
+        document.getElementById("customerModal").classList.remove("active");
+    });
+}
+const btnCancelCustomerModal = document.getElementById("btnCancelCustomerModal");
+if (btnCancelCustomerModal) {
+    btnCancelCustomerModal.addEventListener("click", () => {
+        document.getElementById("customerModal").classList.remove("active");
+    });
+}
 
 document.getElementById("customerContactId").addEventListener("change", (e) => {
     const contactId = e.target.value;
@@ -2020,6 +2176,7 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
         document.getElementById("appContainer").classList.add("logged-in");
         document.getElementById("sidebarUsername").innerText = "Admin";
         
+        ensureParanaEcoturismo();
         renderAll();
         // Setup late bind buttons after login loads DOM
         setupOpenImportButton();
@@ -3190,7 +3347,7 @@ function renderFinanceCharts(env) {
     });
 
     // 2. Revenue by Niche calculations
-    const niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Outro"];
+    const niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Turismo", "Outro"];
     const nicheSums = niches.map(n => {
         return env.invoices
             .filter(inv => inv.niche === n)
@@ -3655,6 +3812,50 @@ window.addEventListener("DOMContentLoaded", () => {
         stgBottom.onclick = () => {
             state.activeFunnelSegment = "bottom";
             renderKanban();
+        };
+    }
+
+    // Backup actions logic
+    const btnExportBackup = document.getElementById("btnExportBackup");
+    if (btnExportBackup) {
+        btnExportBackup.onclick = () => {
+            const dataStr = localStorage.getItem("nexus_crm_multitenant_state") || JSON.stringify(state);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'crm_backup_' + new Date().toISOString().split('T')[0] + '.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        };
+    }
+
+    const btnImportBackup = document.getElementById("btnImportBackup");
+    const backupFileInput = document.getElementById("backupFileInput");
+    if (btnImportBackup && backupFileInput) {
+        btnImportBackup.onclick = () => {
+            backupFileInput.click();
+        };
+        backupFileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const parsed = JSON.parse(evt.target.result);
+                    if (parsed.environments || parsed.currentEnv) {
+                        localStorage.setItem("nexus_crm_multitenant_state", evt.target.result);
+                        alert("Backup importado com sucesso! A página será recarregada.");
+                        window.location.reload();
+                    } else {
+                        alert("Arquivo de backup inválido.");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler o arquivo de backup.");
+                }
+            };
+            reader.readAsText(file);
         };
     }
 });

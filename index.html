@@ -133,6 +133,22 @@
                     <i data-lucide="moon" class="moon-icon"></i>
                     <span>Modo Claro</span>
                 </div>
+                <div class="backup-actions" style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 8px; padding: 0 16px;">
+                    <button class="btn btn-secondary btn-sm" id="btnExportBackup" style="flex: 1; font-size: 11px; padding: 6px 10px; display: flex; align-items: center; justify-content: center; gap: 4px; border-radius: 4px; border: 1px solid var(--border-color); background: transparent;" title="Exportar Backup dos Dados">
+                        <i data-lucide="download" style="width: 12px; height: 12px;"></i>
+                        <span>Exportar</span>
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="btnImportBackup" style="flex: 1; font-size: 11px; padding: 6px 10px; display: flex; align-items: center; justify-content: center; gap: 4px; border-radius: 4px; border: 1px solid var(--border-color); background: transparent;" title="Importar Backup dos Dados">
+                        <i data-lucide="upload" style="width: 12px; height: 12px;"></i>
+                        <span>Importar</span>
+                    </button>
+                    <input type="file" id="backupFileInput" accept=".json" style="display: none;">
+                </div>
+                <!-- Sync status indicator -->
+                <div id="syncIndicator" style="font-size: 11px; padding: 4px 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; color: var(--text-secondary);">
+                    <span id="syncDot" style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block; transition: background 0.3s ease;"></span>
+                    <span id="syncText">Verificando conexão...</span>
+                </div>
                 <div class="user-profile">
                     <img src="https://api.dicebear.com/7.x/identicon/svg?seed=webco" alt="Web Co. Logo" class="avatar">
                     <div class="user-info">
@@ -362,6 +378,7 @@
                             <option value="Serviços">Serviços</option>
                             <option value="Saúde / Estética">Saúde / Estética</option>
                             <option value="Infoprodutos">Infoprodutos</option>
+                            <option value="Turismo">Turismo</option>
                             <option value="Outro">Outro</option>
                         </select>
                     </div>
@@ -1251,6 +1268,7 @@
                                 <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
                                 <option value="SaaS / Startup">SaaS / Startup</option>
                                 <option value="Serviços B2B">Serviços B2B</option>
+                                <option value="Turismo">Turismo</option>
                                 <option value="Outro">Outro</option>
                             </select>
                         </div>
@@ -1445,6 +1463,7 @@
                                 <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
                                 <option value="SaaS / Startup">SaaS / Startup</option>
                                 <option value="Serviços B2B">Serviços B2B</option>
+                                <option value="Turismo">Turismo</option>
                                 <option value="Outro">Outro</option>
                             </select>
                         </div>
@@ -1686,6 +1705,7 @@
                                 <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
                                 <option value="SaaS / Startup">SaaS / Startup</option>
                                 <option value="Serviços B2B">Serviços B2B</option>
+                                <option value="Turismo">Turismo</option>
                                 <option value="Outro">Outro</option>
                             </select>
                         </div>
