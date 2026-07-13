@@ -662,16 +662,7 @@ function renderKanban() {
             document.getElementById("funnelBottomValGraphic").innerText = `${formatCurrency(bottomValue)} fat.`;
         }
 
-        // Pass rate arrows calculations
-        const passRate1 = topCount > 0 ? (midCount / topCount) * 100 : 0;
-        const passRate2 = midCount > 0 ? (bottomCount / midCount) * 100 : 0;
 
-        if (document.getElementById("funnelPassRate1")) {
-            document.getElementById("funnelPassRate1").innerText = `${passRate1.toFixed(0)}% de avanço`;
-        }
-        if (document.getElementById("funnelPassRate2")) {
-            document.getElementById("funnelPassRate2").innerText = `${passRate2.toFixed(0)}% de avanço`;
-        }
 
         // Selected segment styles
         const stgTop = document.getElementById("funnelStageTop");
