@@ -1,6 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- GLOBAL ERROR LOGGER BANNER -->
+    <script>
+        window.addEventListener('error', function(e) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '10px';
+            errorDiv.style.left = '50%';
+            errorDiv.style.transform = 'translateX(-50%)';
+            errorDiv.style.backgroundColor = '#ef4444';
+            errorDiv.style.color = '#ffffff';
+            errorDiv.style.padding = '12px 24px';
+            errorDiv.style.borderRadius = '8px';
+            errorDiv.style.zIndex = '99999';
+            errorDiv.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+            errorDiv.style.fontFamily = 'sans-serif';
+            errorDiv.style.fontSize = '14px';
+            errorDiv.style.fontWeight = 'bold';
+            errorDiv.style.display = 'flex';
+            errorDiv.style.alignItems = 'center';
+            errorDiv.style.gap = '10px';
+            errorDiv.innerHTML = '<span>❌ Erro de Sistema: ' + e.message + ' (Linha: ' + e.lineno + ')</span>';
+            document.body.appendChild(errorDiv);
+            console.error('Captured Global Error:', e);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '10px';
+            errorDiv.style.left = '50%';
+            errorDiv.style.transform = 'translateX(-50%)';
+            errorDiv.style.backgroundColor = '#ef4444';
+            errorDiv.style.color = '#ffffff';
+            errorDiv.style.padding = '12px 24px';
+            errorDiv.style.borderRadius = '8px';
+            errorDiv.style.zIndex = '99999';
+            errorDiv.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+            errorDiv.style.fontFamily = 'sans-serif';
+            errorDiv.style.fontSize = '14px';
+            errorDiv.style.fontWeight = 'bold';
+            errorDiv.style.display = 'flex';
+            errorDiv.style.alignItems = 'center';
+            errorDiv.style.gap = '10px';
+            errorDiv.innerHTML = '<span>❌ Erro de Sistema (Promise): ' + e.reason + '</span>';
+            document.body.appendChild(errorDiv);
+            console.error('Captured Unhandled Rejection:', e);
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus CRM - Web Co.</title>

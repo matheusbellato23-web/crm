@@ -253,6 +253,16 @@ function updateSyncIndicator(isSync) {
     }
 }
 
+function safeCreateIcons() {
+    try {
+        if (typeof lucide !== 'undefined' && lucide && typeof lucide.createIcons === 'function') {
+            lucide.createIcons();
+        }
+    } catch (e) {
+        console.error("Error creating Lucide icons:", e);
+    }
+}
+
 const getApiUrl = (path) => {
     const basePath = window.location.pathname.startsWith('/crm') ? '/crm' : '';
     return `${basePath}${path}`;
@@ -406,11 +416,7 @@ function renderAll() {
     safeRun("populateEventContactsDropdown", populateEventContactsDropdown);
     safeRun("populateCustomerProductsDropdown", populateCustomerProductsDropdown);
     
-    try {
-        lucide.createIcons();
-    } catch (err) {
-        console.error("Error creating Lucide icons:", err);
-    }
+    safeCreateIcons();
 }
 
 // 1. Dashboard Render
@@ -1165,7 +1171,7 @@ function renderCustomers() {
             tbody.appendChild(tr);
         });
         
-        lucide.createIcons();
+        safeCreateIcons();
     }
 }
 
@@ -1299,12 +1305,12 @@ function renderProducts() {
                             row.classList.add("hidden");
                             icon.setAttribute("data-lucide", "chevron-right");
                         }
-                        lucide.createIcons();
+                        safeCreateIcons();
                     });
                 }
             }
         });
-        lucide.createIcons();
+        safeCreateIcons();
     }
 }
 
@@ -1646,7 +1652,7 @@ function openContactDetails(id) {
     renderTimeline(c);
     
     document.getElementById("contactDetailsModal").classList.add("active");
-    lucide.createIcons();
+    safeCreateIcons();
 }
 
 function renderTimeline(contact) {
@@ -1798,7 +1804,7 @@ function openClientServicesModal(clientKey) {
 
     document.getElementById("clientServicesTotalLabel").innerText = `Total Ativo: ${formatCurrency(totalVal)}`;
     document.getElementById("clientServicesModal").classList.add("active");
-    lucide.createIcons();
+    safeCreateIcons();
 }
 
 function openEditCustomer(id) {
@@ -2487,11 +2493,7 @@ function updatePrivacyIcon() {
         } else {
             privacyBtn.innerHTML = `<i data-lucide="eye"></i>`;
         }
-        try {
-            lucide.createIcons();
-        } catch (err) {
-            console.error("Error creating Lucide icons in updatePrivacyIcon:", err);
-        }
+        safeCreateIcons();
     }
 }
 
@@ -3135,7 +3137,7 @@ function openDayPreview(dateString) {
                 <p style="font-size:12px; margin:0;">Nenhum compromisso agendado para este dia.</p>
             </div>
         `;
-        lucide.createIcons();
+        safeCreateIcons();
         document.getElementById("dayPreviewModal").classList.add("active");
         return;
     }
@@ -3225,7 +3227,7 @@ function openDayPreview(dateString) {
     }
 
     document.getElementById("dayPreviewModal").classList.add("active");
-    lucide.createIcons();
+    safeCreateIcons();
 }
 
 // 11. Finance View Control
@@ -3552,7 +3554,7 @@ function renderMarketingAssets() {
             grid.appendChild(card);
         });
     }
-    lucide.createIcons();
+    safeCreateIcons();
 }
 
 function openEditMarketingAsset(id) {
