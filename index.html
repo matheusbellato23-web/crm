@@ -532,6 +532,10 @@
                         <h1 class="view-title">Clientes e Recorrência</h1>
                         <p class="view-subtitle">Acompanhe as mensalidades ativas (Google Ads/Suporte) e faturamento de clientes.</p>
                     </div>
+                    <button class="btn btn-primary" id="btnCreateCustomer">
+                        <i data-lucide="plus"></i>
+                        <span>Adicionar Cliente</span>
+                    </button>
                 </div>
 
                 <!-- Customer Financial Cards -->
@@ -1634,6 +1638,95 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="btnCancelConversionModal">Pular</button>
                     <button type="submit" class="btn btn-primary">Adicionar a Clientes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT CUSTOMER (CLIENTE) -->
+    <div class="modal" id="customerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customerModalTitle">Adicionar Cliente</h3>
+                <button class="btn-close" id="btnCloseCustomerModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="customerForm">
+                <input type="hidden" id="customerId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="customerContactId">Vincular Contato / Lead (Opcional)</label>
+                        <select id="customerContactId" class="form-control">
+                            <option value="">-- Selecione ou digite abaixo --</option>
+                            <!-- Dynamic contacts dropdown -->
+                        </select>
+                        <span style="font-size:11px; color:var(--text-muted); margin-top:4px; display:block;">
+                            Selecione um contato existente para preencher automaticamente ou preencha os dados abaixo manualmente.
+                        </span>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Nome do Cliente *</label>
+                            <input type="text" id="customerName" class="form-control" placeholder="Ex: Maria Oliveira" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerCompany">Empresa</label>
+                            <input type="text" id="customerCompany" class="form-control" placeholder="Ex: Giga Corp">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerNiche">Nicho *</label>
+                            <select id="customerNiche" class="form-control" required>
+                                <option value="Negócio Local">Negócio Local</option>
+                                <option value="E-commerce">E-commerce</option>
+                                <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
+                                <option value="SaaS / Startup">SaaS / Startup</option>
+                                <option value="Serviços B2B">Serviços B2B</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <!-- Empty spacer -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerProduct">Produto / Serviço Vendido *</label>
+                        <select id="customerProduct" class="form-control" required>
+                            <!-- Dynamic products dropdown -->
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerPrice">Valor do Contrato (R$) *</label>
+                            <input type="number" id="customerPrice" class="form-control" min="0" step="0.01" placeholder="Ex: 1200" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerBillingType">Tipo de Cobrança *</label>
+                            <select id="customerBillingType" class="form-control" required>
+                                <option value="single">Taxa Única</option>
+                                <option value="monthly">Recorrente Mensal</option>
+                                <option value="yearly">Recorrente Anual</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerStatus">Status *</label>
+                        <select id="customerStatus" class="form-control" required>
+                            <option value="active">Ativo</option>
+                            <option value="inactive">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelCustomerModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Cliente</button>
                 </div>
             </form>
         </div>

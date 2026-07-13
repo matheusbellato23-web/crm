@@ -237,6 +237,7 @@ function renderAll() {
     populateContactDropdowns();
     populateConversionProductsDropdown();
     populateEventContactsDropdown();
+    populateCustomerProductsDropdown();
     lucide.createIcons();
 }
 
@@ -926,12 +927,14 @@ function renderCustomers() {
                 </td>
                 <td>
                     <div class="kanban-card-actions">
+                        <button class="btn-icon-only btn-edit-customer" title="Editar"><i data-lucide="edit-2" style="width:14px;height:14px;"></i></button>
                         <button class="btn-icon-only btn-toggle-status" title="Alternar Status"><i data-lucide="refresh-cw" style="width:14px;height:14px;"></i></button>
                         <button class="btn-icon-only btn-delete-customer" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                     </div>
                 </td>
             `;
 
+            tr.querySelector(".btn-edit-customer").addEventListener("click", () => openEditCustomer(cust.id));
             tr.querySelector(".btn-toggle-status").addEventListener("click", () => toggleCustomerStatus(cust.id));
             tr.querySelector(".btn-delete-customer").addEventListener("click", () => deleteCustomer(cust.id));
 
@@ -1238,13 +1241,42 @@ function deleteTask(id) {
 function populateContactDropdowns() {
     const env = getEnv();
     const select = document.getElementById("taskContact");
-    select.innerHTML = `<option value="">Nenhum Contato</option>`;
+    if (select) {
+        select.innerHTML = `<option value="">Nenhum Contato</option>`;
+        const sorted = [...env.contacts].sort((a,b) => a.name.localeCompare(b.name));
+        sorted.forEach(c => {
+            const option = document.createElement("option");
+            option.value = c.id;
+            option.innerText = `${c.name} (${c.company || "Sem Empresa"})`;
+            select.appendChild(option);
+        });
+    }
+
+    const customerContactSelect = document.getElementById("customerContactId");
+    if (customerContactSelect) {
+        customerContactSelect.innerHTML = `<option value="">-- Selecione ou digite abaixo --</option>`;
+        const sorted = [...env.contacts].sort((a,b) => a.name.localeCompare(b.name));
+        sorted.forEach(c => {
+            const option = document.createElement("option");
+            option.value = c.id;
+            option.innerText = `${c.name} (${c.company || "Sem Empresa"})`;
+            customerContactSelect.appendChild(option);
+        });
+    }
+}
+
+function populateCustomerProductsDropdown() {
+    const env = getEnv();
+    const select = document.getElementById("customerProduct");
+    if (!select) return;
     
-    const sorted = [...env.contacts].sort((a,b) => a.name.localeCompare(b.name));
-    sorted.forEach(c => {
+    select.innerHTML = `<option value="custom">-- Serviço Customizado --</option>`;
+    
+    const sortedProducts = [...env.products].sort((a, b) => a.name.localeCompare(b.name));
+    sortedProducts.forEach(p => {
         const option = document.createElement("option");
-        option.value = c.id;
-        option.innerText = `${c.name} (${c.company || "Sem Empresa"})`;
+        option.value = p.id;
+        option.innerText = `${p.name} (${formatCurrency(p.price)})`;
         select.appendChild(option);
     });
 }
@@ -1422,6 +1454,195 @@ function renderTimeline(contact) {
         container.appendChild(item);
     });
 }
+
+// Customers form modal controls
+function openAddCustomer() {
+    document.getElementById("customerForm").reset();
+    document.getElementById("customerId").value = "";
+    document.getElementById("customerContactId").value = "";
+    
+    document.getElementById("customerNiche").value = "Negócio Local";
+    
+    const env = getEnv();
+    const select = document.getElementById("customerProduct");
+    if (env.products.length > 0) {
+        select.value = env.products[0].id;
+        document.getElementById("customerPrice").value = env.products[0].price;
+        document.getElementById("customerBillingType").value = env.products[0].type;
+    } else {
+        select.value = "custom";
+        document.getElementById("customerPrice").value = "";
+        document.getElementById("customerBillingType").value = "single";
+    }
+    
+    document.getElementById("customerStatus").value = "active";
+    document.getElementById("customerModalTitle").innerText = "Adicionar Cliente";
+    document.getElementById("customerModal").classList.add("active");
+}
+
+function openEditCustomer(id) {
+    const env = getEnv();
+    const cust = env.customers.find(c => c.id === id);
+    if (!cust) return;
+
+    document.getElementById("customerForm").reset();
+    document.getElementById("customerId").value = cust.id;
+    document.getElementById("customerContactId").value = cust.contactId || "";
+    document.getElementById("customerName").value = cust.name || "";
+    document.getElementById("customerCompany").value = cust.company || "";
+    document.getElementById("customerNiche").value = cust.niche || "Outro";
+    
+    const matchingProd = env.products.find(p => p.name === cust.productName);
+    if (matchingProd) {
+        document.getElementById("customerProduct").value = matchingProd.id;
+    } else {
+        document.getElementById("customerProduct").value = "custom";
+    }
+
+    document.getElementById("customerPrice").value = cust.value;
+    document.getElementById("customerBillingType").value = cust.type;
+    document.getElementById("customerStatus").value = cust.status;
+
+    document.getElementById("customerModalTitle").innerText = "Editar Cliente";
+    document.getElementById("customerModal").classList.add("active");
+}
+
+document.getElementById("btnCreateCustomer").addEventListener("click", () => {
+    openAddCustomer();
+});
+document.getElementById("btnCloseCustomerModal").addEventListener("click", () => {
+    document.getElementById("customerModal").classList.remove("active");
+});
+document.getElementById("btnCancelCustomerModal").addEventListener("click", () => {
+    document.getElementById("customerModal").classList.remove("active");
+});
+
+document.getElementById("customerContactId").addEventListener("change", (e) => {
+    const contactId = e.target.value;
+    if (contactId) {
+        const env = getEnv();
+        const contact = env.contacts.find(c => c.id === contactId);
+        if (contact) {
+            document.getElementById("customerName").value = contact.name || "";
+            document.getElementById("customerCompany").value = contact.company || "";
+            document.getElementById("customerNiche").value = contact.niche || "Outro";
+        }
+    }
+});
+
+document.getElementById("customerProduct").addEventListener("change", (e) => {
+    const productId = e.target.value;
+    if (productId === "custom") {
+        document.getElementById("customerPrice").value = "";
+        document.getElementById("customerBillingType").value = "single";
+    } else {
+        const env = getEnv();
+        const prod = env.products.find(p => p.id === productId);
+        if (prod) {
+            document.getElementById("customerPrice").value = prod.price;
+            document.getElementById("customerBillingType").value = prod.type;
+        }
+    }
+});
+
+document.getElementById("customerForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const env = getEnv();
+    const id = document.getElementById("customerId").value;
+    const contactId = document.getElementById("customerContactId").value;
+    const name = document.getElementById("customerName").value;
+    const company = document.getElementById("customerCompany").value;
+    const niche = document.getElementById("customerNiche").value;
+    const productId = document.getElementById("customerProduct").value;
+    const price = parseFloat(document.getElementById("customerPrice").value) || 0;
+    const billingType = document.getElementById("customerBillingType").value;
+    const status = document.getElementById("customerStatus").value;
+
+    let productName = "Serviço Customizado";
+    if (productId !== "custom") {
+        const prod = env.products.find(p => p.id === productId);
+        if (prod) {
+            productName = prod.name;
+        }
+    }
+
+    if (id) {
+        const cust = env.customers.find(c => c.id === id);
+        if (cust) {
+            cust.contactId = contactId || null;
+            cust.name = name;
+            cust.company = company;
+            cust.niche = niche;
+            cust.productName = productName;
+            cust.value = price;
+            cust.type = billingType;
+            cust.status = status;
+        }
+    } else {
+        const newCust = {
+            id: "cust_" + Date.now(),
+            contactId: contactId || null,
+            name: name,
+            company: company,
+            niche: niche,
+            productName: productName,
+            value: price,
+            type: billingType,
+            status: status,
+            createdAt: new Date().toISOString()
+        };
+        env.customers.push(newCust);
+
+        // Auto-generate invoice
+        const newInvoice = {
+            id: "FAT-" + Date.now().toString().substring(8),
+            customerName: name,
+            company: company || "-",
+            niche: niche,
+            productName: productName,
+            value: price,
+            dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "pending"
+        };
+        env.invoices.push(newInvoice);
+
+        // Auto-generate contract draft
+        const newCon = {
+            id: "CONTR-" + Date.now().toString().substring(8),
+            contactId: contactId || null,
+            proposalId: "DIRECT-CONV-" + Date.now().toString().substring(8),
+            clientName: name,
+            company: company || "Pessoa Física",
+            productName: productName,
+            value: price,
+            recurrence: billingType,
+            startDate: new Date().toISOString().split("T")[0],
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "draft"
+        };
+        env.contracts.push(newCon);
+
+        if (contactId) {
+            const contact = env.contacts.find(c => c.id === contactId);
+            if (contact) {
+                contact.status = "won";
+                contact.company = company;
+                contact.niche = niche;
+                contact.value = price;
+                contact.timeline.push({
+                    id: "act_" + Date.now(),
+                    type: "note",
+                    description: `Cadastrado como cliente direto para o serviço: ${productName} (${formatCurrency(price)})`,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+    }
+
+    saveState();
+    document.getElementById("customerModal").classList.remove("active");
+    renderAll();
+});
 
 // Products form
 document.getElementById("btnCreateProduct").addEventListener("click", () => {
