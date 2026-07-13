@@ -356,7 +356,8 @@ const formatDate = (dateStr) => {
 };
 
 const getInitials = (name) => {
-    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    if (!name || typeof name !== 'string') return "?";
+    return name.trim().split(/\s+/).filter(n => n).map(n => n[0]).slice(0, 2).join('').toUpperCase();
 };
 
 const getDaysSince = (dateStr) => {
@@ -1038,7 +1039,7 @@ function renderCustomers() {
     // Calculate unique active clients (by company name, or contact name if no company)
     const uniqueActiveClients = new Set();
     activeCustomers.forEach(c => {
-        const nameKey = (c.company || c.name || "").trim().toLowerCase();
+        const nameKey = String(c.company || c.name || "").trim().toLowerCase();
         if (nameKey) uniqueActiveClients.add(nameKey);
     });
 
@@ -1061,8 +1062,8 @@ function renderCustomers() {
         // Group services by client company (or name if no company)
         const grouped = [];
         filtered.forEach(cust => {
-            const key = (cust.company || cust.name || "").trim();
-            let existing = grouped.find(g => (g.company || g.clientName || "").trim() === key);
+            const key = String(cust.company || cust.name || "").trim();
+            let existing = grouped.find(g => String(g.company || g.clientName || "").trim() === key);
             if (!existing) {
                 existing = {
                     clientName: cust.name,
@@ -1090,7 +1091,7 @@ function renderCustomers() {
                 .filter(s => s.status === "active" && s.type === "monthly")
                 .reduce((sum, s) => sum + s.value, 0);
 
-            const key = (group.company || group.clientName || "").trim();
+            const key = String(group.company || group.clientName || "").trim();
             const serviceCountText = `${group.services.length} ${group.services.length === 1 ? 'Serviço' : 'Serviços'}`;
 
             tr.innerHTML = `
@@ -1699,7 +1700,7 @@ function openClientServicesModal(clientKey) {
     const env = getEnv();
     
     const services = env.customers.filter(c => {
-        const key = (c.company || c.name || "").trim();
+        const key = String(c.company || c.name || "").trim();
         return key === clientKey;
     });
 
@@ -3892,7 +3893,7 @@ window.addEventListener("DOMContentLoaded", () => {
         btnAddServiceFromDetails.addEventListener("click", () => {
             document.getElementById("clientServicesModal").classList.remove("active");
             const env = getEnv();
-            const services = env.customers.filter(c => (c.company || c.name || "").trim() === currentDetailsClientKey);
+            const services = env.customers.filter(c => String(c.company || c.name || "").trim() === currentDetailsClientKey);
             if (services.length > 0) {
                 openAddCustomer({
                     contactId: services[0].contactId,
