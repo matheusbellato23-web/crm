@@ -253,9 +253,14 @@ function updateSyncIndicator(isSync) {
     }
 }
 
+const getApiUrl = (path) => {
+    const basePath = window.location.pathname.startsWith('/crm') ? '/crm' : '';
+    return `${basePath}${path}`;
+};
+
 async function saveStateToServer() {
     try {
-        const response = await fetch('/api/state', {
+        const response = await fetch(getApiUrl('/api/state'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -278,7 +283,7 @@ async function init() {
     let loadedFromServer = false;
     let serverOnline = false;
     try {
-        const response = await fetch('/api/state');
+        const response = await fetch(getApiUrl('/api/state'));
         if (response.ok) {
             serverOnline = true;
             const data = await response.json();
