@@ -1750,7 +1750,46 @@
                 </div>
             </form>
         </div>
+    <!-- MODAL: DETALHES DOS SERVIÇOS DO CLIENTE -->
+    <div class="modal" id="clientServicesModal">
+        <div class="modal-content" style="max-width: 750px; width: 100%;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="clientServicesModalTitle">Serviços Contratados</h3>
+                    <p class="modal-subtitle" id="clientServicesModalSubtitle">-</p>
+                </div>
+                <button class="btn-close" id="btnCloseServicesModal">&times;</button>
+            </div>
+            <div class="modal-body" style="padding-top: 16px;">
+                <div class="table-container" style="max-height: 350px; overflow-y: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Serviço/Produto</th>
+                                <th>Cobrança</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientServicesTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                <span style="font-weight: 600; font-size: 14px; color: var(--text-primary);" id="clientServicesTotalLabel">Total: R$ 0,00</span>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" id="btnCancelServicesModal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="btnAddServiceFromDetails" style="display: flex; align-items: center; gap: 4px;">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Novo Serviço
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+
 
     <!-- MODAL: IMPORT LEADS -->
     <div class="modal" id="importModal">

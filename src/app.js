@@ -1080,28 +1080,16 @@ function renderCustomers() {
         grouped.forEach(group => {
             const tr = document.createElement("tr");
             
-            // Build the services list HTML
-            let servicesHtml = '<div style="display: flex; flex-direction: column; gap: 6px;">';
-            group.services.forEach(s => {
-                const badgeText = s.type === 'monthly' ? 'Mensal' : s.type === 'yearly' ? 'Anual' : 'Único';
-                
-                servicesHtml += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 10px; background: rgba(248, 250, 252, 0.6); border: 1px solid var(--border-color); border-radius: 6px;">
-                        <span style="font-size: 12px; font-weight: 500; color: var(--text-primary);">${s.productName}</span>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <span class="badge-recurrence ${s.type}" style="margin: 0; font-size: 10px; padding: 2px 6px;">${badgeText}</span>
-                            <span style="font-size: 12px; font-weight: 600; color: var(--text-primary); min-width: 80px; text-align: right;">${formatCurrency(s.value)}</span>
-                            <span class="badge-status ${s.status}" style="margin: 0; font-size: 10px; padding: 2px 6px;">${s.status === 'active' ? 'Ativo' : 'Inativo'}</span>
-                            <div style="display: flex; gap: 4px; border-left: 1px solid var(--border-color); padding-left: 8px;">
-                                <button class="btn-icon-only btn-sm btn-edit-customer" data-id="${s.id}" title="Editar" style="width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center;"><i data-lucide="edit-2" style="width:12px;height:12px;"></i></button>
-                                <button class="btn-icon-only btn-sm btn-toggle-status" data-id="${s.id}" title="Alternar Status" style="width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center;"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i></button>
-                                <button class="btn-icon-only btn-sm btn-delete-customer" data-id="${s.id}" title="Excluir" style="width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center;"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            servicesHtml += '</div>';
+            const totalActiveValue = group.services
+                .filter(s => s.status === "active")
+                .reduce((sum, s) => sum + s.value, 0);
+
+            const mrrValue = group.services
+                .filter(s => s.status === "active" && s.type === "monthly")
+                .reduce((sum, s) => sum + s.value, 0);
+
+            const key = (group.company || group.clientName || "").trim();
+            const serviceCountText = `${group.services.length} ${group.services.length === 1 ? 'Serviço' : 'Serviços'}`;
 
             tr.innerHTML = `
                 <td>
@@ -1112,14 +1100,21 @@ function renderCustomers() {
                 </td>
                 <td>${group.company || "-"}</td>
                 <td><span style="font-size: 11px; color: var(--text-secondary); background: var(--bg-app); padding: 2px 6px; border-radius: 4px;">${group.niche || "Outro"}</span></td>
-                <td colspan="3">${servicesHtml}</td>
+                <td>
+                    <button class="btn btn-secondary btn-xs btn-view-client-services" style="font-size: 11px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 6px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-app); color: var(--text-primary); cursor: pointer; font-weight: 500;">
+                        <i data-lucide="list" style="width:12px;height:12px;"></i>
+                        <span>${serviceCountText}</span>
+                    </button>
+                </td>
+                <td><strong>${formatCurrency(mrrValue)} / mês</strong></td>
+                <td><strong>${formatCurrency(totalActiveValue)}</strong></td>
                 <td>
                     <span class="badge-status ${group.status}">
                         ${group.status === 'active' ? 'Ativo' : 'Inativo'}
                     </span>
                 </td>
                 <td>
-                    <div class="kanban-card-actions">
+                    <div class="kanban-card-actions" style="display: flex; gap: 6px;">
                         <button class="btn btn-secondary btn-xs btn-add-service-to-client" style="font-size: 10px; padding: 4px 8px; display: flex; align-items: center; gap: 4px; border-radius: 4px; border: 1px solid var(--border-color); background: transparent; color: var(--text-primary); font-weight: 500; cursor: pointer;">
                             <i data-lucide="plus" style="width:10px;height:10px;"></i> Contratar
                         </button>
@@ -1127,19 +1122,10 @@ function renderCustomers() {
                 </td>
             `;
 
-            // Bind actions for each service inline buttons
-            tr.querySelectorAll(".btn-edit-customer").forEach(btn => {
-                const id = btn.getAttribute("data-id");
-                btn.onclick = () => openEditCustomer(id);
-            });
-            tr.querySelectorAll(".btn-toggle-status").forEach(btn => {
-                const id = btn.getAttribute("data-id");
-                btn.onclick = () => toggleCustomerStatus(id);
-            });
-            tr.querySelectorAll(".btn-delete-customer").forEach(btn => {
-                const id = btn.getAttribute("data-id");
-                btn.onclick = () => deleteCustomer(id);
-            });
+            // Bind click to open details modal
+            tr.querySelector(".btn-view-client-services").onclick = () => {
+                openClientServicesModal(key);
+            };
 
             // Bind quick add service button
             tr.querySelector(".btn-add-service-to-client").onclick = () => {
@@ -1704,6 +1690,82 @@ function openAddCustomer(preFill = null) {
     document.getElementById("customerModal").classList.add("active");
 }
 
+let currentDetailsClientKey = "";
+
+function openClientServicesModal(clientKey) {
+    currentDetailsClientKey = clientKey;
+    const env = getEnv();
+    
+    const services = env.customers.filter(c => {
+        const key = (c.company || c.name || "").trim();
+        return key === clientKey;
+    });
+
+    if (services.length === 0) {
+        document.getElementById("clientServicesModal").classList.remove("active");
+        return;
+    }
+
+    const first = services[0];
+    document.getElementById("clientServicesModalSubtitle").innerText = first.company ? `${first.company} (Representante: ${first.name})` : first.name;
+    
+    const tbody = document.getElementById("clientServicesTableBody");
+    tbody.innerHTML = "";
+    
+    let totalVal = 0;
+
+    services.forEach(s => {
+        const tr = document.createElement("tr");
+        const badgeText = s.type === 'monthly' ? 'Mensal' : s.type === 'yearly' ? 'Anual' : 'Único';
+        
+        tr.innerHTML = `
+            <td><strong>${s.productName}</strong></td>
+            <td>
+                <span class="badge-recurrence ${s.type}">
+                    ${badgeText}
+                </span>
+            </td>
+            <td><strong>${formatCurrency(s.value)}</strong></td>
+            <td>
+                <span class="badge-status ${s.status}">
+                    ${s.status === 'active' ? 'Ativo' : 'Inativo'}
+                </span>
+            </td>
+            <td style="text-align: right;">
+                <div style="display: flex; gap: 4px; justify-content: flex-end;">
+                    <button class="btn-icon-only btn-sm btn-edit-service" data-id="${s.id}" title="Editar" style="width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"><i data-lucide="edit-2" style="width:12px;height:12px;"></i></button>
+                    <button class="btn-icon-only btn-sm btn-toggle-service" data-id="${s.id}" title="Alternar Status" style="width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i></button>
+                    <button class="btn-icon-only btn-sm btn-delete-service" data-id="${s.id}" title="Excluir" style="width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>
+                </div>
+            </td>
+        `;
+
+        if (s.status === "active") {
+            totalVal += s.value;
+        }
+
+        // Bind inner actions
+        tr.querySelector(".btn-edit-service").onclick = () => {
+            document.getElementById("clientServicesModal").classList.remove("active");
+            openEditCustomer(s.id);
+        };
+        tr.querySelector(".btn-toggle-service").onclick = () => {
+            toggleCustomerStatus(s.id);
+            setTimeout(() => openClientServicesModal(clientKey), 100);
+        };
+        tr.querySelector(".btn-delete-service").onclick = () => {
+            deleteCustomer(s.id);
+            setTimeout(() => openClientServicesModal(clientKey), 100);
+        };
+
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById("clientServicesTotalLabel").innerText = `Total Ativo: ${formatCurrency(totalVal)}`;
+    document.getElementById("clientServicesModal").classList.add("active");
+    lucide.createIcons();
+}
+
 function openEditCustomer(id) {
     const env = getEnv();
     const cust = env.customers.find(c => c.id === id);
@@ -1747,6 +1809,37 @@ const btnCancelCustomerModal = document.getElementById("btnCancelCustomerModal")
 if (btnCancelCustomerModal) {
     btnCancelCustomerModal.addEventListener("click", () => {
         document.getElementById("customerModal").classList.remove("active");
+    });
+}
+
+const btnCloseServicesModal = document.getElementById("btnCloseServicesModal");
+if (btnCloseServicesModal) {
+    btnCloseServicesModal.addEventListener("click", () => {
+        document.getElementById("clientServicesModal").classList.remove("active");
+    });
+}
+const btnCancelServicesModal = document.getElementById("btnCancelServicesModal");
+if (btnCancelServicesModal) {
+    btnCancelServicesModal.addEventListener("click", () => {
+        document.getElementById("clientServicesModal").classList.remove("active");
+    });
+}
+const btnAddServiceFromDetails = document.getElementById("btnAddServiceFromDetails");
+if (btnAddServiceFromDetails) {
+    btnAddServiceFromDetails.addEventListener("click", () => {
+        document.getElementById("clientServicesModal").classList.remove("active");
+        const env = getEnv();
+        const services = env.customers.filter(c => (c.company || c.name || "").trim() === currentDetailsClientKey);
+        if (services.length > 0) {
+            openAddCustomer({
+                contactId: services[0].contactId,
+                name: services[0].name,
+                company: services[0].company,
+                niche: services[0].niche
+            });
+        } else {
+            openAddCustomer();
+        }
     });
 }
 
