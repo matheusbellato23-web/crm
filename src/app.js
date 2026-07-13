@@ -294,7 +294,11 @@ async function init() {
     if (!loadedFromServer) {
         const savedState = localStorage.getItem("nexus_crm_multitenant_state");
         if (savedState) {
-            state = JSON.parse(savedState);
+            try {
+                state = JSON.parse(savedState);
+            } catch (err) {
+                console.error("Error parsing localStorage state:", err);
+            }
         }
     }
     
@@ -371,24 +375,37 @@ const getDaysSince = (dateStr) => {
 // UI Rendering Functions
 function renderAll() {
     if (!state.currentEnv) return;
-    ensureParanaEcoturismo();
     
-    renderDashboard();
-    renderContacts();
-    renderKanban();
-    renderCustomers();
-    renderProducts();
-    renderTasks();
-    renderProposals();
-    renderContracts();
-    renderCalendar();
-    renderFinance();
-    renderMarketingAssets();
-    populateContactDropdowns();
-    populateConversionProductsDropdown();
-    populateEventContactsDropdown();
-    populateCustomerProductsDropdown();
-    lucide.createIcons();
+    const safeRun = (name, fn) => {
+        try {
+            fn();
+        } catch (err) {
+            console.error(`Error rendering ${name}:`, err);
+        }
+    };
+
+    safeRun("ensureParanaEcoturismo", ensureParanaEcoturismo);
+    safeRun("renderDashboard", renderDashboard);
+    safeRun("renderContacts", renderContacts);
+    safeRun("renderKanban", renderKanban);
+    safeRun("renderCustomers", renderCustomers);
+    safeRun("renderProducts", renderProducts);
+    safeRun("renderTasks", renderTasks);
+    safeRun("renderProposals", renderProposals);
+    safeRun("renderContracts", renderContracts);
+    safeRun("renderCalendar", renderCalendar);
+    safeRun("renderFinance", renderFinance);
+    safeRun("renderMarketingAssets", renderMarketingAssets);
+    safeRun("populateContactDropdowns", populateContactDropdowns);
+    safeRun("populateConversionProductsDropdown", populateConversionProductsDropdown);
+    safeRun("populateEventContactsDropdown", populateEventContactsDropdown);
+    safeRun("populateCustomerProductsDropdown", populateCustomerProductsDropdown);
+    
+    try {
+        lucide.createIcons();
+    } catch (err) {
+        console.error("Error creating Lucide icons:", err);
+    }
 }
 
 // 1. Dashboard Render
@@ -2441,7 +2458,11 @@ function updatePrivacyIcon() {
         } else {
             privacyBtn.innerHTML = `<i data-lucide="eye"></i>`;
         }
-        lucide.createIcons();
+        try {
+            lucide.createIcons();
+        } catch (err) {
+            console.error("Error creating Lucide icons in updatePrivacyIcon:", err);
+        }
     }
 }
 
