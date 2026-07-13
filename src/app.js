@@ -1700,19 +1700,29 @@ function openAddCustomer(preFill = null) {
     
     const env = getEnv();
     const select = document.getElementById("customerProduct");
-    if (env.products.length > 0) {
-        select.value = env.products[0].id;
-        document.getElementById("customerPrice").value = env.products[0].price;
-        document.getElementById("customerBillingType").value = env.products[0].type;
-    } else {
-        select.value = "custom";
-        document.getElementById("customerPrice").value = "";
-        document.getElementById("customerBillingType").value = "single";
+    if (select) {
+        const firstProduct = env.products && env.products.length > 0 ? env.products.find(p => p && p.id) : null;
+        if (firstProduct) {
+            select.value = firstProduct.id;
+            const priceInput = document.getElementById("customerPrice");
+            if (priceInput) priceInput.value = firstProduct.price !== undefined && firstProduct.price !== null ? firstProduct.price : "";
+            const billingInput = document.getElementById("customerBillingType");
+            if (billingInput) billingInput.value = firstProduct.type || "single";
+        } else {
+            select.value = "custom";
+            const priceInput = document.getElementById("customerPrice");
+            if (priceInput) priceInput.value = "";
+            const billingInput = document.getElementById("customerBillingType");
+            if (billingInput) billingInput.value = "single";
+        }
     }
     
-    document.getElementById("customerStatus").value = "active";
-    document.getElementById("customerModalTitle").innerText = "Adicionar Cliente";
-    document.getElementById("customerModal").classList.add("active");
+    const statusInput = document.getElementById("customerStatus");
+    if (statusInput) statusInput.value = "active";
+    const titleInput = document.getElementById("customerModalTitle");
+    if (titleInput) titleInput.innerText = "Adicionar Cliente";
+    const modalInput = document.getElementById("customerModal");
+    if (modalInput) modalInput.classList.add("active");
 }
 
 let currentDetailsClientKey = "";
@@ -1796,26 +1806,40 @@ function openEditCustomer(id) {
     const cust = env.customers.find(c => c.id === id);
     if (!cust) return;
 
-    document.getElementById("customerForm").reset();
-    document.getElementById("customerId").value = cust.id;
-    document.getElementById("customerContactId").value = cust.contactId || "";
-    document.getElementById("customerName").value = cust.name || "";
-    document.getElementById("customerCompany").value = cust.company || "";
-    document.getElementById("customerNiche").value = cust.niche || "Outro";
+    const form = document.getElementById("customerForm");
+    if (form) form.reset();
+    const idInput = document.getElementById("customerId");
+    if (idInput) idInput.value = cust.id;
+    const contactInput = document.getElementById("customerContactId");
+    if (contactInput) contactInput.value = cust.contactId || "";
+    const nameInput = document.getElementById("customerName");
+    if (nameInput) nameInput.value = cust.name || "";
+    const companyInput = document.getElementById("customerCompany");
+    if (companyInput) companyInput.value = cust.company || "";
+    const nicheInput = document.getElementById("customerNiche");
+    if (nicheInput) nicheInput.value = cust.niche || "Outro";
     
-    const matchingProd = env.products.find(p => p.name === cust.productName);
-    if (matchingProd) {
-        document.getElementById("customerProduct").value = matchingProd.id;
-    } else {
-        document.getElementById("customerProduct").value = "custom";
+    const matchingProd = env.products ? env.products.find(p => p && p.name === cust.productName) : null;
+    const productSelect = document.getElementById("customerProduct");
+    if (productSelect) {
+        if (matchingProd) {
+            productSelect.value = matchingProd.id;
+        } else {
+            productSelect.value = "custom";
+        }
     }
 
-    document.getElementById("customerPrice").value = cust.value;
-    document.getElementById("customerBillingType").value = cust.type;
-    document.getElementById("customerStatus").value = cust.status;
+    const priceInput = document.getElementById("customerPrice");
+    if (priceInput) priceInput.value = cust.value !== undefined && cust.value !== null ? cust.value : "";
+    const billingInput = document.getElementById("customerBillingType");
+    if (billingInput) billingInput.value = cust.type || "single";
+    const statusInput = document.getElementById("customerStatus");
+    if (statusInput) statusInput.value = cust.status || "active";
 
-    document.getElementById("customerModalTitle").innerText = "Editar Cliente";
-    document.getElementById("customerModal").classList.add("active");
+    const titleInput = document.getElementById("customerModalTitle");
+    if (titleInput) titleInput.innerText = "Editar Cliente";
+    const modalInput = document.getElementById("customerModal");
+    if (modalInput) modalInput.classList.add("active");
 }
 
 
