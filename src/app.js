@@ -2296,8 +2296,10 @@ searchInput.addEventListener("input", () => {
 });
 
 // Modals Trigger Handlers
-document.getElementById("btnQuickAddContact").addEventListener("click", openAddContact);
-document.getElementById("btnAddContact").addEventListener("click", openAddContact);
+const btnQuickAdd = document.getElementById("btnQuickAddContact");
+if (btnQuickAdd) btnQuickAdd.addEventListener("click", openAddContact);
+const btnAddContact = document.getElementById("btnAddContact");
+if (btnAddContact) btnAddContact.addEventListener("click", openAddContact);
 document.getElementById("btnCloseContactModal").addEventListener("click", () => {
     document.getElementById("contactModal").classList.remove("active");
 });
