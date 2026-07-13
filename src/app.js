@@ -276,14 +276,15 @@ async function saveStateToServer() {
 // Initialize & Load
 async function init() {
     let loadedFromServer = false;
+    let serverOnline = false;
     try {
         const response = await fetch('/api/state');
         if (response.ok) {
+            serverOnline = true;
             const data = await response.json();
             if (data) {
                 state = data;
                 loadedFromServer = true;
-                updateSyncIndicator(true);
             }
         }
     } catch (e) {
@@ -295,8 +296,9 @@ async function init() {
         if (savedState) {
             state = JSON.parse(savedState);
         }
-        updateSyncIndicator(false);
     }
+    
+    updateSyncIndicator(serverOnline);
     
     // Privacy Mode setup
     if (state.privacyMode === undefined) {
