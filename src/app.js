@@ -1398,12 +1398,32 @@ function renderProducts() {
     const env = getEnv();
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
     
-    // Default any product with undefined isCore to true
+    // Default any product with undefined isCore:
+    // If it is referenced as a suggested addon by any other product, default isCore to false (subproduct).
+    // Otherwise, default to true (core product).
+    const allSuggestedAddonIds = new Set();
     env.products.forEach(p => {
-        if (p.isCore === undefined) {
-            p.isCore = true;
+        if (p.suggestedAddons) {
+            p.suggestedAddons.forEach(aid => allSuggestedAddonIds.add(aid));
         }
     });
+
+    let stateChanged = false;
+    env.products.forEach(p => {
+        if (allSuggestedAddonIds.has(p.id)) {
+            if (p.isCore !== false) {
+                p.isCore = false;
+                stateChanged = true;
+            }
+        } else if (p.isCore === undefined) {
+            p.isCore = true;
+            stateChanged = true;
+        }
+    });
+
+    if (stateChanged) {
+        saveState();
+    }
 
     let filtered = [...env.products];
     if (searchVal) {
