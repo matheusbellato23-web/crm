@@ -700,7 +700,7 @@
 
                 <div class="products-dual-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; margin-top: 20px;">
                     <!-- Card 1: Produtos Principais -->
-                    <div class="table-card" style="margin: 0; min-height: 400px; display: flex; flex-direction: column;">
+                    <div class="table-card" id="coreProductsCard" style="margin: 0; min-height: 400px; display: flex; flex-direction: column;">
                         <div style="padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                             <h3 style="margin: 0; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-primary);"><i data-lucide="award" style="width: 16px; height: 16px; color: var(--color-primary);"></i> Produtos Principais (Core)</h3>
                             <span style="font-size: 11px; color: var(--text-muted);">Solte subprodutos aqui para vincular</span>
@@ -728,7 +728,7 @@
                     </div>
 
                     <!-- Card 2: Subprodutos & Add-ons -->
-                    <div class="table-card" style="margin: 0; min-height: 400px; display: flex; flex-direction: column;">
+                    <div class="table-card" id="subProductsCard" style="margin: 0; min-height: 400px; display: flex; flex-direction: column;">
                         <div style="padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                             <h3 style="margin: 0; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-primary);"><i data-lucide="layers" style="width: 16px; height: 16px; color: var(--color-teal);"></i> Subprodutos & Upsell (Arraste)</h3>
                             <span style="font-size: 11px; color: var(--text-muted);">Arraste para o produto principal</span>
@@ -737,6 +737,7 @@
                             <table class="data-table" id="subProductsTable">
                                 <thead>
                                     <tr>
+                                        <th style="width: 30px;"></th>
                                         <th>Nome</th>
                                         <th>Preço</th>
                                         <th style="text-align: right;">Ações</th>

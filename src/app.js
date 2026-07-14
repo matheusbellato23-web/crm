@@ -265,6 +265,50 @@ function safeCreateIcons() {
     }
 }
 
+function showToast(message, type = 'success') {
+    let container = document.getElementById("toast-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-container";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    
+    let iconName = "check-circle";
+    if (type === "warning") iconName = "alert-triangle";
+    if (type === "error") iconName = "alert-circle";
+    if (type === "info") iconName = "info";
+
+    toast.innerHTML = `
+        <i data-lucide="${iconName}" class="toast-icon"></i>
+        <div class="toast-message" style="line-height: 1.4;">${message}</div>
+    `;
+
+    container.appendChild(toast);
+    
+    try {
+        if (typeof lucide !== 'undefined' && lucide && typeof lucide.createIcons === 'function') {
+            lucide.createIcons();
+        }
+    } catch (e) {
+        console.error("Lucide icons error in toast:", e);
+    }
+
+    setTimeout(() => {
+        toast.classList.add("show");
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        toast.classList.add("hide");
+        toast.addEventListener("transitionend", () => {
+            toast.remove();
+        });
+    }, 3500);
+}
+
 function formatDateBr(dateStr) {
     if (!dateStr) return "-";
     const parts = dateStr.split("-");
@@ -1075,21 +1119,38 @@ function renderKanban() {
             card.setAttribute("data-status", c.status);
             
             card.innerHTML = `
-                <h4 class="kanban-card-title">${c.name}</h4>
-                <div class="kanban-card-company">${c.company || "Sem Empresa"} <small style="color:var(--text-muted);font-size:9px;">(${c.niche || "Outro"})</small></div>
-                <div class="kanban-card-footer">
-                    <span class="kanban-card-value">${formatCurrency(c.value)}</span>
-                    <span class="kanban-card-days">${getDaysSince(c.createdAt)}</span>
+                <div class="kanban-card-drag-handle">
+                    <i data-lucide="grip-vertical" style="width:14px; height:14px;"></i>
+                </div>
+                <div class="kanban-card-content">
+                    <h4 class="kanban-card-title">${c.name}</h4>
+                    <div class="kanban-card-company">${c.company || "Sem Empresa"} <small style="color:var(--text-muted);font-size:9px;">(${c.niche || "Outro"})</small></div>
+                    <div class="kanban-card-footer">
+                        <span class="kanban-card-value">${formatCurrency(c.value)}</span>
+                        <span class="kanban-card-days">${getDaysSince(c.createdAt)}</span>
+                    </div>
                 </div>
             `;
 
             card.addEventListener("dragstart", (e) => {
                 e.dataTransfer.setData("text/plain", c.id);
-                card.style.opacity = "0.5";
+                card.classList.add("dragging");
+                document.body.classList.add("dragging-active");
+                
+                // Highlight other columns
+                document.querySelectorAll(".kanban-column").forEach(col => {
+                    if (col.getAttribute("data-status") !== c.status) {
+                        col.classList.add("eligible-kanban-drop");
+                    }
+                });
             });
 
             card.addEventListener("dragend", () => {
-                card.style.opacity = "1";
+                card.classList.remove("dragging");
+                document.body.classList.remove("dragging-active");
+                document.querySelectorAll(".kanban-column").forEach(col => {
+                    col.classList.remove("eligible-kanban-drop", "drag-hover");
+                });
             });
 
             card.addEventListener("dblclick", () => openContactDetails(c.id));
@@ -1100,18 +1161,24 @@ function renderKanban() {
 
     // Make columns drop targets
     document.querySelectorAll(".kanban-column").forEach(column => {
+        column.addEventListener("dragenter", (e) => {
+            e.preventDefault();
+            if (column.classList.contains("eligible-kanban-drop")) {
+                column.classList.add("drag-hover");
+            }
+        });
+
         column.addEventListener("dragover", (e) => {
             e.preventDefault();
-            column.style.backgroundColor = "var(--bg-card-hover)";
         });
 
         column.addEventListener("dragleave", () => {
-            column.style.backgroundColor = "";
+            column.classList.remove("drag-hover");
         });
 
         column.addEventListener("drop", (e) => {
             e.preventDefault();
-            column.style.backgroundColor = "";
+            column.classList.remove("drag-hover");
             const id = e.dataTransfer.getData("text/plain");
             const newStatus = column.getAttribute("data-status");
             
@@ -1140,6 +1207,7 @@ function updateContactStatus(id, newStatus) {
 
             saveState();
             renderAll();
+            showToast(`O lead "${contact.name}" foi movido para "${newStatusText}".`, 'success');
         }
     }
 }
@@ -1403,17 +1471,14 @@ function renderProducts() {
             // Drag and drop dropzone handlers
             tr.addEventListener("dragover", (e) => {
                 e.preventDefault();
-                tr.style.background = "rgba(0, 140, 255, 0.05)";
-                tr.style.border = "1px dashed var(--color-primary)";
+                tr.classList.add("dropzone-target-over");
             });
             tr.addEventListener("dragleave", () => {
-                tr.style.background = "";
-                tr.style.border = "";
+                tr.classList.remove("dropzone-target-over");
             });
             tr.addEventListener("drop", (e) => {
                 e.preventDefault();
-                tr.style.background = "";
-                tr.style.border = "";
+                tr.classList.remove("dropzone-target-over");
                 const subId = e.dataTransfer.getData("text/plain");
                 if (subId && subId !== p.id) {
                     p.suggestedAddons = p.suggestedAddons || [];
@@ -1421,7 +1486,12 @@ function renderProducts() {
                         p.suggestedAddons.push(subId);
                         saveState();
                         renderAll();
-                        alert(`Subproduto vinculado com sucesso!`);
+                        
+                        const subProd = env.products.find(x => x.id === subId);
+                        const subProdName = subProd ? subProd.name : "Subproduto";
+                        showToast(`"${subProdName}" vinculado a "${p.name}" com sucesso!`, 'success');
+                    } else {
+                        showToast(`"${p.name}" já possui este subproduto vinculado.`, 'warning');
                     }
                 }
             });
@@ -1440,8 +1510,8 @@ function renderProducts() {
                     .filter(Boolean);
 
                 const addonsListHtml = addonItems.map(item => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; border-bottom:1px solid var(--border-color); font-size:11px;">
-                        <span style="color:var(--text-primary); font-weight:500;">🔗 ${item.name}</span>
+                    <div class="linked-subproduct-item" draggable="true" data-main-id="${p.id}" data-sub-id="${item.id}">
+                        <span style="color:var(--text-primary); font-weight:500;">🔗 ${item.name} <span style="font-size:9px;color:var(--text-muted);font-weight:400;margin-left:4px;">(arraste p/ fora p/ desvincular)</span></span>
                         <div style="display:flex; gap:12px; align-items:center;">
                             <span class="badge-recurrence ${item.type}" style="font-size:8px; padding:1px 4px;">${item.type === 'monthly' ? 'Mensal' : 'Único'}</span>
                             <strong style="color:var(--text-secondary);">${formatCurrency(item.price)}</strong>
@@ -1459,12 +1529,39 @@ function renderProducts() {
                     </td>
                 `;
                 
-                // Bind unlink buttons
+                // Bind unlink buttons click
                 subTr.querySelectorAll(".btn-unlink-subproduct").forEach(btn => {
                     btn.onclick = (e) => {
                         e.stopPropagation();
                         unlinkSubproduct(btn.dataset.mainId, btn.dataset.subId);
+                        const subProd = env.products.find(x => x.id === btn.dataset.subId);
+                        const subProdName = subProd ? subProd.name : "Subproduto";
+                        showToast(`Vínculo de "${subProdName}" removido com sucesso!`, 'info');
                     };
+                });
+
+                // Bind drag unlink triggers on the linked subproduct item
+                subTr.querySelectorAll(".linked-subproduct-item").forEach(itemEl => {
+                    itemEl.addEventListener("dragstart", (e) => {
+                        const mainId = itemEl.dataset.mainId;
+                        const subId = itemEl.dataset.subId;
+                        e.dataTransfer.setData("application/json", JSON.stringify({ action: "unlink", mainId, subId }));
+                        e.dataTransfer.setData("text/plain", subId);
+                        itemEl.style.opacity = "0.4";
+                        
+                        const subCard = document.getElementById("subProductsCard");
+                        if (subCard) {
+                            subCard.classList.add("subproducts-table-unlink-active");
+                        }
+                    });
+                    itemEl.addEventListener("dragend", () => {
+                        itemEl.style.opacity = "";
+                        const subCard = document.getElementById("subProductsCard");
+                        if (subCard) {
+                            subCard.classList.remove("subproducts-table-unlink-active");
+                            subCard.classList.remove("subproducts-table-unlink-over");
+                        }
+                    });
                 });
 
                 coreTbody.appendChild(subTr);
@@ -1505,13 +1602,28 @@ function renderProducts() {
             // Drag start
             tr.addEventListener("dragstart", (e) => {
                 e.dataTransfer.setData("text/plain", p.id);
-                tr.style.opacity = "0.5";
+                e.dataTransfer.setData("action", "link");
+                tr.classList.add("subproduct-drag-active");
+                
+                // Highlight eligible core rows
+                document.querySelectorAll("#coreProductsTableBody tr:not([id^='subproducts-row-'])").forEach(row => {
+                    row.classList.add("dropzone-target-active");
+                });
             });
             tr.addEventListener("dragend", () => {
-                tr.style.opacity = "";
+                tr.classList.remove("subproduct-drag-active");
+                
+                document.querySelectorAll("#coreProductsTableBody tr").forEach(row => {
+                    row.classList.remove("dropzone-target-active", "dropzone-target-over");
+                });
             });
 
             tr.innerHTML = `
+                <td style="vertical-align: middle; padding-left: 8px;">
+                    <div class="product-drag-handle">
+                        <i data-lucide="grip-vertical" style="width: 14px; height: 14px;"></i>
+                    </div>
+                </td>
                 <td>
                     <div>
                         <strong style="font-size:12px; color:var(--text-primary);">${p.name}</strong>
@@ -1538,6 +1650,34 @@ function renderProducts() {
         });
     }
 
+    const subCard = document.getElementById("subProductsCard");
+    if (subCard) {
+        subCard.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            subCard.classList.add("subproducts-table-unlink-over");
+        });
+        subCard.addEventListener("dragleave", () => {
+            subCard.classList.remove("subproducts-table-unlink-over");
+        });
+        subCard.addEventListener("drop", (e) => {
+            e.preventDefault();
+            subCard.classList.remove("subproducts-table-unlink-over");
+            subCard.classList.remove("subproducts-table-unlink-active");
+            
+            try {
+                const dataStr = e.dataTransfer.getData("application/json");
+                if (dataStr) {
+                    const data = JSON.parse(dataStr);
+                    if (data && data.action === "unlink") {
+                        unlinkSubproduct(data.mainId, data.subId);
+                    }
+                }
+            } catch (err) {
+                console.error("Error drop unlink:", err);
+            }
+        });
+    }
+
     safeCreateIcons();
 }
 
@@ -1548,6 +1688,10 @@ function unlinkSubproduct(mainId, subId) {
         p.suggestedAddons = (p.suggestedAddons || []).filter(id => id !== subId);
         saveState();
         renderAll();
+        
+        const subProd = env.products.find(x => x.id === subId);
+        const subProdName = subProd ? subProd.name : "Subproduto";
+        showToast(`"${subProdName}" desvinculado de "${p.name}" com sucesso!`, 'info');
     }
 }
 
@@ -2509,13 +2653,13 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
     logTableBody.innerHTML = "";
     
     if (!textData) {
-        alert("Por favor, cole os dados CSV na caixa de texto.");
+        showToast("Por favor, cole os dados CSV na caixa de texto.", "warning");
         return;
     }
 
     const lines = textData.split("\n");
     if (lines.length <= 1) {
-        alert("O CSV inserido não possui registros suficientes.");
+        showToast("O CSV inserido não possui registros suficientes.", "error");
         return;
     }
 
@@ -2639,7 +2783,7 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
 
     saveState();
     renderAll();
-    alert(`Importação concluída. ${successCount} importados, ${ignoredCount} ignorados.`);
+    showToast(`Importação concluída. ${successCount} importados, ${ignoredCount} ignorados.`, "success");
 });
 
 // File reader parser
@@ -2662,10 +2806,10 @@ document.getElementById("importFile").addEventListener("change", (e) => {
                     });
                     document.getElementById("importText").value = csvText;
                 } else {
-                    alert("JSON inválido: deve ser uma lista de objetos.");
+                    showToast("JSON inválido: deve ser uma lista de objetos.", "error");
                 }
             } catch (err) {
-                alert("Erro ao ler JSON: " + err.message);
+                showToast("Erro ao ler JSON: " + err.message, "error");
             }
         } else {
             document.getElementById("importText").value = content;
@@ -3033,7 +3177,7 @@ function renderProposals() {
 function openCreateProposal() {
     const env = getEnv();
     if (env.contacts.length === 0) {
-        alert("Cadastre pelo menos um lead para gerar propostas!");
+        showToast("Cadastre pelo menos um lead para gerar propostas!", "warning");
         return;
     }
 
@@ -3456,7 +3600,7 @@ function openViewContract(id) {
             con.status = "active";
             saveState();
             renderAll();
-            alert("Contrato ativado comercialmente com sucesso!");
+            showToast("Contrato ativado comercialmente com sucesso!", "success");
             document.getElementById("contractViewerWrapper").classList.add("hidden");
             document.getElementById("contractsListWrapper").classList.remove("hidden");
         };
@@ -3788,7 +3932,7 @@ function renderFinance() {
                 inv.status = "paid";
                 saveState();
                 renderAll();
-                alert("Fatura liquidada com sucesso!");
+                showToast("Fatura liquidada com sucesso!", "success");
             };
         }
         tr.querySelector(".btn-delete-invoice").onclick = () => {
@@ -4457,13 +4601,15 @@ window.addEventListener("DOMContentLoaded", () => {
                     const parsed = JSON.parse(evt.target.result);
                     if (parsed.environments || parsed.currentEnv) {
                         localStorage.setItem("nexus_crm_multitenant_state", evt.target.result);
-                        alert("Backup importado com sucesso! A página será recarregada.");
-                        window.location.reload();
+                        showToast("Backup importado com sucesso! A página será recarregada.", "success");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
                     } else {
-                        alert("Arquivo de backup inválido.");
+                        showToast("Arquivo de backup inválido.", "error");
                     }
                 } catch (err) {
-                    alert("Erro ao ler o arquivo de backup.");
+                    showToast("Erro ao ler o arquivo de backup.", "error");
                 }
             };
             reader.readAsText(file);
@@ -4873,7 +5019,7 @@ function generateReceiptFromFiscalNote(id) {
     const tabInvoices = document.getElementById("tabInvoices");
     if (tabInvoices) tabInvoices.click();
     
-    alert("Recebimento lançado com sucesso!");
+    showToast("Recebimento lançado com sucesso!", "success");
 }
 
 function openAddFiscalNote() {
