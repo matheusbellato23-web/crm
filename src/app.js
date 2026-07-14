@@ -275,13 +275,21 @@ function updateCustomerServicesFormSummary() {
 
         if (summaryContainer) {
             summaryContainer.style.display = "block";
+            summaryContainer.style.backgroundColor = "rgba(16, 185, 129, 0.03)";
+            summaryContainer.style.border = "1px solid rgba(16, 185, 129, 0.1)";
             summaryContainer.innerHTML = `
-                <div style="font-weight: 600; margin-bottom: 4px;">Serviços Selecionados:</div>
-                <ul style="margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 4px;">
-                    ${names.map(name => `<li>${name}</li>`).join("")}
-                </ul>
-                <div style="margin-top: 6px; font-weight: 600; border-top: 1px solid var(--border-color); padding-top: 4px;">
-                    Total: ${formatCurrency(totalVal)} ${hasMonthly ? '(contém mensalidade)' : '(taxa única)'}
+                <div style="font-weight: 600; font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-secondary); margin-bottom: 8px;">Serviços Selecionados:</div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    ${names.map(name => `
+                        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-primary);">
+                            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--color-primary); flex-shrink:0;"></span>
+                            <span>${name}</span>
+                        </div>
+                    `).join("")}
+                </div>
+                <div style="margin-top: 10px; font-weight: 600; font-size:12px; border-top: 1px solid var(--border-color); padding-top: 8px; display:flex; justify-content:space-between; align-items:center; color:var(--text-primary);">
+                    <span>Total Contratado:</span>
+                    <span style="color:var(--color-primary); font-size:13px;">${formatCurrency(totalVal)} ${hasMonthly ? '(Mensal)' : '(Taxa Única)'}</span>
                 </div>
             `;
         }

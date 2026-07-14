@@ -1825,8 +1825,9 @@
                     <i data-lucide="x"></i>
                 </button>
             </div>
-            <form id="customerForm">
+            <form id="customerForm" style="display: flex; flex-direction: column; overflow: hidden; margin: 0; max-height: calc(90vh - 53px);">
                 <input type="hidden" id="customerId">
+                <div class="modal-body" style="overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 20px;">
                     <div class="form-group">
                         <label>Vincular Contatos (Opcional)</label>
                         <div class="custom-multiselect" id="customerContactsMultiselect">
@@ -1883,9 +1884,12 @@
                     <div class="form-group" style="margin-top: 12px;">
                         <label style="font-weight: 600; margin-bottom: 8px; display: block;">Serviços / Produtos Contratados *</label>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <button type="button" class="btn btn-secondary" id="btnOpenCustomerServicesSelectionModal" style="display:inline-flex; align-items:center; gap:6px; width:fit-content; cursor:pointer;">
-                                <i data-lucide="plus" style="width:14px; height:14px;"></i>
-                                <span id="btnOpenCustomerServicesSelectionModalText">Vincular Produtos / Serviços (0)</span>
+                            <button type="button" class="form-control" id="btnOpenCustomerServicesSelectionModal" style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; text-align:left; background:var(--bg-card); border: 1px dashed var(--color-primary); color:var(--color-primary); font-weight:500; height: 38px;">
+                                <span style="display:flex; align-items:center; gap:8px;">
+                                    <i data-lucide="plus-circle" style="width:14px; height:14px; color:var(--color-primary);"></i>
+                                    <span id="btnOpenCustomerServicesSelectionModalText">Vincular Produtos / Serviços (0)</span>
+                                </span>
+                                <i data-lucide="chevron-down" style="width:14px; height:14px; color:var(--text-muted);"></i>
                             </button>
                             <div id="customerSelectedServicesSummary" style="font-size:12px; color:var(--text-secondary); background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px; display:none;">
                                 <!-- Dynamically populated selected services summary -->
