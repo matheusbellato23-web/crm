@@ -1485,13 +1485,16 @@ function renderProducts() {
                 : `<span style="display:inline-block; width:22px; margin-right:8px;"></span>`;
 
             tr.innerHTML = `
-                <td>
-                    <div style="display:flex; align-items:center;">
-                        ${expandBtn}
-                        <div>
-                            <strong style="font-size:12px; color:var(--text-primary);">${p.name}</strong>
+                <td style="vertical-align: middle; padding-left: 8px;">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <div class="product-drag-handle" style="color: var(--text-muted); cursor: grab; padding: 2px;">
+                            <i data-lucide="grip-vertical" style="width: 14px; height: 14px; vertical-align: middle;"></i>
                         </div>
+                        ${expandBtn}
                     </div>
+                </td>
+                <td>
+                    <strong style="font-size:12px; color:var(--text-primary);">${p.name}</strong>
                 </td>
                 <td>
                     <div style="font-size:11px;">
@@ -1999,9 +2002,10 @@ function populateContactDropdowns() {
 function populateCustomerContactsMultiselect() {
     const env = getEnv();
     const dropdown = document.getElementById("customerContactsDropdown");
-    if (!dropdown) return;
+    const container = document.getElementById("customerContactsItemsContainer");
+    if (!dropdown || !container) return;
     
-    dropdown.innerHTML = "";
+    container.innerHTML = "";
     
     const sorted = [...env.contacts].sort((a,b) => a.name.localeCompare(b.name));
     sorted.forEach(c => {
@@ -2019,7 +2023,7 @@ function populateCustomerContactsMultiselect() {
         
         item.appendChild(checkbox);
         item.appendChild(label);
-        dropdown.appendChild(item);
+        container.appendChild(item);
         
         item.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -2038,6 +2042,27 @@ function populateCustomerContactsMultiselect() {
             updateContactsTriggerText();
         });
     });
+    
+    // Wire search filter
+    const searchInput = document.getElementById("customerContactsSearch");
+    if (searchInput) {
+        searchInput.value = "";
+        searchInput.oninput = (e) => {
+            const query = e.target.value.toLowerCase();
+            const items = container.querySelectorAll(".multiselect-item");
+            items.forEach(item => {
+                const labelText = item.querySelector("label")?.textContent.toLowerCase() || "";
+                if (labelText.includes(query)) {
+                    item.style.display = "flex";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        };
+        searchInput.onclick = (e) => {
+            e.stopPropagation();
+        };
+    }
     
     updateContactsTriggerText();
 }

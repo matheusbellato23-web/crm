@@ -1821,8 +1821,14 @@
                                 <span id="customerContactsTriggerText">Selecione os contatos...</span>
                                 <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
                             </button>
-                            <div class="multiselect-dropdown hidden" id="customerContactsDropdown">
-                                <!-- Populated dynamically -->
+                            <div class="multiselect-dropdown hidden" id="customerContactsDropdown" style="padding-top: 0;">
+                                <div class="multiselect-search-container" style="padding: 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; position: sticky; top: 0; background: var(--bg-card); z-index: 10;">
+                                    <i data-lucide="search" style="width: 12px; height: 12px; color: var(--text-muted);"></i>
+                                    <input type="text" id="customerContactsSearch" placeholder="Buscar contato..." style="width: 100%; border: none; outline: none; font-size: 11px; padding: 4px; background: transparent; color: var(--text-primary);">
+                                </div>
+                                <div class="multiselect-items-container" id="customerContactsItemsContainer" style="display: flex; flex-direction: column; gap: 4px; padding: 0 4px 4px 4px;">
+                                    <!-- Populated dynamically -->
+                                </div>
                             </div>
                         </div>
                         <span style="font-size:11px; color:var(--text-muted); margin-top:4px; display:block;">
