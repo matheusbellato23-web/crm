@@ -20,8 +20,26 @@
             errorDiv.style.fontWeight = 'bold';
             errorDiv.style.display = 'flex';
             errorDiv.style.alignItems = 'center';
+            errorDiv.style.justifyContent = 'space-between';
             errorDiv.style.gap = '10px';
-            errorDiv.innerHTML = '<span>❌ Erro de Sistema: ' + e.message + ' (Linha: ' + e.lineno + ')</span>';
+            errorDiv.style.minWidth = '300px';
+
+            const textSpan = document.createElement('span');
+            textSpan.innerText = '❌ Erro de Sistema: ' + e.message + ' (Linha: ' + e.lineno + ')';
+
+            const closeBtn = document.createElement('button');
+            closeBtn.innerText = '✕';
+            closeBtn.style.background = 'none';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = '#ffffff';
+            closeBtn.style.fontSize = '16px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.padding = '0 4px';
+            closeBtn.style.marginLeft = '16px';
+            closeBtn.onclick = function() { errorDiv.remove(); };
+
+            errorDiv.appendChild(textSpan);
+            errorDiv.appendChild(closeBtn);
             document.body.appendChild(errorDiv);
             console.error('Captured Global Error:', e);
         });
@@ -42,8 +60,26 @@
             errorDiv.style.fontWeight = 'bold';
             errorDiv.style.display = 'flex';
             errorDiv.style.alignItems = 'center';
+            errorDiv.style.justifyContent = 'space-between';
             errorDiv.style.gap = '10px';
-            errorDiv.innerHTML = '<span>❌ Erro de Sistema (Promise): ' + e.reason + '</span>';
+            errorDiv.style.minWidth = '300px';
+
+            const textSpan = document.createElement('span');
+            textSpan.innerText = '❌ Erro de Sistema (Promise): ' + e.reason;
+
+            const closeBtn = document.createElement('button');
+            closeBtn.innerText = '✕';
+            closeBtn.style.background = 'none';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = '#ffffff';
+            closeBtn.style.fontSize = '16px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.padding = '0 4px';
+            closeBtn.style.marginLeft = '16px';
+            closeBtn.onclick = function() { errorDiv.remove(); };
+
+            errorDiv.appendChild(textSpan);
+            errorDiv.appendChild(closeBtn);
             document.body.appendChild(errorDiv);
             console.error('Captured Unhandled Rejection:', e);
         });
@@ -222,6 +258,10 @@
                 <div class="header-actions">
                     <button class="btn btn-secondary" id="btnTogglePrivacy" title="Ocultar/Exibir Valores">
                         <i data-lucide="eye"></i>
+                    </button>
+                    <button class="btn btn-secondary" id="btnNotifications" title="Notificações do Calendário" style="position: relative;">
+                        <i data-lucide="bell"></i>
+                        <span id="notificationBadge" class="hidden" style="position: absolute; top: -4px; right: -4px; background: var(--color-danger); color: white; border-radius: 50%; width: 14px; height: 14px; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: bold;">0</span>
                     </button>
                 </div>
             </header>
@@ -1505,10 +1545,12 @@
                             <select id="contactNiche" class="form-control" required>
                                 <option value="Negócio Local">Negócio Local</option>
                                 <option value="E-commerce">E-commerce</option>
+                                <option value="Gráfica">Gráfica</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Turismo">Turismo</option>
                                 <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
                                 <option value="SaaS / Startup">SaaS / Startup</option>
                                 <option value="Serviços B2B">Serviços B2B</option>
-                                <option value="Turismo">Turismo</option>
                                 <option value="Outro">Outro</option>
                             </select>
                         </div>
@@ -1719,15 +1761,19 @@
             </div>
             <form id="customerForm">
                 <input type="hidden" id="customerId">
-                <div class="modal-body">
                     <div class="form-group">
-                        <label for="customerContactId">Vincular Contato / Lead (Opcional)</label>
-                        <select id="customerContactId" class="form-control">
-                            <option value="">-- Selecione ou digite abaixo --</option>
-                            <!-- Dynamic contacts dropdown -->
-                        </select>
+                        <label>Vincular Contatos (Opcional)</label>
+                        <div class="custom-multiselect" id="customerContactsMultiselect">
+                            <button type="button" class="multiselect-trigger" id="customerContactsTrigger">
+                                <span id="customerContactsTriggerText">Selecione os contatos...</span>
+                                <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+                            </button>
+                            <div class="multiselect-dropdown hidden" id="customerContactsDropdown">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
                         <span style="font-size:11px; color:var(--text-muted); margin-top:4px; display:block;">
-                            Selecione um contato existente para preencher automaticamente ou preencha os dados abaixo manualmente.
+                            Selecione um ou mais contatos para associar a este serviço.
                         </span>
                     </div>
                     
@@ -1748,10 +1794,12 @@
                             <select id="customerNiche" class="form-control" required>
                                 <option value="Negócio Local">Negócio Local</option>
                                 <option value="E-commerce">E-commerce</option>
+                                <option value="Gráfica">Gráfica</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Turismo">Turismo</option>
                                 <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
                                 <option value="SaaS / Startup">SaaS / Startup</option>
                                 <option value="Serviços B2B">Serviços B2B</option>
-                                <option value="Turismo">Turismo</option>
                                 <option value="Outro">Outro</option>
                             </select>
                         </div>
@@ -1782,6 +1830,28 @@
                         </div>
                     </div>
 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerStartDate">Data de Início</label>
+                            <input type="date" id="customerStartDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEndDate">Prazo / Data de Término</label>
+                            <input type="date" id="customerEndDate" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerLastServiceDate">Último Serviço Prestado</label>
+                            <input type="date" id="customerLastServiceDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerDocumentUrl">Documento / Contrato Anexo</label>
+                            <input type="text" id="customerDocumentUrl" class="form-control" placeholder="Link do contrato ou briefing (Drive, Dropbox)">
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="customerStatus">Status *</label>
                         <select id="customerStatus" class="form-control" required>
@@ -1799,7 +1869,7 @@
     </div>
     <!-- MODAL: DETALHES DOS SERVIÇOS DO CLIENTE -->
     <div class="modal" id="clientServicesModal">
-        <div class="modal-content" style="max-width: 750px; width: 100%;">
+        <div class="modal-content" style="max-width: 950px; width: 100%;">
             <div class="modal-header">
                 <div>
                     <h3 class="modal-title" id="clientServicesModalTitle">Serviços Contratados</h3>
@@ -1815,6 +1885,9 @@
                                 <th>Serviço/Produto</th>
                                 <th>Cobrança</th>
                                 <th>Valor</th>
+                                <th>Vigência (Início / Fim)</th>
+                                <th>Último Serviço</th>
+                                <th>Doc</th>
                                 <th>Status</th>
                                 <th style="text-align: right;">Ações</th>
                             </tr>
@@ -1992,6 +2065,24 @@
                     <button type="submit" class="btn btn-primary">Salvar Ativo</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL: NOTIFICAÇÕES / COMPROMISSOS -->
+    <div class="modal" id="notificationsModal">
+        <div class="modal-content" style="max-width: 450px; width: 100%;">
+            <div class="modal-header">
+                <h3>Notificações & Compromissos</h3>
+                <button class="btn-close" id="btnCloseNotificationsModal">&times;</button>
+            </div>
+            <div class="modal-body" style="padding-top: 16px;">
+                <div id="notificationsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
+                    <!-- Dynamically populated events -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnCancelNotificationsModal">Fechar</button>
+            </div>
         </div>
     </div>
 

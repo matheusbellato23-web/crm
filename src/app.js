@@ -263,6 +263,15 @@ function safeCreateIcons() {
     }
 }
 
+function formatDateBr(dateStr) {
+    if (!dateStr) return "-";
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateStr;
+}
+
 const getApiUrl = (path) => {
     const basePath = window.location.pathname.startsWith('/crm') ? '/crm' : '';
     return `${basePath}${path}`;
@@ -415,6 +424,7 @@ function renderAll() {
     safeRun("populateConversionProductsDropdown", populateConversionProductsDropdown);
     safeRun("populateEventContactsDropdown", populateEventContactsDropdown);
     safeRun("populateCustomerProductsDropdown", populateCustomerProductsDropdown);
+    safeRun("updateCalendarNotifications", updateCalendarNotifications);
     
     safeCreateIcons();
 }
@@ -1122,11 +1132,31 @@ function renderCustomers() {
             const key = String(group.company || group.clientName || "").trim();
             const serviceCountText = `${group.services.length} ${group.services.length === 1 ? 'Serviço' : 'Serviços'}`;
 
+            const allContactIds = [];
+            group.services.forEach(s => {
+                const ids = s.contactIds || (s.contactId ? [s.contactId] : []);
+                ids.forEach(id => {
+                    if (id && !allContactIds.includes(id)) {
+                        allContactIds.push(id);
+                    }
+                });
+            });
+
+            const contactNames = allContactIds
+                .map(id => {
+                    const c = env.contacts.find(x => x.id === id);
+                    return c ? c.name : null;
+                })
+                .filter(Boolean);
+
             tr.innerHTML = `
                 <td>
                     <div class="col-contact-info">
                         <div class="contact-avatar">${getInitials(group.clientName)}</div>
-                        <span>${group.clientName}</span>
+                        <div>
+                            <span style="font-weight: 600; display: block;">${group.clientName}</span>
+                            ${contactNames.length > 0 ? `<span style="font-size: 10px; color: var(--text-secondary); display: block; margin-top: 2px;">Contatos: ${contactNames.join(", ")}</span>` : ''}
+                        </div>
                     </div>
                 </td>
                 <td>${group.company || "-"}</td>
@@ -1162,6 +1192,7 @@ function renderCustomers() {
             tr.querySelector(".btn-add-service-to-client").onclick = () => {
                 openAddCustomer({
                     contactId: group.services[0].contactId,
+                    contactIds: allContactIds,
                     name: group.clientName,
                     company: group.company,
                     niche: group.niche
@@ -1297,15 +1328,15 @@ function renderProducts() {
                     toggleBtn.addEventListener("click", (e) => {
                         e.stopPropagation();
                         const row = document.getElementById(`subproducts-row-${p.id}`);
-                        const icon = toggleBtn.querySelector("i");
-                        if (row.classList.contains("hidden")) {
-                            row.classList.remove("hidden");
-                            icon.setAttribute("data-lucide", "chevron-down");
-                        } else {
-                            row.classList.add("hidden");
-                            icon.setAttribute("data-lucide", "chevron-right");
+                        if (row) {
+                            if (row.classList.contains("hidden")) {
+                                row.classList.remove("hidden");
+                                toggleBtn.classList.add("expanded");
+                            } else {
+                                row.classList.add("hidden");
+                                toggleBtn.classList.remove("expanded");
+                            }
                         }
-                        safeCreateIcons();
                     });
                 }
             }
@@ -1484,16 +1515,71 @@ function populateContactDropdowns() {
         });
     }
 
-    const customerContactSelect = document.getElementById("customerContactId");
-    if (customerContactSelect) {
-        customerContactSelect.innerHTML = `<option value="">-- Selecione ou digite abaixo --</option>`;
-        const sorted = [...env.contacts].sort((a,b) => a.name.localeCompare(b.name));
-        sorted.forEach(c => {
-            const option = document.createElement("option");
-            option.value = c.id;
-            option.innerText = `${c.name} (${c.company || "Sem Empresa"})`;
-            customerContactSelect.appendChild(option);
+    populateCustomerContactsMultiselect();
+}
+
+function populateCustomerContactsMultiselect() {
+    const env = getEnv();
+    const dropdown = document.getElementById("customerContactsDropdown");
+    if (!dropdown) return;
+    
+    dropdown.innerHTML = "";
+    
+    const sorted = [...env.contacts].sort((a,b) => a.name.localeCompare(b.name));
+    sorted.forEach(c => {
+        const item = document.createElement("div");
+        item.className = "multiselect-item";
+        
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = c.id;
+        checkbox.id = `chk-contact-${c.id}`;
+        
+        const label = document.createElement("label");
+        label.htmlFor = `chk-contact-${c.id}`;
+        label.innerText = `${c.name} (${c.company || "Sem Empresa"})`;
+        
+        item.appendChild(checkbox);
+        item.appendChild(label);
+        dropdown.appendChild(item);
+        
+        item.addEventListener("click", (e) => {
+            e.stopPropagation();
         });
+        
+        checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+                const nameInput = document.getElementById("customerName");
+                const companyInput = document.getElementById("customerCompany");
+                const nicheInput = document.getElementById("customerNiche");
+                
+                if (nameInput && !nameInput.value) nameInput.value = c.name || "";
+                if (companyInput && !companyInput.value) companyInput.value = c.company || "";
+                if (nicheInput && (!nicheInput.value || nicheInput.value === "Outro")) nicheInput.value = c.niche || "Negócio Local";
+            }
+            updateContactsTriggerText();
+        });
+    });
+    
+    updateContactsTriggerText();
+}
+
+function updateContactsTriggerText() {
+    const dropdown = document.getElementById("customerContactsDropdown");
+    const triggerText = document.getElementById("customerContactsTriggerText");
+    if (!dropdown || !triggerText) return;
+    
+    const checked = Array.from(dropdown.querySelectorAll("input[type='checkbox']:checked"));
+    if (checked.length === 0) {
+        triggerText.innerText = "Selecione os contatos...";
+    } else if (checked.length <= 2) {
+        const names = checked.map(chk => {
+            const label = dropdown.querySelector(`label[for='${chk.id}']`);
+            return label ? label.innerText.split(" (")[0] : "";
+        });
+        triggerText.innerText = names.join(", ");
+    } else {
+        triggerText.innerText = `${checked.length} contatos selecionados`;
     }
 }
 
@@ -1692,17 +1778,46 @@ function openAddCustomer(preFill = null) {
     document.getElementById("customerForm").reset();
     document.getElementById("customerId").value = "";
     
+    // Reset date fields and document
+    const startDateInput = document.getElementById("customerStartDate");
+    if (startDateInput) startDateInput.value = new Date().toISOString().split("T")[0];
+    const endDateInput = document.getElementById("customerEndDate");
+    if (endDateInput) endDateInput.value = "";
+    const lastServiceDateInput = document.getElementById("customerLastServiceDate");
+    if (lastServiceDateInput) lastServiceDateInput.value = "";
+    const documentUrlInput = document.getElementById("customerDocumentUrl");
+    if (documentUrlInput) documentUrlInput.value = "";
+    
+    const dropdown = document.getElementById("customerContactsDropdown");
+    if (dropdown) {
+        const checkboxes = dropdown.querySelectorAll("input[type='checkbox']");
+        checkboxes.forEach(chk => chk.checked = false);
+    }
+    
     if (preFill) {
-        document.getElementById("customerContactId").value = preFill.contactId || "";
         document.getElementById("customerName").value = preFill.name || "";
         document.getElementById("customerCompany").value = preFill.company || "";
         document.getElementById("customerNiche").value = preFill.niche || "Negócio Local";
+        
+        if (dropdown) {
+            const targetIds = preFill.contactIds || (preFill.contactId ? [preFill.contactId] : []);
+            targetIds.forEach(id => {
+                const chk = dropdown.querySelector(`input[value='${id}']`);
+                if (chk) chk.checked = true;
+            });
+        }
+        
+        if (preFill.startDate && startDateInput) startDateInput.value = preFill.startDate;
+        if (preFill.endDate && endDateInput) endDateInput.value = preFill.endDate;
+        if (preFill.lastServiceDate && lastServiceDateInput) lastServiceDateInput.value = preFill.lastServiceDate;
+        if (preFill.documentUrl && documentUrlInput) documentUrlInput.value = preFill.documentUrl;
     } else {
-        document.getElementById("customerContactId").value = "";
         document.getElementById("customerName").value = "";
         document.getElementById("customerCompany").value = "";
         document.getElementById("customerNiche").value = "Negócio Local";
     }
+    
+    updateContactsTriggerText();
     
     const env = getEnv();
     const select = document.getElementById("customerProduct");
@@ -1726,7 +1841,7 @@ function openAddCustomer(preFill = null) {
     const statusInput = document.getElementById("customerStatus");
     if (statusInput) statusInput.value = "active";
     const titleInput = document.getElementById("customerModalTitle");
-    if (titleInput) titleInput.innerText = "Adicionar Cliente";
+    if (titleInput) titleInput.innerText = "Adicionar Serviço ao Cliente";
     const modalInput = document.getElementById("customerModal");
     if (modalInput) modalInput.classList.add("active");
 }
@@ -1759,6 +1874,15 @@ function openClientServicesModal(clientKey) {
         const tr = document.createElement("tr");
         const badgeText = s.type === 'monthly' ? 'Mensal' : s.type === 'yearly' ? 'Anual' : 'Único';
         
+        const dateText = (s.startDate ? formatDateBr(s.startDate) : '-') + ' / ' + (s.endDate ? formatDateBr(s.endDate) : '-');
+        const lastServiceText = s.lastServiceDate ? formatDateBr(s.lastServiceDate) : '-';
+        
+        let docHtml = '-';
+        if (s.documentUrl) {
+            const url = s.documentUrl.startsWith('http') ? s.documentUrl : 'https://' + s.documentUrl;
+            docHtml = `<a href="${url}" target="_blank" class="btn-doc-link" title="Abrir Anexo"><i data-lucide="paperclip" style="width:12px;height:12px;"></i></a>`;
+        }
+
         tr.innerHTML = `
             <td><strong>${s.productName}</strong></td>
             <td>
@@ -1767,6 +1891,9 @@ function openClientServicesModal(clientKey) {
                 </span>
             </td>
             <td><strong>${formatCurrency(s.value)}</strong></td>
+            <td><span style="font-size: 11px;">${dateText}</span></td>
+            <td><span style="font-size: 11px;">${lastServiceText}</span></td>
+            <td style="text-align: center;">${docHtml}</td>
             <td>
                 <span class="badge-status ${s.status}">
                     ${s.status === 'active' ? 'Ativo' : 'Inativo'}
@@ -1816,8 +1943,21 @@ function openEditCustomer(id) {
     if (form) form.reset();
     const idInput = document.getElementById("customerId");
     if (idInput) idInput.value = cust.id;
-    const contactInput = document.getElementById("customerContactId");
-    if (contactInput) contactInput.value = cust.contactId || "";
+    
+    // Set checkboxes for multiselect
+    const dropdown = document.getElementById("customerContactsDropdown");
+    if (dropdown) {
+        const checkboxes = dropdown.querySelectorAll("input[type='checkbox']");
+        checkboxes.forEach(chk => chk.checked = false);
+        
+        const targetIds = cust.contactIds || (cust.contactId ? [cust.contactId] : []);
+        targetIds.forEach(cid => {
+            const chk = dropdown.querySelector(`input[value='${cid}']`);
+            if (chk) chk.checked = true;
+        });
+    }
+    updateContactsTriggerText();
+
     const nameInput = document.getElementById("customerName");
     if (nameInput) nameInput.value = cust.name || "";
     const companyInput = document.getElementById("customerCompany");
@@ -1839,11 +1979,22 @@ function openEditCustomer(id) {
     if (priceInput) priceInput.value = cust.value !== undefined && cust.value !== null ? cust.value : "";
     const billingInput = document.getElementById("customerBillingType");
     if (billingInput) billingInput.value = cust.type || "single";
+    
+    // Set date and document fields
+    const startDateInput = document.getElementById("customerStartDate");
+    if (startDateInput) startDateInput.value = cust.startDate || "";
+    const endDateInput = document.getElementById("customerEndDate");
+    if (endDateInput) endDateInput.value = cust.endDate || "";
+    const lastServiceDateInput = document.getElementById("customerLastServiceDate");
+    if (lastServiceDateInput) lastServiceDateInput.value = cust.lastServiceDate || "";
+    const documentUrlInput = document.getElementById("customerDocumentUrl");
+    if (documentUrlInput) documentUrlInput.value = cust.documentUrl || "";
+
     const statusInput = document.getElementById("customerStatus");
     if (statusInput) statusInput.value = cust.status || "active";
 
     const titleInput = document.getElementById("customerModalTitle");
-    if (titleInput) titleInput.innerText = "Editar Cliente";
+    if (titleInput) titleInput.innerText = "Editar Serviço do Cliente";
     const modalInput = document.getElementById("customerModal");
     if (modalInput) modalInput.classList.add("active");
 }
@@ -3961,22 +4112,6 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const customerContactSelect = document.getElementById("customerContactId");
-    if (customerContactSelect) {
-        customerContactSelect.addEventListener("change", (e) => {
-            const contactId = e.target.value;
-            if (contactId) {
-                const env = getEnv();
-                const contact = env.contacts.find(c => c.id === contactId);
-                if (contact) {
-                    document.getElementById("customerName").value = contact.name || "";
-                    document.getElementById("customerCompany").value = contact.company || "";
-                    document.getElementById("customerNiche").value = contact.niche || "Outro";
-                }
-            }
-        });
-    }
-
     const customerProductSelect = document.getElementById("customerProduct");
     if (customerProductSelect) {
         customerProductSelect.addEventListener("change", (e) => {
@@ -3995,19 +4130,63 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const contactsTrigger = document.getElementById("customerContactsTrigger");
+    const contactsDropdown = document.getElementById("customerContactsDropdown");
+    if (contactsTrigger && contactsDropdown) {
+        contactsTrigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            contactsDropdown.classList.toggle("hidden");
+        });
+        document.addEventListener("click", () => {
+            contactsDropdown.classList.add("hidden");
+        });
+    }
+
+    // Calendar Notifications triggers
+    const btnNotifications = document.getElementById("btnNotifications");
+    if (btnNotifications) {
+        btnNotifications.addEventListener("click", () => {
+            updateCalendarNotifications();
+            document.getElementById("notificationsModal").classList.add("active");
+        });
+    }
+    const btnCloseNotificationsModal = document.getElementById("btnCloseNotificationsModal");
+    if (btnCloseNotificationsModal) {
+        btnCloseNotificationsModal.addEventListener("click", () => {
+            document.getElementById("notificationsModal").classList.remove("active");
+        });
+    }
+    const btnCancelNotificationsModal = document.getElementById("btnCancelNotificationsModal");
+    if (btnCancelNotificationsModal) {
+        btnCancelNotificationsModal.addEventListener("click", () => {
+            document.getElementById("notificationsModal").classList.remove("active");
+        });
+    }
+
     const customerFormElement = document.getElementById("customerForm");
     if (customerFormElement) {
         customerFormElement.addEventListener("submit", (e) => {
             e.preventDefault();
             const env = getEnv();
             const id = document.getElementById("customerId").value;
-            const contactId = document.getElementById("customerContactId").value;
+            
+            // Get selected contact IDs from multiselect checkboxes
+            const dropdown = document.getElementById("customerContactsDropdown");
+            const contactIds = dropdown ? Array.from(dropdown.querySelectorAll("input[type='checkbox']:checked")).map(chk => chk.value) : [];
+            const contactId = contactIds.length > 0 ? contactIds[0] : null;
+
             const name = document.getElementById("customerName").value;
             const company = document.getElementById("customerCompany").value;
             const niche = document.getElementById("customerNiche").value;
             const productId = document.getElementById("customerProduct").value;
             const price = parseFloat(document.getElementById("customerPrice").value) || 0;
             const billingType = document.getElementById("customerBillingType").value;
+            
+            const startDate = document.getElementById("customerStartDate")?.value || "";
+            const endDate = document.getElementById("customerEndDate")?.value || "";
+            const lastServiceDate = document.getElementById("customerLastServiceDate")?.value || "";
+            const documentUrl = document.getElementById("customerDocumentUrl")?.value || "";
+
             const status = document.getElementById("customerStatus").value;
 
             let productName = "Serviço Customizado";
@@ -4021,6 +4200,7 @@ window.addEventListener("DOMContentLoaded", () => {
             if (id) {
                 const cust = env.customers.find(c => c.id === id);
                 if (cust) {
+                    cust.contactIds = contactIds;
                     cust.contactId = contactId || null;
                     cust.name = name;
                     cust.company = company;
@@ -4029,10 +4209,15 @@ window.addEventListener("DOMContentLoaded", () => {
                     cust.value = price;
                     cust.type = billingType;
                     cust.status = status;
+                    cust.startDate = startDate;
+                    cust.endDate = endDate;
+                    cust.lastServiceDate = lastServiceDate;
+                    cust.documentUrl = documentUrl;
                 }
             } else {
                 const newCust = {
                     id: "cust_" + Date.now(),
+                    contactIds: contactIds,
                     contactId: contactId || null,
                     name: name,
                     company: company,
@@ -4041,6 +4226,10 @@ window.addEventListener("DOMContentLoaded", () => {
                     value: price,
                     type: billingType,
                     status: status,
+                    startDate: startDate,
+                    endDate: endDate,
+                    lastServiceDate: lastServiceDate,
+                    documentUrl: documentUrl,
                     createdAt: new Date().toISOString()
                 };
                 env.customers.push(newCust);
@@ -4068,14 +4257,15 @@ window.addEventListener("DOMContentLoaded", () => {
                     productName: productName,
                     value: price,
                     recurrence: billingType,
-                    startDate: new Date().toISOString().split("T")[0],
-                    endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+                    startDate: startDate || new Date().toISOString().split("T")[0],
+                    endDate: endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
                     status: "draft"
                 };
                 env.contracts.push(newCon);
 
-                if (contactId) {
-                    const contact = env.contacts.find(c => c.id === contactId);
+                // Mark all linked contacts as won
+                contactIds.forEach(cid => {
+                    const contact = env.contacts.find(c => c.id === cid);
                     if (contact) {
                         contact.status = "won";
                         contact.company = company;
@@ -4088,7 +4278,7 @@ window.addEventListener("DOMContentLoaded", () => {
                             timestamp: new Date().toISOString()
                         });
                     }
-                }
+                });
             }
 
             saveState();
@@ -4097,3 +4287,74 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+function updateCalendarNotifications() {
+    const env = getEnv();
+    const badge = document.getElementById("notificationBadge");
+    const list = document.getElementById("notificationsList");
+    if (!badge || !list) return;
+    
+    const todayStr = new Date().toISOString().split("T")[0];
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split("T")[0];
+    
+    // Sort all events chronologically
+    const allEvents = [...(env.events || [])].sort((a,b) => a.date.localeCompare(b.date));
+    
+    // Filter events starting from today
+    const upcomingEvents = allEvents.filter(evt => evt.date >= todayStr);
+    
+    // Count of today's events
+    const todayEventsCount = allEvents.filter(evt => evt.date === todayStr).length;
+    
+    if (todayEventsCount > 0) {
+        badge.innerText = todayEventsCount;
+        badge.classList.remove("hidden");
+    } else {
+        badge.classList.add("hidden");
+    }
+    
+    list.innerHTML = "";
+    if (upcomingEvents.length === 0) {
+        list.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 13px;">Nenhum compromisso agendado a partir de hoje.</div>`;
+        return;
+    }
+    
+    upcomingEvents.forEach(evt => {
+        const item = document.createElement("div");
+        item.style.padding = "10px 12px";
+        item.style.background = "var(--bg-app)";
+        item.style.border = "1px solid var(--border-color)";
+        item.style.borderRadius = "var(--radius-sm)";
+        item.style.display = "flex";
+        item.style.flexDirection = "column";
+        item.style.gap = "4px";
+        
+        let dayLabel = formatDateBr(evt.date);
+        let dayBadgeColor = "var(--color-primary)";
+        let dayBadgeBg = "var(--color-primary-glow)";
+        
+        if (evt.date === todayStr) {
+            dayLabel = "Hoje";
+            dayBadgeColor = "var(--color-danger)";
+            dayBadgeBg = "rgba(239, 68, 68, 0.1)";
+        } else if (evt.date === tomorrowStr) {
+            dayLabel = "Amanhã";
+            dayBadgeColor = "var(--color-warning)";
+            dayBadgeBg = "rgba(245, 158, 11, 0.1)";
+        }
+        
+        const contactName = evt.contactId ? (env.contacts.find(c => c.id === evt.contactId)?.name || "") : "";
+        
+        item.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 13px; color: var(--text-primary);">${evt.title}</span>
+                <span style="font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; color: ${dayBadgeColor}; background: ${dayBadgeBg};">${dayLabel} às ${evt.time || "00:00"}</span>
+            </div>
+            ${contactName ? `<div style="font-size: 11px; color: var(--text-secondary);">Contato: <strong>${contactName}</strong></div>` : ''}
+            ${evt.description ? `<div style="font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 2px;">${evt.description}</div>` : ''}
+        `;
+        list.appendChild(item);
+    });
+}
