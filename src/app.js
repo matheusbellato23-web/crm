@@ -300,6 +300,100 @@ function updateCustomerServicesFormSummary() {
     }
 }
 
+function applyDashboardCustomization() {
+    let settings = {
+        showKpis: true,
+        showFinancialChart: true,
+        showFunnelChart: true,
+        showRecentLeads: true,
+        showUrgentTasks: true
+    };
+    
+    const saved = localStorage.getItem("nexus_crm_dashboard_widgets");
+    if (saved) {
+        try {
+            settings = { ...settings, ...JSON.parse(saved) };
+        } catch (e) {
+            console.error("Error parsing dashboard widget settings:", e);
+        }
+    }
+    
+    const chkKpis = document.getElementById("chkShowKpiGrid");
+    const chkFinancial = document.getElementById("chkShowFinancialChart");
+    const chkFunnel = document.getElementById("chkShowFunnelChart");
+    const chkRecent = document.getElementById("chkShowRecentLeads");
+    const chkUrgent = document.getElementById("chkShowUrgentTasks");
+    
+    if (chkKpis) chkKpis.checked = settings.showKpis;
+    if (chkFinancial) chkFinancial.checked = settings.showFinancialChart;
+    if (chkFunnel) chkFunnel.checked = settings.showFunnelChart;
+    if (chkRecent) chkRecent.checked = settings.showRecentLeads;
+    if (chkUrgent) chkUrgent.checked = settings.showUrgentTasks;
+    
+    const widgetKpi = document.getElementById("widgetKpiGrid");
+    const widgetFinancial = document.getElementById("widgetFinancialChart");
+    const widgetFunnel = document.getElementById("widgetFunnelChart");
+    const widgetRecent = document.getElementById("widgetRecentLeads");
+    const widgetUrgent = document.getElementById("widgetUrgentTasks");
+    
+    if (widgetKpi) {
+        if (settings.showKpis) widgetKpi.style.display = "grid";
+        else widgetKpi.style.display = "none";
+    }
+    
+    if (widgetFinancial) {
+        if (settings.showFinancialChart) widgetFinancial.style.display = "flex";
+        else widgetFinancial.style.display = "none";
+    }
+    if (widgetFunnel) {
+        if (settings.showFunnelChart) widgetFunnel.style.display = "flex";
+        else widgetFunnel.style.display = "none";
+    }
+    
+    const chartsGrid = document.querySelector(".charts-grid");
+    if (chartsGrid) {
+        if (!settings.showFinancialChart && !settings.showFunnelChart) {
+            chartsGrid.style.display = "none";
+        } else {
+            chartsGrid.style.display = "grid";
+            if (settings.showFinancialChart && !settings.showFunnelChart) {
+                widgetFinancial.style.gridColumn = "span 2";
+            } else if (!settings.showFinancialChart && settings.showFunnelChart) {
+                widgetFunnel.style.gridColumn = "span 2";
+            } else {
+                if (widgetFinancial) widgetFinancial.style.gridColumn = "";
+                if (widgetFunnel) widgetFunnel.style.gridColumn = "";
+            }
+        }
+    }
+    
+    if (widgetRecent) {
+        if (settings.showRecentLeads) widgetRecent.style.display = "flex";
+        else widgetRecent.style.display = "none";
+    }
+    if (widgetUrgent) {
+        if (settings.showUrgentTasks) widgetUrgent.style.display = "flex";
+        else widgetUrgent.style.display = "none";
+    }
+    
+    const detailsGrid = document.querySelector(".dashboard-details-grid");
+    if (detailsGrid) {
+        if (!settings.showRecentLeads && !settings.showUrgentTasks) {
+            detailsGrid.style.display = "none";
+        } else {
+            detailsGrid.style.display = "grid";
+            if (settings.showRecentLeads && !settings.showUrgentTasks) {
+                widgetRecent.style.gridColumn = "span 2";
+            } else if (!settings.showRecentLeads && settings.showUrgentTasks) {
+                widgetUrgent.style.gridColumn = "span 2";
+            } else {
+                if (widgetRecent) widgetRecent.style.gridColumn = "";
+                if (widgetUrgent) widgetUrgent.style.gridColumn = "";
+            }
+        }
+    }
+}
+
 // Helper to get active environment data
 function getEnv() {
     const env = state.currentEnv || "webco";
@@ -640,6 +734,7 @@ function renderAll() {
 
 // 1. Dashboard Render
 function renderDashboard() {
+    applyDashboardCustomization();
     const env = getEnv();
     
     // KPIs: calculate LTV from customers
@@ -5027,6 +5122,57 @@ window.addEventListener("DOMContentLoaded", () => {
     if (btnCancelCustomerModal) {
         btnCancelCustomerModal.addEventListener("click", () => {
             document.getElementById("customerModal").classList.remove("active");
+        });
+    }
+
+    // Dashboard Customization Modal controls
+    const btnOpenDashCustom = document.getElementById("btnOpenDashboardCustomizationModal");
+    if (btnOpenDashCustom) {
+        btnOpenDashCustom.addEventListener("click", () => {
+            const modal = document.getElementById("dashboardCustomizationModal");
+            if (modal) {
+                applyDashboardCustomization();
+                modal.classList.add("active");
+            }
+        });
+    }
+
+    const btnCloseDashCustom = document.getElementById("btnCloseDashboardCustomizationModal");
+    if (btnCloseDashCustom) {
+        btnCloseDashCustom.addEventListener("click", () => {
+            document.getElementById("dashboardCustomizationModal").classList.remove("active");
+        });
+    }
+
+    const btnCancelDashCustom = document.getElementById("btnCancelDashboardCustomizationModal");
+    if (btnCancelDashCustom) {
+        btnCancelDashCustom.addEventListener("click", () => {
+            document.getElementById("dashboardCustomizationModal").classList.remove("active");
+        });
+    }
+
+    const btnSaveDashCustom = document.getElementById("btnSaveDashboardCustomization");
+    if (btnSaveDashCustom) {
+        btnSaveDashCustom.addEventListener("click", () => {
+            const chkKpis = document.getElementById("chkShowKpiGrid");
+            const chkFinancial = document.getElementById("chkShowFinancialChart");
+            const chkFunnel = document.getElementById("chkShowFunnelChart");
+            const chkRecent = document.getElementById("chkShowRecentLeads");
+            const chkUrgent = document.getElementById("chkShowUrgentTasks");
+            
+            const settings = {
+                showKpis: chkKpis ? chkKpis.checked : true,
+                showFinancialChart: chkFinancial ? chkFinancial.checked : true,
+                showFunnelChart: chkFunnel ? chkFunnel.checked : true,
+                showRecentLeads: chkRecent ? chkRecent.checked : true,
+                showUrgentTasks: chkUrgent ? chkUrgent.checked : true
+            };
+            
+            localStorage.setItem("nexus_crm_dashboard_widgets", JSON.stringify(settings));
+            applyDashboardCustomization();
+            
+            document.getElementById("dashboardCustomizationModal").classList.remove("active");
+            showToast("Configuração do Dashboard salva com sucesso!", "success");
         });
     }
 

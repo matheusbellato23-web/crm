@@ -265,15 +265,19 @@
 
             <!-- Dashboard View -->
             <section id="dashboardView" class="view-section active">
-                <div class="view-header">
+                <div class="view-header flex-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 12px; flex-wrap: wrap;">
                     <div>
                         <h1 class="view-title">Dashboard</h1>
                         <p class="view-subtitle">Visão geral do desempenho de vendas e tráfego pago da Web Co.</p>
                     </div>
+                    <button class="btn btn-secondary" id="btnOpenDashboardCustomizationModal" style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <i data-lucide="sliders" style="width: 14px; height: 14px;"></i>
+                        <span>Customizar Widgets</span>
+                    </button>
                 </div>
 
                 <!-- KPI Cards -->
-                <div class="kpi-grid">
+                <div class="kpi-grid" id="widgetKpiGrid">
                     <div class="kpi-card">
                         <div class="kpi-card-header">
                             <div class="kpi-icon-wrapper sales">
@@ -326,7 +330,7 @@
 
                 <!-- Charts Section -->
                 <div class="charts-grid">
-                    <div class="chart-card large">
+                    <div class="chart-card large" id="widgetFinancialChart">
                         <div class="chart-header">
                             <h3>Desempenho Financeiro</h3>
                             <span class="chart-legend">Ganhos vs Em Negociação</span>
@@ -335,7 +339,7 @@
                             <canvas id="salesTrendChart"></canvas>
                         </div>
                     </div>
-                    <div class="chart-card small">
+                    <div class="chart-card small" id="widgetFunnelChart">
                         <div class="chart-header">
                             <h3>Distribuição do Funil</h3>
                             <span class="chart-legend">Contatos por Estágio</span>
@@ -348,7 +352,7 @@
 
                 <!-- Bottom Row: Recent Contacts & Pending Tasks -->
                 <div class="dashboard-details-grid">
-                    <div class="details-card">
+                    <div class="details-card" id="widgetRecentLeads">
                         <div class="card-header">
                             <h3>Leads Recentes</h3>
                             <button class="btn btn-text" id="btnViewAllContacts">Ver todos</button>
@@ -369,7 +373,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="details-card">
+                    <div class="details-card" id="widgetUrgentTasks">
                         <div class="card-header">
                             <h3>Tarefas Críticas</h3>
                             <button class="btn btn-text" id="btnViewAllTasks">Ver todas</button>
@@ -2266,6 +2270,86 @@
                     Total Estimado: <span id="customerServicesSelectedTotal" style="color: var(--color-primary);">R$ 0,00</span>
                 </div>
                 <button type="button" class="btn btn-primary" id="btnConfirmCustomerServicesSelectionModal">Confirmar Seleção</button>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL: CUSTOMIZAR WIDGETS DO DASHBOARD -->
+    <div class="modal" id="dashboardCustomizationModal" style="z-index: 2000;">
+        <div class="modal-content" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3>Customizar Widgets do Dashboard</h3>
+                <button type="button" class="btn-close" id="btnCloseDashboardCustomizationModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">Escolha quais seções e indicadores deverão aparecer na tela inicial do seu Dashboard:</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Option 1: KPI Cards -->
+                    <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-card); transition: border-color var(--transition-fast);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="credit-card" style="width: 16px; height: 16px; color: var(--color-primary);"></i>
+                            <div>
+                                <span style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); display: block;">Painel de Indicadores (KPIs)</span>
+                                <span style="font-size: 10px; color: var(--text-muted);">LTV, Pipeline, Conversão e Tarefas</span>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="chkShowKpiGrid" checked style="width: 18px; height: 18px; cursor: pointer;">
+                    </label>
+
+                    <!-- Option 2: Financial Performance Chart -->
+                    <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-card); transition: border-color var(--transition-fast);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="bar-chart-3" style="width: 16px; height: 16px; color: var(--color-success);"></i>
+                            <div>
+                                <span style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); display: block;">Desempenho Financeiro</span>
+                                <span style="font-size: 10px; color: var(--text-muted);">Gráfico de Ganhos vs Em Negociação</span>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="chkShowFinancialChart" checked style="width: 18px; height: 18px; cursor: pointer;">
+                    </label>
+
+                    <!-- Option 3: Sales Funnel Chart -->
+                    <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-card); transition: border-color var(--transition-fast);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="filter" style="width: 16px; height: 16px; color: var(--color-warning);"></i>
+                            <div>
+                                <span style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); display: block;">Distribuição do Funil</span>
+                                <span style="font-size: 10px; color: var(--text-muted);">Gráfico de fatias de leads por estágio</span>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="chkShowFunnelChart" checked style="width: 18px; height: 18px; cursor: pointer;">
+                    </label>
+
+                    <!-- Option 4: Recent Leads List -->
+                    <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-card); transition: border-color var(--transition-fast);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="users" style="width: 16px; height: 16px; color: var(--color-primary-glow);"></i>
+                            <div>
+                                <span style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); display: block;">Leads Recentes</span>
+                                <span style="font-size: 10px; color: var(--text-muted);">Tabela resumida com os últimos contatos</span>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="chkShowRecentLeads" checked style="width: 18px; height: 18px; cursor: pointer;">
+                    </label>
+
+                    <!-- Option 5: Critical Tasks List -->
+                    <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-card); transition: border-color var(--transition-fast);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="check-square" style="width: 16px; height: 16px; color: var(--color-danger);"></i>
+                            <div>
+                                <span style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); display: block;">Tarefas Críticas</span>
+                                <span style="font-size: 10px; color: var(--text-muted);">Lista de tarefas urgentes a fazer</span>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="chkShowUrgentTasks" checked style="width: 18px; height: 18px; cursor: pointer;">
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding-top: 12px;">
+                <button type="button" class="btn btn-secondary" id="btnCancelDashboardCustomizationModal" style="flex: 1;">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnSaveDashboardCustomization" style="flex: 1;">Confirmar Seleção</button>
             </div>
         </div>
     </div>
