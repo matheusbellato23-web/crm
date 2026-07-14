@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Carlos Souza (Art & Co)",
+    "company": "Art & Co Impressões",
+    "email": "carlos@artco.com.br",
+    "phone": "5511998765432",
+    "value": 1500,
+    "niche": "Gráfica",
+    "notes": "🔥 INTERESSADO - Conversa pausada para atendimento manual. | Nicho: Gráfica | Último contato: 13/07/2026 14:32:10"
+  },
+  {
+    "name": "Ana Paula (Copyfast)",
+    "company": "Copyfast Cópias Rápidas",
+    "email": "",
+    "phone": "5511987654321",
+    "value": 0,
+    "niche": "Gráfica",
+    "notes": "💬 Em conversa ativa com a IA. | Nicho: Gráfica | Último contato: 13/07/2026 18:15:44"
+  },
+  {
+    "name": "Marcos Oliveira",
+    "company": "Gráfica Jundiaí Eireli",
+    "email": "contato@graficajundiai.com.br",
+    "phone": "5511976543210",
+    "value": 2500,
+    "niche": "Gráfica",
+    "notes": "✉️ Proposta Comercial Enviada. | Nicho: Gráfica | Último contato: 12/07/2026 11:20:00"
+  },
+  {
+    "name": "Juliana Silva (Studio Laser)",
+    "company": "Studio Laser Cortes e Gravações",
+    "email": "juliana@studiolaser.com.br",
+    "phone": "5519965432109",
+    "value": 4500,
+    "niche": "Corte a Laser",
+    "notes": "🏆 Fechamento comercial efetuado. | Nicho: Corte a Laser | Último contato: 10/07/2026 16:45:30"
+  }
+]

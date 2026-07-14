@@ -186,6 +186,8 @@ function ensureParanaEcoturismo() {
     if (!env.customers) env.customers = [...defaultCustomers];
     if (!env.invoices) env.invoices = [...defaultInvoices];
     if (!env.contracts) env.contracts = [...defaultContractsList];
+    if (!env.fiscalNotes) env.fiscalNotes = [];
+    if (!env.importHistory) env.importHistory = [];
 
     const exists = env.customers.some(c => c.company === "Paraná Ecoturismo");
     if (!exists) {
@@ -689,7 +691,26 @@ function renderContacts() {
                     </div>
                 </td>
                 <td><strong>${formatCurrency(c.value)}</strong></td>
-                <td><span class="status-badge ${c.status}">${translateStatus(c.status)}</span></td>
+                <td>
+                    <select class="select-inline-status status-${c.status}" data-id="${c.id}" style="
+                        font-size: 11px;
+                        font-weight: 600;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        border: 1px solid var(--border-color);
+                        background: var(--bg-card);
+                        color: var(--text-primary);
+                        cursor: pointer;
+                        outline: none;
+                    ">
+                        <option value="lead" ${c.status === 'lead' ? 'selected' : ''}>Novo Lead</option>
+                        <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contatado</option>
+                        <option value="proposal" ${c.status === 'proposal' ? 'selected' : ''}>Proposta Enviada</option>
+                        <option value="negotiating" ${c.status === 'negotiating' ? 'selected' : ''}>Em Negociação</option>
+                        <option value="won" ${c.status === 'won' ? 'selected' : ''}>Ganho (Won)</option>
+                        <option value="lost" ${c.status === 'lost' ? 'selected' : ''}>Perdido (Lost)</option>
+                    </select>
+                </td>
                 <td>
                     <div class="contact-comm-info">
                         <span>${lastInteractionText}</span>
@@ -704,6 +725,26 @@ function renderContacts() {
                     </div>
                 </td>
             `;
+
+            tr.querySelector(".select-inline-status").onchange = (e) => {
+                const newStatus = e.target.value;
+                const prevStatus = c.status;
+                c.status = newStatus;
+                
+                c.timeline.push({
+                    id: "act_" + Date.now(),
+                    type: "note",
+                    description: `Estágio atualizado na listagem para: ${translateStatus(newStatus)}`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                if (newStatus === "won" && prevStatus !== "won") {
+                    openConversionModal(c.id);
+                } else {
+                    saveState();
+                    renderAll();
+                }
+            };
 
             tr.querySelector(".btn-view").addEventListener("click", () => openContactDetails(c.id));
             tr.querySelector(".btn-edit").addEventListener("click", () => openEditContact(c.id));
@@ -836,104 +877,163 @@ function renderKanban() {
         }
     }
 
+    const funnelSelect = document.getElementById("funnelLayersSelect");
+    if (funnelSelect) {
+        funnelSelect.value = env.funnelLayers || 3;
+        funnelSelect.onchange = (e) => {
+            env.funnelLayers = parseInt(e.target.value);
+            saveState();
+            renderAll();
+        };
+    }
+
     if (state.pipelineViewMode === "funnel") {
-        // Update Graphic counts and values
-        if (document.getElementById("funnelTopCountGraphic")) {
-            document.getElementById("funnelTopCountGraphic").innerText = `${topCount} Leads`;
-            document.getElementById("funnelTopValGraphic").innerText = `${formatCurrency(topValue)} est.`;
-        }
-        if (document.getElementById("funnelMidCountGraphic")) {
-            document.getElementById("funnelMidCountGraphic").innerText = `${midCount} Leads`;
-            document.getElementById("funnelMidValGraphic").innerText = `${formatCurrency(midValue)} est.`;
-        }
-        if (document.getElementById("funnelBottomCountGraphic")) {
-            document.getElementById("funnelBottomCountGraphic").innerText = `${bottomCount} Clientes`;
-            document.getElementById("funnelBottomValGraphic").innerText = `${formatCurrency(bottomValue)} fat.`;
+        const funnelConfig = {
+            3: [
+                { key: "top", name: "1. TOPO (Novos Leads)", stages: ["lead", "contacted"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
+                { key: "mid", name: "2. MEIO (Orçamentos)", stages: ["proposal", "negotiating"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
+                { key: "bottom", name: "3. FUNDO (Fechados)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" }
+            ],
+            4: [
+                { key: "layer1", name: "1. Novos Leads", stages: ["lead"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
+                { key: "layer2", name: "2. Contatados", stages: ["contacted"], color: "var(--color-purple)", bg: "rgba(168, 85, 247, 0.08)", text: "Leads" },
+                { key: "layer3", name: "3. Em Negociação", stages: ["proposal", "negotiating"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
+                { key: "layer4", name: "4. Fechados (Won)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" }
+            ],
+            5: [
+                { key: "layer1", name: "1. Novos Leads", stages: ["lead"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
+                { key: "layer2", name: "2. Contatados", stages: ["contacted"], color: "var(--color-purple)", bg: "rgba(168, 85, 247, 0.08)", text: "Leads" },
+                { key: "layer3", name: "3. Proposta Enviada", stages: ["proposal"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
+                { key: "layer4", name: "4. Em Negociação", stages: ["negotiating"], color: "var(--color-orange)", bg: "rgba(249, 115, 22, 0.08)", text: "Leads" },
+                { key: "layer5", name: "5. Fechados (Won)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" }
+            ],
+            6: [
+                { key: "layer1", name: "1. Novos Leads", stages: ["lead"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
+                { key: "layer2", name: "2. Contatados", stages: ["contacted"], color: "var(--color-purple)", bg: "rgba(168, 85, 247, 0.08)", text: "Leads" },
+                { key: "layer3", name: "3. Proposta Enviada", stages: ["proposal"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
+                { key: "layer4", name: "4. Em Negociação", stages: ["negotiating"], color: "var(--color-orange)", bg: "rgba(249, 115, 22, 0.08)", text: "Leads" },
+                { key: "layer5", name: "5. Fechados (Won)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" },
+                { key: "layer6", name: "6. Perdidos (Lost)", stages: ["lost"], color: "var(--color-danger)", bg: "rgba(239, 68, 68, 0.08)", text: "Contatos" }
+            ]
+        };
+
+        const layersCount = env.funnelLayers || 3;
+        const layers = funnelConfig[layersCount] || funnelConfig[3];
+        
+        const layerKeys = layers.map(l => l.key);
+        if (!state.activeFunnelSegment || !layerKeys.includes(state.activeFunnelSegment)) {
+            state.activeFunnelSegment = layerKeys[0];
         }
 
+        const svg = document.getElementById("funnelSvg");
+        if (svg) {
+            svg.innerHTML = `
+                <defs>
+                    <filter id="shadow-glow-layer" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.15"/>
+                    </filter>
+                </defs>
+            `;
+            
+            const W_top = 280;
+            const W_bottom = 50;
+            const H = 290;
+            const margin = 8;
+            const N = layers.length;
+            const h_slice = (H - (N - 1) * margin) / N;
 
-
-        // Selected segment styles
-        const stgTop = document.getElementById("funnelStageTop");
-        const stgMid = document.getElementById("funnelStageMid");
-        const stgBottom = document.getElementById("funnelStageBottom");
-
-        // Reset all SVG polygons to inactive state
-        if (stgTop) {
-            stgTop.setAttribute("fill", "rgba(0, 140, 255, 0.03)");
-            stgTop.setAttribute("stroke", "var(--border-color)");
-            stgTop.setAttribute("stroke-width", "1");
-            stgTop.style.filter = "";
+            layers.forEach((layer, i) => {
+                const y1 = i * (h_slice + margin) + 10;
+                const y2 = y1 + h_slice;
+                
+                const w1 = W_top - (y1 / H) * (W_top - W_bottom);
+                const w2 = W_top - (y2 / H) * (W_top - W_bottom);
+                
+                const x_tl = 150 - w1/2;
+                const x_tr = 150 + w1/2;
+                const x_br = 150 + w2/2;
+                const x_bl = 150 - w2/2;
+                
+                const layerContacts = filteredContacts.filter(c => layer.stages.includes(c.status));
+                const count = layerContacts.length;
+                const valueSum = layerContacts.reduce((sum, c) => sum + (c.value || 0), 0);
+                
+                const isSelected = state.activeFunnelSegment === layer.key;
+                
+                const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                polygon.setAttribute("points", `${x_tl},${y1} ${x_tr},${y1} ${x_br},${y2} ${x_bl},${y2}`);
+                
+                if (isSelected) {
+                    polygon.setAttribute("fill", layer.bg);
+                    polygon.setAttribute("stroke", layer.color);
+                    polygon.setAttribute("stroke-width", "2");
+                    polygon.setAttribute("filter", "url(#shadow-glow-layer)");
+                } else {
+                    polygon.setAttribute("fill", "var(--bg-card)");
+                    polygon.setAttribute("stroke", "var(--border-color)");
+                    polygon.setAttribute("stroke-width", "1");
+                }
+                
+                polygon.setAttribute("style", "cursor: pointer; transition: all 0.2s;");
+                
+                polygon.onmouseover = () => {
+                    if (!isSelected) {
+                        polygon.setAttribute("fill", layer.bg);
+                        polygon.setAttribute("stroke", layer.color);
+                    }
+                };
+                polygon.onmouseout = () => {
+                    if (!isSelected) {
+                        polygon.setAttribute("fill", "var(--bg-card)");
+                        polygon.setAttribute("stroke", "var(--border-color)");
+                    }
+                };
+                
+                polygon.onclick = () => {
+                    state.activeFunnelSegment = layer.key;
+                    renderAll();
+                };
+                
+                svg.appendChild(polygon);
+                
+                const foreign = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+                foreign.setAttribute("x", (150 - w1/2).toString());
+                foreign.setAttribute("y", y1.toString());
+                foreign.setAttribute("width", w1.toString());
+                foreign.setAttribute("height", h_slice.toString());
+                foreign.setAttribute("style", "pointer-events: none;");
+                
+                foreign.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; text-align:center; font-family:inherit; pointer-events:none; line-height: 1.15; padding: 2px;">
+                        <strong style="font-size: 8px; color: ${isSelected ? layer.color : 'var(--text-muted)'}; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${layer.name}</strong>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 1px 0;">${count} ${layer.text}</span>
+                        <span style="font-size: 8px; color: var(--text-secondary);">${formatCurrency(valueSum)}</span>
+                    </div>
+                `;
+                
+                svg.appendChild(foreign);
+            });
         }
-        if (stgMid) {
-            stgMid.setAttribute("fill", "rgba(250, 180, 0, 0.02)");
-            stgMid.setAttribute("stroke", "var(--border-color)");
-            stgMid.setAttribute("stroke-width", "1");
-            stgMid.style.filter = "";
-        }
-        if (stgBottom) {
-            stgBottom.setAttribute("fill", "rgba(13, 242, 201, 0.02)");
-            stgBottom.setAttribute("stroke", "var(--border-color)");
-            stgBottom.setAttribute("stroke-width", "1");
-            stgBottom.style.filter = "";
+
+        const activeLayer = layers.find(l => l.key === state.activeFunnelSegment) || layers[0];
+        const activeLeads = filteredContacts.filter(c => activeLayer.stages.includes(c.status));
+
+        const segmentTitleEl = document.getElementById("funnelSegmentTitle");
+        if (segmentTitleEl) {
+            segmentTitleEl.innerText = `Contatos em ${activeLayer.name}`;
+            segmentTitleEl.style.color = activeLayer.color;
         }
 
-        let activeLeads = [];
-        let segmentTitle = "";
-        let segmentColor = "";
-
-        if (state.activeFunnelSegment === "top") {
-            activeLeads = topLeads;
-            segmentTitle = "Contatos no Topo do Funil (Novos)";
-            segmentColor = "var(--color-primary)";
-            if (stgTop) {
-                stgTop.setAttribute("fill", "rgba(0, 140, 255, 0.1)");
-                stgTop.setAttribute("stroke", "var(--color-primary)");
-                stgTop.setAttribute("stroke-width", "2");
-                stgTop.style.filter = "url(#shadow-top)";
-            }
-        } else if (state.activeFunnelSegment === "mid") {
-            activeLeads = midLeads;
-            segmentTitle = "Contatos no Meio do Funil (Orçamentos)";
-            segmentColor = "var(--color-warning)";
-            if (stgMid) {
-                stgMid.setAttribute("fill", "rgba(250, 180, 0, 0.1)");
-                stgMid.setAttribute("stroke", "var(--color-warning)");
-                stgMid.setAttribute("stroke-width", "2");
-                stgMid.style.filter = "url(#shadow-mid)";
-            }
-        } else {
-            activeLeads = bottomLeads;
-            segmentTitle = "Contatos no Fundo do Funil (Fechados)";
-            segmentColor = "var(--color-teal)";
-            if (stgBottom) {
-                stgBottom.setAttribute("fill", "rgba(13, 242, 201, 0.1)");
-                stgBottom.setAttribute("stroke", "var(--color-teal)");
-                stgBottom.setAttribute("stroke-width", "2");
-                stgBottom.style.filter = "url(#shadow-bottom)";
-            }
+        const segmentBadge = document.getElementById("funnelSegmentBadgeCount");
+        if (segmentBadge) {
+            segmentBadge.innerText = `${activeLeads.length} contatos`;
         }
 
-        // Render segment title and count
-        const titleEl = document.getElementById("funnelSegmentTitle");
-        if (titleEl) {
-            titleEl.innerText = segmentTitle;
-            titleEl.style.color = segmentColor;
-        }
-        if (document.getElementById("funnelSegmentBadgeCount")) {
-            document.getElementById("funnelSegmentBadgeCount").innerText = `${activeLeads.length} contatos`;
-        }
-
-        // Render active leads in right panel
         const container = document.getElementById("funnelSegmentLeadsContainer");
         if (container) {
             container.innerHTML = "";
             if (activeLeads.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
-                        <p style="font-size:11px;">Nenhum lead nesta etapa com as configurações filtradas.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:11px;">Nenhum lead nesta etapa com as configurações filtradas.</div>`;
             } else {
                 activeLeads.forEach(c => {
                     const card = document.createElement("div");
@@ -945,10 +1045,9 @@ function renderKanban() {
                         </div>
                         <div style="text-align:right;">
                             <strong style="color:var(--color-primary); font-size:11px;">${formatCurrency(c.value)}</strong>
-                            <div style="font-size:9px; color:var(--text-secondary);">${c.status === 'lead' ? 'Novo' : c.status === 'contacted' ? 'Contatado' : c.status === 'proposal' ? 'Proposta' : c.status === 'negotiating' ? 'Em Negociação' : 'Ganho'}</div>
+                            <div style="font-size:9px; color:var(--text-secondary);">${translateStatus(c.status)}</div>
                         </div>
                     `;
-                    // Hover effect
                     card.onmouseenter = () => { card.style.borderColor = "var(--color-primary)"; card.style.background = "var(--bg-card-hover)"; };
                     card.onmouseleave = () => { card.style.borderColor = "var(--border-color)"; card.style.background = "var(--bg-app)"; };
                     card.onclick = () => openContactDetails(c.id);
@@ -1231,8 +1330,14 @@ function renderProducts() {
     const env = getEnv();
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
     
+    // Default any product with undefined isCore to true
+    env.products.forEach(p => {
+        if (p.isCore === undefined) {
+            p.isCore = true;
+        }
+    });
+
     let filtered = [...env.products];
-    
     if (searchVal) {
         filtered = filtered.filter(p => 
             p.name.toLowerCase().includes(searchVal) ||
@@ -1240,22 +1345,31 @@ function renderProducts() {
         );
     }
 
-    const tbody = document.getElementById("productsTableBody");
-    const emptyState = document.getElementById("productsEmptyState");
-    tbody.innerHTML = "";
+    const coreList = filtered.filter(p => p.isCore === true);
+    const subList = filtered.filter(p => p.isCore === false);
 
-    if (filtered.length === 0) {
-        emptyState.classList.remove("hidden");
-        document.getElementById("productsTable").classList.add("hidden");
+    const coreTbody = document.getElementById("coreProductsTableBody");
+    const subTbody = document.getElementById("subProductsTableBody");
+    const coreEmpty = document.getElementById("coreProductsEmptyState");
+    const subEmpty = document.getElementById("subProductsEmptyState");
+
+    if (!coreTbody || !subTbody) return;
+
+    coreTbody.innerHTML = "";
+    subTbody.innerHTML = "";
+
+    // 1. Render Core Products
+    if (coreList.length === 0) {
+        coreEmpty.classList.remove("hidden");
+        document.getElementById("coreProductsTable").classList.add("hidden");
     } else {
-        emptyState.classList.add("hidden");
-        document.getElementById("productsTable").classList.remove("hidden");
+        coreEmpty.classList.add("hidden");
+        document.getElementById("coreProductsTable").classList.remove("hidden");
 
-        filtered.forEach(p => {
-            // Build main row
+        coreList.forEach(p => {
             const tr = document.createElement("tr");
+            tr.dataset.id = p.id;
             
-            // Expand button if it has suggested addons
             const hasAddons = p.suggestedAddons && p.suggestedAddons.length > 0;
             const expandBtn = hasAddons
                 ? `<button class="btn-icon-only btn-expand-subproducts" style="margin-right:8px; cursor:pointer;" data-id="${p.id}"><i data-lucide="chevron-right" style="width:14px; height:14px; vertical-align:middle;"></i></button>`
@@ -1270,17 +1384,15 @@ function renderProducts() {
                         </div>
                     </div>
                 </td>
-                <td><span style="font-size:11px; color:var(--text-secondary);">${p.description || "-"}</span></td>
-                <td><strong style="font-size:11px;">${formatCurrency(p.price)}</strong></td>
                 <td>
-                    <span class="badge-recurrence ${p.type}">
-                        ${p.type === 'monthly' ? 'Recorrente Mensal' : p.type === 'yearly' ? 'Recorrente Anual' : 'Cobrança Única'}
-                    </span>
+                    <div style="font-size:11px;">
+                        ${formatProductPriceHtml(p)}
+                    </div>
                 </td>
-                <td>
-                    <div class="kanban-card-actions">
-                        <button class="btn-icon-only btn-edit-product" title="Editar"><i data-lucide="edit-2" style="width:14px;height:14px;"></i></button>
-                        <button class="btn-icon-only btn-delete-product" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 4px; justify-content: flex-end;">
+                        <button class="btn-icon-only btn-edit-product" title="Editar" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center;"><i data-lucide="edit-2" style="width:12px;height:12px;"></i></button>
+                        <button class="btn-icon-only btn-delete-product" title="Excluir" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center;"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>
                     </div>
                 </td>
             `;
@@ -1288,16 +1400,41 @@ function renderProducts() {
             tr.querySelector(".btn-edit-product").addEventListener("click", () => openEditProduct(p.id));
             tr.querySelector(".btn-delete-product").addEventListener("click", () => deleteProduct(p.id));
 
-            tbody.appendChild(tr);
+            // Drag and drop dropzone handlers
+            tr.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                tr.style.background = "rgba(0, 140, 255, 0.05)";
+                tr.style.border = "1px dashed var(--color-primary)";
+            });
+            tr.addEventListener("dragleave", () => {
+                tr.style.background = "";
+                tr.style.border = "";
+            });
+            tr.addEventListener("drop", (e) => {
+                e.preventDefault();
+                tr.style.background = "";
+                tr.style.border = "";
+                const subId = e.dataTransfer.getData("text/plain");
+                if (subId && subId !== p.id) {
+                    p.suggestedAddons = p.suggestedAddons || [];
+                    if (!p.suggestedAddons.includes(subId)) {
+                        p.suggestedAddons.push(subId);
+                        saveState();
+                        renderAll();
+                        alert(`Subproduto vinculado com sucesso!`);
+                    }
+                }
+            });
 
-            // If it has addons, create the nested subproducts row
+            coreTbody.appendChild(tr);
+
+            // Nested subproducts row
             if (hasAddons) {
                 const subTr = document.createElement("tr");
                 subTr.id = `subproducts-row-${p.id}`;
                 subTr.className = "hidden";
                 subTr.style.background = "var(--bg-app)";
-                
-                // Get addons data
+
                 const addonItems = p.suggestedAddons
                     .map(aid => env.products.find(x => x.id === aid))
                     .filter(Boolean);
@@ -1308,21 +1445,30 @@ function renderProducts() {
                         <div style="display:flex; gap:12px; align-items:center;">
                             <span class="badge-recurrence ${item.type}" style="font-size:8px; padding:1px 4px;">${item.type === 'monthly' ? 'Mensal' : 'Único'}</span>
                             <strong style="color:var(--text-secondary);">${formatCurrency(item.price)}</strong>
+                            <button class="btn-unlink-subproduct" data-main-id="${p.id}" data-sub-id="${item.id}" title="Remover Vínculo" style="background:transparent; border:none; color:var(--color-danger); cursor:pointer; padding:2px; display:inline-flex; align-items:center; justify-content:center;"><i data-lucide="x" style="width:10px;height:10px;"></i></button>
                         </div>
                     </div>
                 `).join('');
 
                 subTr.innerHTML = `
-                    <td colspan="5" style="padding: 0 0 12px 40px; border-top:none;">
+                    <td colspan="4" style="padding: 0 0 12px 24px; border-top:none;">
                         <div style="border-left:3px solid var(--color-primary); background:var(--bg-card); border-radius: var(--radius-sm); border-top:1px solid var(--border-color); border-right:1px solid var(--border-color); border-bottom:1px solid var(--border-color); padding: 8px 0; margin-top: 4px; box-shadow: var(--shadow-sm);">
                             <div style="padding: 4px 12px 8px 12px; font-weight:600; font-size:10px; text-transform:uppercase; color:var(--text-muted); border-bottom:1px solid var(--border-color);">Subprodutos recomendados vinculados:</div>
                             ${addonsListHtml}
                         </div>
                     </td>
                 `;
-                tbody.appendChild(subTr);
+                
+                // Bind unlink buttons
+                subTr.querySelectorAll(".btn-unlink-subproduct").forEach(btn => {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        unlinkSubproduct(btn.dataset.mainId, btn.dataset.subId);
+                    };
+                });
 
-                // Add click listener to toggle the subproducts row
+                coreTbody.appendChild(subTr);
+
                 const toggleBtn = tr.querySelector(".btn-expand-subproducts");
                 if (toggleBtn) {
                     toggleBtn.addEventListener("click", (e) => {
@@ -1341,8 +1487,88 @@ function renderProducts() {
                 }
             }
         });
-        safeCreateIcons();
     }
+
+    // 2. Render Subproducts
+    if (subList.length === 0) {
+        subEmpty.classList.remove("hidden");
+        document.getElementById("subProductsTable").classList.add("hidden");
+    } else {
+        subEmpty.classList.add("hidden");
+        document.getElementById("subProductsTable").classList.remove("hidden");
+
+        subList.forEach(p => {
+            const tr = document.createElement("tr");
+            tr.setAttribute("draggable", "true");
+            tr.style.cursor = "grab";
+            
+            // Drag start
+            tr.addEventListener("dragstart", (e) => {
+                e.dataTransfer.setData("text/plain", p.id);
+                tr.style.opacity = "0.5";
+            });
+            tr.addEventListener("dragend", () => {
+                tr.style.opacity = "";
+            });
+
+            tr.innerHTML = `
+                <td>
+                    <div>
+                        <strong style="font-size:12px; color:var(--text-primary);">${p.name}</strong>
+                        ${p.description ? `<div style="font-size:10px; color:var(--text-muted); font-style:italic;">${p.description}</div>` : ''}
+                    </div>
+                </td>
+                <td>
+                    <div style="font-size:11px;">
+                        ${formatProductPriceHtml(p)}
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 4px; justify-content: flex-end;">
+                        <button class="btn-icon-only btn-edit-product" title="Editar" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;"><i data-lucide="edit-2" style="width:12px;height:12px;"></i></button>
+                        <button class="btn-icon-only btn-delete-product" title="Excluir" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>
+                    </div>
+                </td>
+            `;
+
+            tr.querySelector(".btn-edit-product").addEventListener("click", () => openEditProduct(p.id));
+            tr.querySelector(".btn-delete-product").addEventListener("click", () => deleteProduct(p.id));
+
+            subTbody.appendChild(tr);
+        });
+    }
+
+    safeCreateIcons();
+}
+
+function unlinkSubproduct(mainId, subId) {
+    const env = getEnv();
+    const p = env.products.find(x => x.id === mainId);
+    if (p) {
+        p.suggestedAddons = (p.suggestedAddons || []).filter(id => id !== subId);
+        saveState();
+        renderAll();
+    }
+}
+
+function formatProductPriceHtml(p) {
+    let html = `<strong>${formatCurrency(p.price)}</strong>`;
+    if (p.type === 'monthly') {
+        html += ` <span style="font-size: 10px; color: var(--text-muted);">/mês</span>`;
+        if (p.yearlyPrice && p.yearlyPrice > 0) {
+            const monthlyTotal = p.price * 12;
+            const diff = monthlyTotal - p.yearlyPrice;
+            if (diff > 0) {
+                const pct = Math.round((diff / monthlyTotal) * 100);
+                html += `<div style="font-size: 9px; color: var(--color-success); font-weight: 600; margin-top: 2px;" title="Economia de R$ ${formatCurrency(diff)} ao ano">💡 Economize ${pct}% (Anual: R$ ${formatCurrency(p.yearlyPrice)})</div>`;
+            }
+        }
+    } else if (p.type === 'yearly') {
+        html += ` <span style="font-size: 10px; color: var(--text-muted);">/ano</span>`;
+    } else {
+        html += ` <span style="font-size: 10px; color: var(--text-muted);">(Taxa Única)</span>`;
+    }
+    return html;
 }
 
 function openEditProduct(id) {
@@ -1355,9 +1581,20 @@ function openEditProduct(id) {
     document.getElementById("productDescription").value = p.description || "";
     document.getElementById("productPrice").value = p.price;
     document.getElementById("productType").value = p.type;
+    
+    const isCoreInput = document.getElementById("productIsCore");
+    if (isCoreInput) {
+        isCoreInput.checked = (p.isCore !== false); // default to true if undefined
+    }
+    
+    const yearlyPriceInput = document.getElementById("productYearlyPrice");
+    if (yearlyPriceInput) {
+        yearlyPriceInput.value = p.yearlyPrice || "";
+    }
 
     // Load suggested addons checkboxes
     populateProductAddons(p.id);
+    updateProductEconomyDisplay();
 
     // Make sure addons container is visible
     const addonsGroup = document.getElementById("productAddonsFormGroup");
@@ -1375,8 +1612,8 @@ function populateProductAddons(selectedProductId = "") {
     if (!container) return;
     container.innerHTML = "";
 
-    // Show all OTHER products
-    const addonCandidates = env.products.filter(p => p.id !== selectedProductId);
+    // Show all OTHER subproducts (non-core)
+    const addonCandidates = env.products.filter(p => p.id !== selectedProductId && p.isCore === false);
     if (addonCandidates.length === 0) {
         container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum outro serviço disponível no catálogo para vincular</span>`;
         return;
@@ -2004,11 +2241,14 @@ function openEditCustomer(id) {
 document.getElementById("btnCreateProduct").addEventListener("click", () => {
     document.getElementById("productForm").reset();
     document.getElementById("productId").value = "";
+    document.getElementById("productIsCore").checked = true; // default core to true
     
     const group = document.getElementById("productAddonsFormGroup");
     if (group) group.classList.remove("hidden");
 
     populateProductAddons(""); // Populate empty addons list
+    updateProductEconomyDisplay();
+    
     document.getElementById("productModalTitle").innerText = "Adicionar Produto";
     document.getElementById("productModal").classList.add("active");
 });
@@ -2019,6 +2259,47 @@ document.getElementById("btnCancelProductModal").addEventListener("click", () =>
     document.getElementById("productModal").classList.remove("active");
 });
 
+const pType = document.getElementById("productType");
+const pPrice = document.getElementById("productPrice");
+const pYearly = document.getElementById("productYearlyPrice");
+if (pType && pPrice && pYearly) {
+    const handler = () => updateProductEconomyDisplay();
+    pType.addEventListener("change", handler);
+    pPrice.addEventListener("input", handler);
+    pYearly.addEventListener("input", handler);
+}
+
+function updateProductEconomyDisplay() {
+    const type = document.getElementById("productType").value;
+    const price = parseFloat(document.getElementById("productPrice").value) || 0;
+    const yearlyPriceInput = document.getElementById("productYearlyPrice");
+    const yearlyPriceRow = document.getElementById("yearlyPriceRow");
+    const economyInfo = document.getElementById("productEconomyInfo");
+    
+    if (type === 'monthly') {
+        if (yearlyPriceRow) yearlyPriceRow.style.display = "block";
+        const yearlyPrice = parseFloat(yearlyPriceInput?.value) || 0;
+        if (price > 0 && yearlyPrice > 0) {
+            const monthlyTotal = price * 12;
+            const diff = monthlyTotal - yearlyPrice;
+            if (diff > 0) {
+                const pct = Math.round((diff / monthlyTotal) * 100);
+                if (economyInfo) {
+                    economyInfo.style.display = "block";
+                    economyInfo.innerHTML = `💡 Economia de <strong>${formatCurrency(diff)}</strong> ao ano (<strong>${pct}%</strong> de desconto no plano anual)`;
+                }
+            } else {
+                if (economyInfo) economyInfo.style.display = "none";
+            }
+        } else {
+            if (economyInfo) economyInfo.style.display = "none";
+        }
+    } else {
+        if (yearlyPriceRow) yearlyPriceRow.style.display = "none";
+        if (economyInfo) economyInfo.style.display = "none";
+    }
+}
+
 document.getElementById("productForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const env = getEnv();
@@ -2027,6 +2308,8 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
     const description = document.getElementById("productDescription").value;
     const price = parseFloat(document.getElementById("productPrice").value) || 0;
     const type = document.getElementById("productType").value;
+    const isCore = document.getElementById("productIsCore")?.checked;
+    const yearlyPrice = parseFloat(document.getElementById("productYearlyPrice")?.value) || 0;
 
     const suggestedAddons = Array.from(document.querySelectorAll(".product-addon-checkbox:checked")).map(cb => cb.value);
 
@@ -2037,6 +2320,8 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             p.description = description;
             p.price = price;
             p.type = type;
+            p.isCore = isCore;
+            p.yearlyPrice = yearlyPrice;
             p.suggestedAddons = suggestedAddons;
         }
     } else {
@@ -2046,6 +2331,8 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             description,
             price,
             type,
+            isCore,
+            yearlyPrice,
             suggestedAddons
         };
         env.products.push(newProd);
@@ -2236,6 +2523,7 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
     
     let successCount = 0;
     let ignoredCount = 0;
+    const importLogs = [];
     
     document.getElementById("importLogsPanel").classList.remove("hidden");
 
@@ -2254,19 +2542,20 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
         const niche = cells[5] || "Outro";
         const notes = cells[6] || "";
 
-        if (!name || !email) {
+        if (!name || (!email && !phone)) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>Linha ${lineNum}</td>
                 <td><span class="badge-status inactive">Ignorado</span></td>
-                <td>Nome ou E-mail ausentes no registro.</td>
+                <td>Nome ou Canal de contato (E-mail/Telefone) ausentes no registro.</td>
             `;
             logTableBody.appendChild(tr);
+            importLogs.push(`Linha ${lineNum}: Ignorado - Nome ou Contato ausentes`);
             ignoredCount++;
             return;
         }
 
-        const duplicateEmail = env.contacts.some(c => c.email.toLowerCase() === email.toLowerCase());
+        const duplicateEmail = email && env.contacts.some(c => c.email && c.email.toLowerCase() === email.toLowerCase());
         const duplicatePhone = phone && env.contacts.some(c => c.phone && c.phone.replace(/\D/g, '') === phone.replace(/\D/g, ''));
 
         if (duplicateEmail) {
@@ -2277,6 +2566,7 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
                 <td>O e-mail '${email}' já existe no ambiente.</td>
             `;
             logTableBody.appendChild(tr);
+            importLogs.push(`Linha ${lineNum} (${name}): Ignorado - E-mail '${email}' já existe`);
             ignoredCount++;
             return;
         }
@@ -2289,8 +2579,22 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
                 <td>O telefone '${phone}' já está cadastrado.</td>
             `;
             logTableBody.appendChild(tr);
+            importLogs.push(`Linha ${lineNum} (${name}): Ignorado - Telefone '${phone}' já cadastrado`);
             ignoredCount++;
             return;
+        }
+
+        // Auto map status from notes (e.g. 🏆, ✉️, 🔥, 💬)
+        let status = "lead";
+        const notesLower = notes.toLowerCase();
+        if (notesLower.includes("fechamento") || notesLower.includes("🏆") || notesLower.includes("ganho")) {
+            status = "won";
+        } else if (notesLower.includes("proposta") || notesLower.includes("✉️")) {
+            status = "proposal";
+        } else if (notesLower.includes("interessado") || notesLower.includes("🔥") || notesLower.includes("negociação")) {
+            status = "negotiating";
+        } else if (notesLower.includes("conversa") || notesLower.includes("💬") || notesLower.includes("contatado")) {
+            status = "contacted";
         }
 
         const newContact = {
@@ -2301,11 +2605,11 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
             phone,
             value,
             niche,
-            status: "lead",
+            status,
             notes,
             createdAt: new Date().toISOString(),
             timeline: [
-                { id: "act_" + Date.now(), type: "note", description: "Contato importado via planilha CSV.", timestamp: new Date().toISOString() }
+                { id: "act_" + Date.now(), type: "note", description: `Contato importado via planilha CSV. Estágio detectado: ${translateStatus(status)}`, timestamp: new Date().toISOString() }
             ]
         };
 
@@ -2319,6 +2623,18 @@ document.getElementById("btnExecuteImport").addEventListener("click", () => {
             <td>Lead importado com sucesso.</td>
         `;
         logTableBody.appendChild(tr);
+        importLogs.push(`Linha ${lineNum} (${name}): Sucesso - Lead importado`);
+    });
+
+    // Save to history
+    env.importHistory = env.importHistory || [];
+    env.importHistory.push({
+        id: "imp_" + Date.now(),
+        date: new Date().toISOString(),
+        fileName: document.getElementById("importFileName")?.innerText || "Importação Direta",
+        successCount: successCount,
+        failCount: ignoredCount,
+        details: importLogs
     });
 
     saveState();
@@ -3388,19 +3704,34 @@ function renderFinance() {
     const env = getEnv();
     
     // Sub-tab toggling
-    document.getElementById("tabInvoices").onclick = () => {
-        document.getElementById("tabInvoices").classList.add("active");
-        document.getElementById("tabExpenses").classList.remove("active");
-        document.getElementById("panelInvoices").classList.remove("hidden");
-        document.getElementById("panelExpenses").classList.add("hidden");
+    const selectSubTab = (activeId, activePanelId) => {
+        const tabs = ["tabInvoices", "tabExpenses", "tabFiscalNotes"];
+        const panels = ["panelInvoices", "panelExpenses", "panelFiscalNotes"];
+        
+        tabs.forEach(tabId => {
+            const el = document.getElementById(tabId);
+            if (el) {
+                if (tabId === activeId) el.classList.add("active");
+                else el.classList.remove("active");
+            }
+        });
+        
+        panels.forEach(panelId => {
+            const el = document.getElementById(panelId);
+            if (el) {
+                if (panelId === activePanelId) el.classList.remove("hidden");
+                else el.classList.add("hidden");
+            }
+        });
     };
 
-    document.getElementById("tabExpenses").onclick = () => {
-        document.getElementById("tabExpenses").classList.add("active");
-        document.getElementById("tabInvoices").classList.remove("active");
-        document.getElementById("panelExpenses").classList.remove("hidden");
-        document.getElementById("panelInvoices").classList.add("hidden");
-    };
+    document.getElementById("tabInvoices").onclick = () => selectSubTab("tabInvoices", "panelInvoices");
+    document.getElementById("tabExpenses").onclick = () => selectSubTab("tabExpenses", "panelExpenses");
+    
+    const tabFN = document.getElementById("tabFiscalNotes");
+    if (tabFN) {
+        tabFN.onclick = () => selectSubTab("tabFiscalNotes", "panelFiscalNotes");
+    }
 
     // Calculate Profitability Metrics
     const totalRevenue = env.invoices.reduce((sum, inv) => sum + inv.value, 0);
@@ -3497,6 +3828,7 @@ function renderFinance() {
         expensesTbody.appendChild(tr);
     });
 
+    renderFiscalNotes();
     renderFinanceCharts(env);
 }
 
@@ -3867,6 +4199,83 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("invoiceModal").classList.remove("active");
     };
 
+    const btnCreateFiscalNote = document.getElementById("btnCreateFiscalNote");
+    if (btnCreateFiscalNote) {
+        btnCreateFiscalNote.onclick = () => {
+            openAddFiscalNote();
+        };
+    }
+    const btnCloseFiscalNoteModal = document.getElementById("btnCloseFiscalNoteModal");
+    if (btnCloseFiscalNoteModal) {
+        btnCloseFiscalNoteModal.onclick = () => {
+            document.getElementById("fiscalNoteModal").classList.remove("active");
+        };
+    }
+    const btnCancelFiscalNoteModal = document.getElementById("btnCancelFiscalNoteModal");
+    if (btnCancelFiscalNoteModal) {
+        btnCancelFiscalNoteModal.onclick = () => {
+            document.getElementById("fiscalNoteModal").classList.remove("active");
+        };
+    }
+
+    const fiscalNoteForm = document.getElementById("fiscalNoteForm");
+    if (fiscalNoteForm) {
+        fiscalNoteForm.onsubmit = (e) => {
+            e.preventDefault();
+            const env = getEnv();
+            const id = document.getElementById("fiscalNoteId").value;
+            const number = document.getElementById("fiscalNoteNumber").value;
+            const issueDate = document.getElementById("fiscalNoteIssueDate").value;
+            const clientName = document.getElementById("fiscalNoteClient").value;
+            const productName = document.getElementById("fiscalNoteProduct").value;
+            const value = parseFloat(document.getElementById("fiscalNoteValue").value) || 0;
+            const generateReceipt = document.getElementById("fiscalNoteGenerateReceipt")?.checked;
+            
+            let receiptId = null;
+            
+            if (id) {
+                const nf = env.fiscalNotes.find(x => x.id === id);
+                if (nf) {
+                    nf.number = number;
+                    nf.issueDate = issueDate;
+                    nf.clientName = clientName;
+                    nf.productName = productName;
+                    nf.value = value;
+                }
+            } else {
+                if (generateReceipt) {
+                    const newInvoice = {
+                        id: "FAT-" + Date.now().toString().substring(8),
+                        customerName: clientName,
+                        company: "-",
+                        niche: "Outro",
+                        productName: productName + ` (Ref: NF ${number})`,
+                        value: value,
+                        dueDate: issueDate,
+                        status: "paid"
+                    };
+                    env.invoices.push(newInvoice);
+                    receiptId = newInvoice.id;
+                }
+                
+                const newNf = {
+                    id: "nf_" + Date.now(),
+                    number,
+                    clientName,
+                    productName,
+                    value,
+                    issueDate,
+                    receiptId
+                };
+                env.fiscalNotes.push(newNf);
+            }
+            
+            saveState();
+            renderAll();
+            document.getElementById("fiscalNoteModal").classList.remove("active");
+        };
+    }
+
     document.getElementById("btnCreateExpense").onclick = () => {
         document.getElementById("expenseForm").reset();
         document.getElementById("expenseDate").value = new Date().toISOString().split("T")[0];
@@ -4059,6 +4468,27 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             reader.readAsText(file);
         };
+    }
+    
+    // Import History triggers
+    const btnOpenImportHistory = document.getElementById("btnOpenImportHistory");
+    if (btnOpenImportHistory) {
+        btnOpenImportHistory.addEventListener("click", () => {
+            renderImportHistory();
+            document.getElementById("importHistoryModal").classList.add("active");
+        });
+    }
+    const btnCloseImportHistoryModal = document.getElementById("btnCloseImportHistoryModal");
+    if (btnCloseImportHistoryModal) {
+        btnCloseImportHistoryModal.addEventListener("click", () => {
+            document.getElementById("importHistoryModal").classList.remove("active");
+        });
+    }
+    const btnCancelImportHistoryModal = document.getElementById("btnCancelImportHistoryModal");
+    if (btnCancelImportHistoryModal) {
+        btnCancelImportHistoryModal.addEventListener("click", () => {
+            document.getElementById("importHistoryModal").classList.remove("active");
+        });
     }
     
     // Bind Customers actions (Manual Create, Edit, and Services Modal)
@@ -4358,3 +4788,242 @@ function updateCalendarNotifications() {
         list.appendChild(item);
     });
 }
+
+function renderFiscalNotes() {
+    const env = getEnv();
+    const tbody = document.getElementById("fiscalNotesTableBody");
+    if (!tbody) return;
+    
+    tbody.innerHTML = "";
+    
+    if (!env.fiscalNotes || env.fiscalNotes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">Nenhuma nota fiscal lançada.</td></tr>`;
+        return;
+    }
+    
+    const sorted = [...env.fiscalNotes].sort((a,b) => b.issueDate.localeCompare(a.issueDate));
+    
+    sorted.forEach(nf => {
+        const tr = document.createElement("tr");
+        
+        let receiptHtml = "";
+        if (nf.receiptId) {
+            receiptHtml = `<span class="badge-status active" style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); font-size: 10px; padding: 2px 6px; border-radius: 4px;">🟢 Lançado (Pago)</span>`;
+        } else {
+            receiptHtml = `<button class="btn btn-secondary btn-xs btn-generate-receipt-from-note" data-id="${nf.id}" style="font-size: 10px; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;"><i data-lucide="plus-circle" style="width:10px;height:10px;"></i> Gerar Recebimento</button>`;
+        }
+        
+        tr.innerHTML = `
+            <td><strong>${nf.number}</strong></td>
+            <td>${nf.clientName}</td>
+            <td>${nf.productName}</td>
+            <td>${formatDateBr(nf.issueDate)}</td>
+            <td><strong>${formatCurrency(nf.value)}</strong></td>
+            <td>${receiptHtml}</td>
+            <td style="text-align: right;">
+                <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                    <button class="btn-icon-only btn-sm btn-edit-fiscal-note" data-id="${nf.id}" title="Editar" style="width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><i data-lucide="edit-2" style="width:12px;height:12px;"></i></button>
+                    <button class="btn-icon-only btn-sm btn-delete-fiscal-note" data-id="${nf.id}" title="Excluir" style="width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>
+                </div>
+            </td>
+        `;
+        
+        if (!nf.receiptId) {
+            tr.querySelector(".btn-generate-receipt-from-note").onclick = () => {
+                generateReceiptFromFiscalNote(nf.id);
+            };
+        }
+        
+        tr.querySelector(".btn-edit-fiscal-note").onclick = () => {
+            openEditFiscalNote(nf.id);
+        };
+        
+        tr.querySelector(".btn-delete-fiscal-note").onclick = () => {
+            deleteFiscalNote(nf.id);
+        };
+        
+        tbody.appendChild(tr);
+    });
+    
+    safeCreateIcons();
+}
+
+function generateReceiptFromFiscalNote(id) {
+    const env = getEnv();
+    const nf = env.fiscalNotes.find(x => x.id === id);
+    if (!nf) return;
+    
+    const newInvoice = {
+        id: "FAT-" + Date.now().toString().substring(8),
+        customerName: nf.clientName,
+        company: "-",
+        niche: "Outro",
+        productName: nf.productName + ` (Ref: NF ${nf.number})`,
+        value: nf.value,
+        dueDate: nf.issueDate,
+        status: "paid"
+    };
+    env.invoices.push(newInvoice);
+    
+    nf.receiptId = newInvoice.id;
+    
+    saveState();
+    renderAll();
+    
+    const tabInvoices = document.getElementById("tabInvoices");
+    if (tabInvoices) tabInvoices.click();
+    
+    alert("Recebimento lançado com sucesso!");
+}
+
+function openAddFiscalNote() {
+    document.getElementById("fiscalNoteForm").reset();
+    document.getElementById("fiscalNoteId").value = "";
+    document.getElementById("fiscalNoteIssueDate").value = new Date().toISOString().split("T")[0];
+    
+    populateFiscalNoteDatalists();
+    
+    document.getElementById("fiscalNoteReceiptGroup").style.display = "flex";
+    document.getElementById("fiscalNoteGenerateReceipt").checked = true;
+    
+    document.getElementById("fiscalNoteModalTitle").innerText = "Lançar Nota Fiscal";
+    document.getElementById("fiscalNoteModal").classList.add("active");
+}
+
+function openEditFiscalNote(id) {
+    const env = getEnv();
+    const nf = env.fiscalNotes.find(x => x.id === id);
+    if (!nf) return;
+    
+    document.getElementById("fiscalNoteForm").reset();
+    document.getElementById("fiscalNoteId").value = nf.id;
+    document.getElementById("fiscalNoteNumber").value = nf.number || "";
+    document.getElementById("fiscalNoteIssueDate").value = nf.issueDate || "";
+    
+    populateFiscalNoteDatalists();
+    
+    document.getElementById("fiscalNoteClient").value = nf.clientName || "";
+    document.getElementById("fiscalNoteProduct").value = nf.productName || "";
+    document.getElementById("fiscalNoteValue").value = nf.value || "";
+    
+    document.getElementById("fiscalNoteReceiptGroup").style.display = "none";
+    
+    document.getElementById("fiscalNoteModalTitle").innerText = "Editar Nota Fiscal";
+    document.getElementById("fiscalNoteModal").classList.add("active");
+}
+
+function deleteFiscalNote(id) {
+    if (confirm("Tem certeza que deseja excluir esta nota fiscal?")) {
+        const env = getEnv();
+        env.fiscalNotes = env.fiscalNotes.filter(x => x.id !== id);
+        saveState();
+        renderAll();
+    }
+}
+
+function populateFiscalNoteDatalists() {
+    const env = getEnv();
+    const clientsDatalist = document.getElementById("fiscalNoteClientsDatalist");
+    const productsDatalist = document.getElementById("fiscalNoteProductsDatalist");
+    if (!clientsDatalist || !productsDatalist) return;
+    
+    clientsDatalist.innerHTML = "";
+    productsDatalist.innerHTML = "";
+    
+    const uniqueClients = [];
+    env.customers.forEach(c => {
+        const name = c.company || c.name;
+        if (name && !uniqueClients.includes(name)) {
+            uniqueClients.push(name);
+        }
+    });
+    env.contacts.forEach(c => {
+        const name = c.company || c.name;
+        if (name && !uniqueClients.includes(name)) {
+            uniqueClients.push(name);
+        }
+    });
+    
+    uniqueClients.sort().forEach(name => {
+        const option = document.createElement("option");
+        option.value = name;
+        clientsDatalist.appendChild(option);
+    });
+    
+    const sortedProducts = [...env.products].sort((a,b) => a.name.localeCompare(b.name));
+    sortedProducts.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.name;
+        productsDatalist.appendChild(option);
+    });
+}
+
+function renderImportHistory() {
+    const env = getEnv();
+    const list = document.getElementById("importHistoryList");
+    if (!list) return;
+    
+    list.innerHTML = "";
+    
+    if (!env.importHistory || env.importHistory.length === 0) {
+        list.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 13px;">Nenhum histórico de importação encontrado.</div>`;
+        return;
+    }
+    
+    const sorted = [...env.importHistory].sort((a,b) => b.date.localeCompare(a.date));
+    
+    sorted.forEach(item => {
+        const itemDiv = document.createElement("div");
+        itemDiv.style.border = "1px solid var(--border-color)";
+        itemDiv.style.borderRadius = "var(--radius-sm)";
+        itemDiv.style.background = "var(--bg-app)";
+        itemDiv.style.padding = "12px";
+        itemDiv.style.display = "flex";
+        itemDiv.style.flexDirection = "column";
+        itemDiv.style.gap = "8px";
+        
+        const dateFormatted = new Date(item.date).toLocaleString("pt-BR");
+        
+        itemDiv.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <strong style="font-size:13px; color:var(--text-primary); display:block;">${item.fileName}</strong>
+                    <span style="font-size:11px; color:var(--text-secondary);">${dateFormatted}</span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <span class="badge-status active" style="font-size:10px; padding:2px 6px; border-radius:4px;">${item.successCount} Sucessos</span>
+                    ${item.failCount > 0 ? `<span class="badge-status inactive" style="font-size:10px; padding:2px 6px; border-radius:4px;">${item.failCount} Falhas</span>` : ''}
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-secondary btn-xs btn-toggle-import-log-details" data-id="${item.id}" style="font-size:10px; padding:4px 8px; border-radius:4px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><i data-lucide="eye" style="width:10px;height:10px;"></i> Ver Logs Detalhados</button>
+            </div>
+            <div class="import-log-details hidden" id="details-${item.id}" style="border-top: 1px dashed var(--border-color); padding-top: 8px; margin-top: 4px; font-family: monospace; font-size: 11px; color: var(--text-secondary); max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                ${item.details.map(log => {
+                    const isSuccess = log.includes("Sucesso");
+                    const color = isSuccess ? "var(--color-success)" : "var(--color-danger)";
+                    const bg = isSuccess ? "rgba(16, 185, 129, 0.05)" : "rgba(239, 68, 68, 0.05)";
+                    return `<div style="padding: 2px 4px; border-radius: 2px; background: ${bg}; color: ${color};">${log}</div>`;
+                }).join("")}
+            </div>
+        `;
+        
+        itemDiv.querySelector(".btn-toggle-import-log-details").onclick = (e) => {
+            const detailsDiv = itemDiv.querySelector(`#details-${item.id}`);
+            const btn = e.currentTarget;
+            if (detailsDiv.classList.contains("hidden")) {
+                detailsDiv.classList.remove("hidden");
+                btn.innerHTML = `<i data-lucide="eye-off" style="width:10px;height:10px;"></i> Ocultar Logs`;
+            } else {
+                detailsDiv.classList.add("hidden");
+                btn.innerHTML = `<i data-lucide="eye" style="width:10px;height:10px;"></i> Ver Logs Detalhados`;
+            }
+            safeCreateIcons();
+        };
+        
+        list.appendChild(itemDiv);
+    });
+    
+    safeCreateIcons();
+}
+
