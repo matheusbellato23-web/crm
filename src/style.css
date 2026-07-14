@@ -2442,5 +2442,40 @@ tr:hover .product-drag-handle {
     transition: all var(--transition-fast) !important;
 }
 
+/* Mobile Responsive Adjustments */
+@media (max-width: 850px) {
+    #btnToggleMobileSidebar {
+        display: inline-flex !important;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: -240px;
+        top: 0;
+        bottom: 0;
+        transition: left var(--transition-normal);
+        z-index: 1500 !important;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .sidebar.sidebar-open {
+        left: 0;
+    }
+    
+    .products-dual-layout {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    .view-section {
+        padding: 16px !important;
+    }
+    
+    /* Kanban columns wrapping on smaller screens */
+    .kanban-board {
+        gap: 10px;
+    }
+}
+
 
 

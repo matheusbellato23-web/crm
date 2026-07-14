@@ -4339,6 +4339,30 @@ function deleteMarketingAsset(id) {
 window.addEventListener("DOMContentLoaded", () => {
     init();
     
+    // Mobile Sidebar controls
+    const btnToggleSidebar = document.getElementById("btnToggleMobileSidebar");
+    const sidebar = document.querySelector(".sidebar");
+    const backdrop = document.getElementById("sidebarBackdrop");
+    
+    if (btnToggleSidebar && sidebar && backdrop) {
+        const openSidebar = () => {
+            sidebar.classList.add("sidebar-open");
+            backdrop.classList.remove("hidden");
+        };
+        const closeSidebar = () => {
+            sidebar.classList.remove("sidebar-open");
+            backdrop.classList.add("hidden");
+        };
+        
+        btnToggleSidebar.addEventListener("click", openSidebar);
+        backdrop.addEventListener("click", closeSidebar);
+        
+        // Auto-close on nav clicks
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.addEventListener("click", closeSidebar);
+        });
+    }
+    
     // Bind buttons early in case of active session reload
     if (sessionStorage.getItem("nexus_crm_logged_in") === "true") {
         setupOpenImportButton();

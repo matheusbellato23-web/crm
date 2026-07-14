@@ -236,14 +236,21 @@
                 </div>
             </div>
         </aside>
+        
+        <div class="sidebar-backdrop hidden" id="sidebarBackdrop" style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 98; backdrop-filter: blur(2px); transition: opacity var(--transition-normal);"></div>
 
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
             <header class="main-header">
-                <div class="header-search">
-                    <i data-lucide="search" class="search-icon"></i>
-                    <input type="text" placeholder="Buscar..." id="globalSearch">
+                <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                    <button class="btn-icon-only" id="btnToggleMobileSidebar" style="display: none; align-items: center; justify-content: center; cursor: pointer; width: 32px; height: 32px; border-radius: var(--radius-sm);">
+                        <i data-lucide="menu" style="width: 16px; height: 16px;"></i>
+                    </button>
+                    <div class="header-search" style="flex: 1; max-width: 280px;">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" placeholder="Buscar..." id="globalSearch">
+                    </div>
                 </div>
                 <div class="header-actions">
                     <button class="btn btn-secondary" id="btnTogglePrivacy" title="Ocultar/Exibir Valores">
