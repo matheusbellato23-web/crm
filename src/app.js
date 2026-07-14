@@ -1437,6 +1437,27 @@ function renderProducts() {
         coreList.forEach(p => {
             const tr = document.createElement("tr");
             tr.dataset.id = p.id;
+            tr.setAttribute("draggable", "true");
+            tr.style.cursor = "grab";
+            
+            tr.addEventListener("dragstart", (e) => {
+                e.dataTransfer.setData("text/plain", p.id);
+                e.dataTransfer.setData("action", "convert-to-sub");
+                tr.classList.add("subproduct-drag-active");
+                
+                const subCard = document.getElementById("subProductsCard");
+                if (subCard) {
+                    subCard.classList.add("subproducts-table-unlink-active");
+                }
+            });
+            tr.addEventListener("dragend", () => {
+                tr.classList.remove("subproduct-drag-active");
+                const subCard = document.getElementById("subProductsCard");
+                if (subCard) {
+                    subCard.classList.remove("subproducts-table-unlink-active");
+                    subCard.classList.remove("subproducts-table-unlink-over");
+                }
+            });
             
             const hasAddons = p.suggestedAddons && p.suggestedAddons.length > 0;
             const expandBtn = hasAddons
@@ -1478,6 +1499,7 @@ function renderProducts() {
             });
             tr.addEventListener("drop", (e) => {
                 e.preventDefault();
+                e.stopPropagation(); // stop bubbling
                 tr.classList.remove("dropzone-target-over");
                 const subId = e.dataTransfer.getData("text/plain");
                 if (subId && subId !== p.id) {
@@ -1605,6 +1627,11 @@ function renderProducts() {
                 e.dataTransfer.setData("action", "link");
                 tr.classList.add("subproduct-drag-active");
                 
+                const coreCard = document.getElementById("coreProductsCard");
+                if (coreCard) {
+                    coreCard.classList.add("dropzone-target-active");
+                }
+                
                 // Highlight eligible core rows
                 document.querySelectorAll("#coreProductsTableBody tr:not([id^='subproducts-row-'])").forEach(row => {
                     row.classList.add("dropzone-target-active");
@@ -1612,6 +1639,11 @@ function renderProducts() {
             });
             tr.addEventListener("dragend", () => {
                 tr.classList.remove("subproduct-drag-active");
+                
+                const coreCard = document.getElementById("coreProductsCard");
+                if (coreCard) {
+                    coreCard.classList.remove("dropzone-target-active", "dropzone-target-over");
+                }
                 
                 document.querySelectorAll("#coreProductsTableBody tr").forEach(row => {
                     row.classList.remove("dropzone-target-active", "dropzone-target-over");
@@ -1670,10 +1702,55 @@ function renderProducts() {
                     const data = JSON.parse(dataStr);
                     if (data && data.action === "unlink") {
                         unlinkSubproduct(data.mainId, data.subId);
+                        return;
+                    }
+                }
+                
+                const action = e.dataTransfer.getData("action");
+                const productId = e.dataTransfer.getData("text/plain");
+                if (productId && action === "convert-to-sub") {
+                    const p = env.products.find(x => x.id === productId);
+                    if (p) {
+                        p.isCore = false;
+                        saveState();
+                        renderAll();
+                        showToast(`"${p.name}" convertido em Subproduto com sucesso!`, 'success');
                     }
                 }
             } catch (err) {
                 console.error("Error drop unlink:", err);
+            }
+        });
+    }
+
+    const coreCard = document.getElementById("coreProductsCard");
+    if (coreCard) {
+        coreCard.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            coreCard.classList.add("dropzone-target-over");
+        });
+        coreCard.addEventListener("dragleave", () => {
+            coreCard.classList.remove("dropzone-target-over");
+        });
+        coreCard.addEventListener("drop", (e) => {
+            e.preventDefault();
+            coreCard.classList.remove("dropzone-target-over");
+            coreCard.classList.remove("dropzone-target-active");
+            
+            try {
+                const action = e.dataTransfer.getData("action");
+                const productId = e.dataTransfer.getData("text/plain");
+                if (productId && action === "link") {
+                    const p = env.products.find(x => x.id === productId);
+                    if (p) {
+                        p.isCore = true;
+                        saveState();
+                        renderAll();
+                        showToast(`"${p.name}" convertido em Produto Principal (Core) com sucesso!`, 'success');
+                    }
+                }
+            } catch (err) {
+                console.error("Error drop convert to core:", err);
             }
         });
     }
