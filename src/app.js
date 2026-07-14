@@ -1964,7 +1964,8 @@ function renderProducts() {
     }
 
     const subCard = document.getElementById("subProductsCard");
-    if (subCard) {
+    if (subCard && !subCard.dataset.dragInitialized) {
+        subCard.dataset.dragInitialized = "true";
         subCard.addEventListener("dragover", (e) => {
             e.preventDefault();
             subCard.classList.add("subproducts-table-unlink-over");
@@ -1990,7 +1991,8 @@ function renderProducts() {
                 const action = e.dataTransfer.getData("action");
                 const productId = e.dataTransfer.getData("text/plain");
                 if (productId && action === "convert-to-sub") {
-                    const p = env.products.find(x => x.id === productId);
+                    const currentEnv = getEnv();
+                    const p = currentEnv.products.find(x => x.id === productId);
                     if (p) {
                         p.isCore = false;
                         saveState();
@@ -2005,7 +2007,8 @@ function renderProducts() {
     }
 
     const coreCard = document.getElementById("coreProductsCard");
-    if (coreCard) {
+    if (coreCard && !coreCard.dataset.dragInitialized) {
+        coreCard.dataset.dragInitialized = "true";
         coreCard.addEventListener("dragover", (e) => {
             e.preventDefault();
             coreCard.classList.add("dropzone-target-over");
@@ -2022,7 +2025,8 @@ function renderProducts() {
                 const action = e.dataTransfer.getData("action");
                 const productId = e.dataTransfer.getData("text/plain");
                 if (productId && action === "link") {
-                    const p = env.products.find(x => x.id === productId);
+                    const currentEnv = getEnv();
+                    const p = currentEnv.products.find(x => x.id === productId);
                     if (p) {
                         p.isCore = true;
                         saveState();
