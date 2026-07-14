@@ -1747,8 +1747,14 @@
                     <div id="productEconomyInfo" style="margin-top: 10px; margin-bottom: 10px; padding: 10px; background: rgba(16, 185, 129, 0.05); color: var(--color-success); border: 1px solid rgba(16, 185, 129, 0.1); border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; display: none;"></div>
                     <div class="form-group" id="productAddonsFormGroup" style="margin-top:12px;">
                         <label style="font-weight:600; margin-bottom:8px; display:block;">Vincular Subprodutos / Serviços Recomendados (Upsell)</label>
-                        <div id="productAddonsContainer" style="display:flex; flex-direction:column; gap:8px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:12px;">
-                            <!-- Checkboxes populated dynamically from other catalog items -->
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button type="button" class="btn btn-secondary" id="btnOpenProductAddonsModal" style="display:inline-flex; align-items:center; gap:6px; width:fit-content; cursor:pointer;">
+                                <i data-lucide="plus" style="width:14px; height:14px;"></i>
+                                <span id="btnOpenProductAddonsModalText">Selecionar Subprodutos (0)</span>
+                            </button>
+                            <div id="productSelectedAddonsSummary" style="font-size:11px; color:var(--text-secondary); background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:8px; display:none;">
+                                <!-- Names of selected subproducts will appear here -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1874,25 +1880,16 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="customerProduct">Produto / Serviço Vendido *</label>
-                        <select id="customerProduct" class="form-control" required>
-                            <!-- Dynamic products dropdown -->
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="customerPrice">Valor do Contrato (R$) *</label>
-                            <input type="number" id="customerPrice" class="form-control" min="0" step="0.01" placeholder="Ex: 1200" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="customerBillingType">Tipo de Cobrança *</label>
-                            <select id="customerBillingType" class="form-control" required>
-                                <option value="single">Taxa Única</option>
-                                <option value="monthly">Recorrente Mensal</option>
-                                <option value="yearly">Recorrente Anual</option>
-                            </select>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label style="font-weight: 600; margin-bottom: 8px; display: block;">Serviços / Produtos Contratados *</label>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button type="button" class="btn btn-secondary" id="btnOpenCustomerServicesSelectionModal" style="display:inline-flex; align-items:center; gap:6px; width:fit-content; cursor:pointer;">
+                                <i data-lucide="plus" style="width:14px; height:14px;"></i>
+                                <span id="btnOpenCustomerServicesSelectionModalText">Vincular Produtos / Serviços (0)</span>
+                            </button>
+                            <div id="customerSelectedServicesSummary" style="font-size:12px; color:var(--text-secondary); background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px; display:none;">
+                                <!-- Dynamically populated selected services summary -->
+                            </div>
                         </div>
                     </div>
 
@@ -2213,6 +2210,58 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="btnCancelImportHistoryModal">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SELECIONAR SUBPRODUTOS (UPSELL) -->
+    <div class="modal" id="productAddonsSelectionModal" style="z-index: 2000;">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3>Vincular Subprodutos</h3>
+                <button type="button" class="btn-close" id="btnCloseProductAddonsModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 6px; background: var(--bg-app); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 6px 10px;">
+                    <i data-lucide="search" style="width: 12px; height: 12px; color: var(--text-muted);"></i>
+                    <input type="text" id="searchAddonsSelection" placeholder="Buscar subproduto..." style="width: 100%; border: none; outline: none; font-size: 12px; background: transparent; color: var(--text-primary);">
+                </div>
+                <div id="productAddonsModalContainer" style="display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto; padding-right:4px;">
+                    <!-- Checkboxes populated dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer" style="padding-top: 12px;">
+                <button type="button" class="btn btn-primary" id="btnConfirmProductAddonsModal" style="width: 100%;">Confirmar Seleção</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SELECIONAR PRODUTOS E SUBPRODUTOS PARA O CLIENTE -->
+    <div class="modal" id="customerServicesSelectionModal" style="z-index: 2000;">
+        <div class="modal-content" style="max-width: 550px; width: 100%;">
+            <div class="modal-header">
+                <h3>Vincular Produtos / Serviços</h3>
+                <button type="button" class="btn-close" id="btnCloseCustomerServicesSelectionModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 6px; background: var(--bg-app); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 6px 10px;">
+                    <i data-lucide="search" style="width: 12px; height: 12px; color: var(--text-muted);"></i>
+                    <input type="text" id="searchCustomerServicesSelection" placeholder="Buscar produto ou subproduto..." style="width: 100%; border: none; outline: none; font-size: 12px; background: transparent; color: var(--text-primary);">
+                </div>
+                
+                <div id="customerServicesSelectionList" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Dynamically populated core products with their subproducts inside groups -->
+                </div>
+            </div>
+            <div class="modal-footer" style="padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
+                    Total Estimado: <span id="customerServicesSelectedTotal" style="color: var(--color-primary);">R$ 0,00</span>
+                </div>
+                <button type="button" class="btn btn-primary" id="btnConfirmCustomerServicesSelectionModal">Confirmar Seleção</button>
             </div>
         </div>
     </div>

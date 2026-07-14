@@ -137,6 +137,161 @@ const defaultMarketingAssets = [
     { id: "ma4", title: "SEO Orgânico - Blog de Tecnologia", category: "organic", status: "active", url: "https://webcolabs.com.br/blog", metrics: "850 acessos orgânicos/mês", cost: "R$ 300,00/mês", notes: "Artigos otimizados para busca local." }
 ];
 
+let currentCustomerSelectedProductIds = [];
+
+function populateCustomerServicesSelectionList(selectedProductIds = []) {
+    const env = getEnv();
+    const listContainer = document.getElementById("customerServicesSelectionList");
+    if (!listContainer) return;
+    listContainer.innerHTML = "";
+
+    const cores = env.products.filter(p => p.isCore !== false);
+    const subs = env.products.filter(p => p.isCore === false);
+
+    const renderedSubIds = new Set();
+
+    cores.forEach(c => {
+        const coreWrapper = document.createElement("div");
+        coreWrapper.className = "service-selection-group";
+        coreWrapper.style = "border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; background: var(--bg-card); margin-bottom: 8px;";
+
+        const hasAddons = c.suggestedAddons && c.suggestedAddons.length > 0;
+
+        const coreHeader = document.createElement("div");
+        coreHeader.style = `display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: ${hasAddons ? "8px" : "0"};`;
+        coreHeader.innerHTML = `
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
+                <input type="checkbox" class="customer-service-checkbox core-service" value="${c.id}" data-price="${c.price}" data-name="${c.name}" data-billing="${c.type}">
+                <span>${c.name}</span>
+            </label>
+            <span style="color: var(--text-secondary); font-size: 12px;">${formatCurrency(c.price)}${c.type === 'monthly' ? '/mês' : ''}</span>
+        `;
+        coreWrapper.appendChild(coreHeader);
+
+        if (hasAddons) {
+            const addonsWrapper = document.createElement("div");
+            addonsWrapper.style = "display: flex; flex-direction: column; gap: 6px; padding-left: 20px; border-left: 2px solid var(--border-color); margin-top: 4px;";
+            
+            c.suggestedAddons.forEach(subId => {
+                const sub = env.products.find(x => x.id === subId);
+                if (sub) {
+                    renderedSubIds.add(sub.id);
+                    const subItem = document.createElement("div");
+                    subItem.style = "display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary);";
+                    subItem.innerHTML = `
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
+                            <input type="checkbox" class="customer-service-checkbox sub-service" value="${sub.id}" data-price="${sub.price}" data-name="${sub.name}" data-billing="${sub.type}">
+                            <span>${sub.name} <span class="badge-recurrence single" style="font-size:9px; padding: 1px 4px; margin-left: 4px;">Subproduto</span></span>
+                        </label>
+                        <span style="font-size: 11px;">${formatCurrency(sub.price)}${sub.type === 'monthly' ? '/mês' : ''}</span>
+                    `;
+                    addonsWrapper.appendChild(subItem);
+                }
+            });
+            coreWrapper.appendChild(addonsWrapper);
+        }
+
+        listContainer.appendChild(coreWrapper);
+    });
+
+    const avulsos = subs.filter(s => !renderedSubIds.has(s.id));
+    if (avulsos.length > 0) {
+        const avulsosWrapper = document.createElement("div");
+        avulsosWrapper.className = "service-selection-group";
+        avulsosWrapper.style = "border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; background: var(--bg-card);";
+
+        const avulsosHeader = document.createElement("div");
+        avulsosHeader.style = "font-weight: 600; font-size: 12px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;";
+        avulsosHeader.innerText = "Subprodutos Avulsos";
+        avulsosWrapper.appendChild(avulsosHeader);
+
+        const avulsosList = document.createElement("div");
+        avulsosList.style = "display: flex; flex-direction: column; gap: 6px;";
+
+        avulsos.forEach(s => {
+            const subItem = document.createElement("div");
+            subItem.style = "display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary);";
+            subItem.innerHTML = `
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
+                    <input type="checkbox" class="customer-service-checkbox sub-service" value="${s.id}" data-price="${s.price}" data-name="${s.name}" data-billing="${s.type}">
+                    <span>${s.name}</span>
+                </label>
+                <span style="font-size: 11px;">${formatCurrency(s.price)}${s.type === 'monthly' ? '/mês' : ''}</span>
+            `;
+            avulsosList.appendChild(subItem);
+        });
+        avulsosWrapper.appendChild(avulsosList);
+        listContainer.appendChild(avulsosWrapper);
+    }
+
+    const checkboxes = listContainer.querySelectorAll(".customer-service-checkbox");
+    checkboxes.forEach(cb => {
+        cb.checked = selectedProductIds.includes(cb.value);
+        cb.addEventListener("change", () => {
+            updateCustomerServicesSelectedTotal();
+        });
+    });
+
+    updateCustomerServicesSelectedTotal();
+}
+
+function updateCustomerServicesSelectedTotal() {
+    const listContainer = document.getElementById("customerServicesSelectionList");
+    const totalEl = document.getElementById("customerServicesSelectedTotal");
+    if (!listContainer || !totalEl) return;
+
+    const checked = Array.from(listContainer.querySelectorAll(".customer-service-checkbox:checked"));
+    let total = 0;
+    checked.forEach(cb => {
+        total += parseFloat(cb.dataset.price) || 0;
+    });
+
+    totalEl.innerText = formatCurrency(total);
+}
+
+function updateCustomerServicesFormSummary() {
+    const summaryContainer = document.getElementById("customerSelectedServicesSummary");
+    const btnText = document.getElementById("btnOpenCustomerServicesSelectionModalText");
+    if (!btnText) return;
+
+    btnText.innerText = `Vincular Produtos / Serviços (${currentCustomerSelectedProductIds.length})`;
+
+    if (currentCustomerSelectedProductIds.length > 0) {
+        const env = getEnv();
+        let totalVal = 0;
+        let names = [];
+        let hasMonthly = false;
+
+        currentCustomerSelectedProductIds.forEach(pid => {
+            const p = env.products.find(x => x.id === pid);
+            if (p) {
+                totalVal += p.price;
+                names.push(`${p.name} (${formatCurrency(p.price)}${p.type === 'monthly' ? '/mês' : ''})`);
+                if (p.type === 'monthly') {
+                    hasMonthly = true;
+                }
+            }
+        });
+
+        if (summaryContainer) {
+            summaryContainer.style.display = "block";
+            summaryContainer.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 4px;">Serviços Selecionados:</div>
+                <ul style="margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 4px;">
+                    ${names.map(name => `<li>${name}</li>`).join("")}
+                </ul>
+                <div style="margin-top: 6px; font-weight: 600; border-top: 1px solid var(--border-color); padding-top: 4px;">
+                    Total: ${formatCurrency(totalVal)} ${hasMonthly ? '(contém mensalidade)' : '(taxa única)'}
+                </div>
+            `;
+        }
+    } else {
+        if (summaryContainer) {
+            summaryContainer.style.display = "none";
+        }
+    }
+}
+
 // Helper to get active environment data
 function getEnv() {
     const env = state.currentEnv || "webco";
@@ -469,7 +624,7 @@ function renderAll() {
     safeRun("populateContactDropdowns", populateContactDropdowns);
     safeRun("populateConversionProductsDropdown", populateConversionProductsDropdown);
     safeRun("populateEventContactsDropdown", populateEventContactsDropdown);
-    safeRun("populateCustomerProductsDropdown", populateCustomerProductsDropdown);
+    safeRun("populateCustomerServicesSelectionList", () => populateCustomerServicesSelectionList(currentCustomerSelectedProductIds));
     safeRun("updateCalendarNotifications", updateCalendarNotifications);
     
     safeCreateIcons();
@@ -1852,14 +2007,18 @@ function openEditProduct(id) {
 
 function populateProductAddons(selectedProductId = "") {
     const env = getEnv();
-    const container = document.getElementById("productAddonsContainer");
+    const container = document.getElementById("productAddonsModalContainer");
+    const summary = document.getElementById("productSelectedAddonsSummary");
+    const btnText = document.getElementById("btnOpenProductAddonsModalText");
     if (!container) return;
     container.innerHTML = "";
 
     // Show all OTHER subproducts (non-core)
     const addonCandidates = env.products.filter(p => p.id !== selectedProductId && p.isCore === false);
     if (addonCandidates.length === 0) {
-        container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Nenhum outro serviço disponível no catálogo para vincular</span>`;
+        container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);padding:8px;">Nenhum outro subproduto disponível no catálogo para vincular</span>`;
+        if (btnText) btnText.innerText = "Selecionar Subprodutos (0)";
+        if (summary) summary.style.display = "none";
         return;
     }
 
@@ -1871,7 +2030,7 @@ function populateProductAddons(selectedProductId = "") {
         const div = document.createElement("div");
         div.style = "display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom: 2px;";
         div.innerHTML = `
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; width:100%;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; width:100%; padding: 4px;">
                 <input type="checkbox" class="product-addon-checkbox" value="${p.id}">
                 <span style="flex:1;">${p.name}</span>
                 <strong style="color:var(--text-secondary);">${formatCurrency(p.price)}${p.type === 'monthly' ? '/mês' : ''}</strong>
@@ -1879,8 +2038,45 @@ function populateProductAddons(selectedProductId = "") {
         `;
         const cb = div.querySelector("input");
         cb.checked = linkedAddons.includes(p.id);
+        
+        cb.onchange = () => {
+            updateSelectedAddonsSummary();
+        };
+        
         container.appendChild(div);
     });
+
+    updateSelectedAddonsSummary();
+}
+
+function updateSelectedAddonsSummary() {
+    const container = document.getElementById("productAddonsModalContainer");
+    const summary = document.getElementById("productSelectedAddonsSummary");
+    const btnText = document.getElementById("btnOpenProductAddonsModalText");
+    if (!container) return;
+
+    const checkedBoxes = Array.from(container.querySelectorAll(".product-addon-checkbox:checked"));
+    const env = getEnv();
+    
+    if (btnText) {
+        btnText.innerText = `Selecionar Subprodutos (${checkedBoxes.length})`;
+    }
+    
+    if (checkedBoxes.length > 0) {
+        const names = checkedBoxes.map(cb => {
+            const p = env.products.find(x => x.id === cb.value);
+            return p ? p.name : "";
+        }).filter(Boolean);
+        
+        if (summary) {
+            summary.style.display = "block";
+            summary.innerHTML = `<strong>Vínculos selecionados:</strong> ${names.join(", ")}`;
+        }
+    } else {
+        if (summary) {
+            summary.style.display = "none";
+        }
+    }
 }
 
 function deleteProduct(id) {
@@ -2322,24 +2518,9 @@ function openAddCustomer(preFill = null) {
     
     updateContactsTriggerText();
     
-    const env = getEnv();
-    const select = document.getElementById("customerProduct");
-    if (select) {
-        const firstProduct = env.products && env.products.length > 0 ? env.products.find(p => p && p.id) : null;
-        if (firstProduct) {
-            select.value = firstProduct.id;
-            const priceInput = document.getElementById("customerPrice");
-            if (priceInput) priceInput.value = firstProduct.price !== undefined && firstProduct.price !== null ? firstProduct.price : "";
-            const billingInput = document.getElementById("customerBillingType");
-            if (billingInput) billingInput.value = firstProduct.type || "single";
-        } else {
-            select.value = "custom";
-            const priceInput = document.getElementById("customerPrice");
-            if (priceInput) priceInput.value = "";
-            const billingInput = document.getElementById("customerBillingType");
-            if (billingInput) billingInput.value = "single";
-        }
-    }
+    currentCustomerSelectedProductIds = [];
+    populateCustomerServicesSelectionList(currentCustomerSelectedProductIds);
+    updateCustomerServicesFormSummary();
     
     const statusInput = document.getElementById("customerStatus");
     if (statusInput) statusInput.value = "active";
@@ -2468,20 +2649,18 @@ function openEditCustomer(id) {
     const nicheInput = document.getElementById("customerNiche");
     if (nicheInput) nicheInput.value = cust.niche || "Outro";
     
-    const matchingProd = env.products ? env.products.find(p => p && p.name === cust.productName) : null;
-    const productSelect = document.getElementById("customerProduct");
-    if (productSelect) {
+    if (cust.productIds) {
+        currentCustomerSelectedProductIds = [...cust.productIds];
+    } else {
+        const matchingProd = env.products.find(p => p.name === cust.productName);
         if (matchingProd) {
-            productSelect.value = matchingProd.id;
+            currentCustomerSelectedProductIds = [matchingProd.id];
         } else {
-            productSelect.value = "custom";
+            currentCustomerSelectedProductIds = [];
         }
     }
-
-    const priceInput = document.getElementById("customerPrice");
-    if (priceInput) priceInput.value = cust.value !== undefined && cust.value !== null ? cust.value : "";
-    const billingInput = document.getElementById("customerBillingType");
-    if (billingInput) billingInput.value = cust.type || "single";
+    populateCustomerServicesSelectionList(currentCustomerSelectedProductIds);
+    updateCustomerServicesFormSummary();
     
     // Set date and document fields
     const startDateInput = document.getElementById("customerStartDate");
@@ -2524,6 +2703,46 @@ document.getElementById("btnCloseProductModal").addEventListener("click", () => 
 document.getElementById("btnCancelProductModal").addEventListener("click", () => {
     document.getElementById("productModal").classList.remove("active");
 });
+
+// Product Addons Modal Controls
+document.getElementById("btnOpenProductAddonsModal").addEventListener("click", () => {
+    const modal = document.getElementById("productAddonsSelectionModal");
+    if (modal) {
+        modal.classList.add("active");
+        const searchInput = document.getElementById("searchAddonsSelection");
+        if (searchInput) {
+            searchInput.value = "";
+            searchInput.dispatchEvent(new Event("input"));
+        }
+    }
+});
+
+document.getElementById("btnCloseProductAddonsModal").addEventListener("click", () => {
+    document.getElementById("productAddonsSelectionModal").classList.remove("active");
+});
+
+document.getElementById("btnConfirmProductAddonsModal").addEventListener("click", () => {
+    document.getElementById("productAddonsSelectionModal").classList.remove("active");
+});
+
+const searchAddonsInput = document.getElementById("searchAddonsSelection");
+if (searchAddonsInput) {
+    searchAddonsInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase();
+        const container = document.getElementById("productAddonsModalContainer");
+        if (container) {
+            const labels = container.querySelectorAll("label");
+            labels.forEach(label => {
+                const text = label.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    label.parentElement.style.display = "flex";
+                } else {
+                    label.parentElement.style.display = "none";
+                }
+            });
+        }
+    });
+}
 
 const pType = document.getElementById("productType");
 const pPrice = document.getElementById("productPrice");
@@ -4803,6 +5022,70 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Customer Services Selection Modal controls
+    const btnOpenCustServices = document.getElementById("btnOpenCustomerServicesSelectionModal");
+    if (btnOpenCustServices) {
+        btnOpenCustServices.addEventListener("click", () => {
+            const modal = document.getElementById("customerServicesSelectionModal");
+            if (modal) {
+                modal.classList.add("active");
+                const searchInput = document.getElementById("searchCustomerServicesSelection");
+                if (searchInput) {
+                    searchInput.value = "";
+                    searchInput.dispatchEvent(new Event("input"));
+                }
+            }
+        });
+    }
+
+    const btnCloseCustServices = document.getElementById("btnCloseCustomerServicesSelectionModal");
+    if (btnCloseCustServices) {
+        btnCloseCustServices.addEventListener("click", () => {
+            document.getElementById("customerServicesSelectionModal").classList.remove("active");
+        });
+    }
+
+    const btnConfirmCustServices = document.getElementById("btnConfirmCustomerServicesSelectionModal");
+    if (btnConfirmCustServices) {
+        btnConfirmCustServices.addEventListener("click", () => {
+            document.getElementById("customerServicesSelectionModal").classList.remove("active");
+            
+            const listContainer = document.getElementById("customerServicesSelectionList");
+            if (listContainer) {
+                const checked = Array.from(listContainer.querySelectorAll(".customer-service-checkbox:checked"));
+                currentCustomerSelectedProductIds = checked.map(cb => cb.value);
+            }
+            updateCustomerServicesFormSummary();
+        });
+    }
+
+    const searchCustServicesInput = document.getElementById("searchCustomerServicesSelection");
+    if (searchCustServicesInput) {
+        searchCustServicesInput.addEventListener("input", (e) => {
+            const query = e.target.value.toLowerCase();
+            const groups = document.querySelectorAll("#customerServicesSelectionList .service-selection-group");
+            groups.forEach(group => {
+                const labels = group.querySelectorAll("label");
+                let hasMatch = false;
+                labels.forEach(lbl => {
+                    const text = lbl.textContent.toLowerCase();
+                    if (text.includes(query)) {
+                        lbl.parentElement.style.display = "flex";
+                        hasMatch = true;
+                    } else {
+                        lbl.parentElement.style.display = "none";
+                    }
+                });
+                
+                if (hasMatch) {
+                    group.style.display = "block";
+                } else {
+                    group.style.display = "none";
+                }
+            });
+        });
+    }
+
     const btnCloseServicesModal = document.getElementById("btnCloseServicesModal");
     if (btnCloseServicesModal) {
         btnCloseServicesModal.addEventListener("click", () => {
@@ -4834,23 +5117,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const customerProductSelect = document.getElementById("customerProduct");
-    if (customerProductSelect) {
-        customerProductSelect.addEventListener("change", (e) => {
-            const productId = e.target.value;
-            if (productId === "custom") {
-                document.getElementById("customerPrice").value = "";
-                document.getElementById("customerBillingType").value = "single";
-            } else {
-                const env = getEnv();
-                const prod = env.products.find(p => p.id === productId);
-                if (prod) {
-                    document.getElementById("customerPrice").value = prod.price;
-                    document.getElementById("customerBillingType").value = prod.type;
-                }
-            }
-        });
-    }
+
 
     const contactsTrigger = document.getElementById("customerContactsTrigger");
     const contactsDropdown = document.getElementById("customerContactsDropdown");
@@ -4900,9 +5167,6 @@ window.addEventListener("DOMContentLoaded", () => {
             const name = document.getElementById("customerName").value;
             const company = document.getElementById("customerCompany").value;
             const niche = document.getElementById("customerNiche").value;
-            const productId = document.getElementById("customerProduct").value;
-            const price = parseFloat(document.getElementById("customerPrice").value) || 0;
-            const billingType = document.getElementById("customerBillingType").value;
             
             const startDate = document.getElementById("customerStartDate")?.value || "";
             const endDate = document.getElementById("customerEndDate")?.value || "";
@@ -4912,10 +5176,16 @@ window.addEventListener("DOMContentLoaded", () => {
             const status = document.getElementById("customerStatus").value;
 
             let productName = "Serviço Customizado";
-            if (productId !== "custom") {
-                const prod = env.products.find(p => p.id === productId);
-                if (prod) {
-                    productName = prod.name;
+            let price = 0;
+            let billingType = "single";
+            
+            if (currentCustomerSelectedProductIds.length > 0) {
+                const selectedProds = currentCustomerSelectedProductIds.map(pid => env.products.find(x => x.id === pid)).filter(Boolean);
+                if (selectedProds.length > 0) {
+                    productName = selectedProds.map(p => p.name).join(" + ");
+                    price = selectedProds.reduce((sum, p) => sum + p.price, 0);
+                    const hasMonthly = selectedProds.some(p => p.type === "monthly");
+                    billingType = hasMonthly ? "monthly" : "single";
                 }
             }
 
@@ -4927,6 +5197,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     cust.name = name;
                     cust.company = company;
                     cust.niche = niche;
+                    cust.productIds = [...currentCustomerSelectedProductIds];
                     cust.productName = productName;
                     cust.value = price;
                     cust.type = billingType;
@@ -4944,6 +5215,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     name: name,
                     company: company,
                     niche: niche,
+                    productIds: [...currentCustomerSelectedProductIds],
                     productName: productName,
                     value: price,
                     type: billingType,
