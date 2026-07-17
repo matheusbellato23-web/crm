@@ -1881,23 +1881,31 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <!-- Empty spacer -->
+                            <label for="customerProduct">Produto / Serviço *</label>
+                            <select id="customerProduct" class="form-control" required>
+                                <option value="custom">-- Serviço Customizado --</option>
+                                <!-- Populated dynamically -->
+                            </select>
                         </div>
                     </div>
 
-                    <div class="form-group" style="margin-top: 12px;">
-                        <label style="font-weight: 600; margin-bottom: 8px; display: block;">Serviços / Produtos Contratados *</label>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <button type="button" class="form-control" id="btnOpenCustomerServicesSelectionModal" style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; text-align:left; background:var(--bg-card); border: 1px dashed var(--color-primary); color:var(--color-primary); font-weight:500; height: 38px;">
-                                <span style="display:flex; align-items:center; gap:8px;">
-                                    <i data-lucide="plus-circle" style="width:14px; height:14px; color:var(--color-primary);"></i>
-                                    <span id="btnOpenCustomerServicesSelectionModalText">Vincular Produtos / Serviços (0)</span>
-                                </span>
-                                <i data-lucide="chevron-down" style="width:14px; height:14px; color:var(--text-muted);"></i>
-                            </button>
-                            <div id="customerSelectedServicesSummary" style="font-size:12px; color:var(--text-secondary); background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px; display:none;">
-                                <!-- Dynamically populated selected services summary -->
-                            </div>
+                    <div class="form-group" id="customerProductNameCustomContainer" style="display: none; margin-top: 4px;">
+                        <label for="customerProductNameCustom">Nome do Serviço Customizado *</label>
+                        <input type="text" id="customerProductNameCustom" class="form-control" placeholder="Ex: Consultoria de SEO">
+                    </div>
+
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="form-group">
+                            <label for="customerPrice">Preço Cobrado (R$) *</label>
+                            <input type="number" id="customerPrice" class="form-control" min="0" step="0.01" placeholder="Ex: 350" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerBillingType">Tipo de Cobrança *</label>
+                            <select id="customerBillingType" class="form-control" required>
+                                <option value="single">Taxa Única</option>
+                                <option value="monthly">Recorrente Mensal</option>
+                                <option value="yearly">Recorrente Anual</option>
+                            </select>
                         </div>
                     </div>
 
@@ -2246,33 +2254,7 @@
         </div>
     </div>
 
-    <!-- MODAL: SELECIONAR PRODUTOS E SUBPRODUTOS PARA O CLIENTE -->
-    <div class="modal" id="customerServicesSelectionModal" style="z-index: 2000;">
-        <div class="modal-content" style="max-width: 550px; width: 100%;">
-            <div class="modal-header">
-                <h3>Vincular Produtos / Serviços</h3>
-                <button type="button" class="btn-close" id="btnCloseCustomerServicesSelectionModal">
-                    <i data-lucide="x"></i>
-                </button>
-            </div>
-            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 6px; background: var(--bg-app); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 6px 10px;">
-                    <i data-lucide="search" style="width: 12px; height: 12px; color: var(--text-muted);"></i>
-                    <input type="text" id="searchCustomerServicesSelection" placeholder="Buscar produto ou subproduto..." style="width: 100%; border: none; outline: none; font-size: 12px; background: transparent; color: var(--text-primary);">
-                </div>
-                
-                <div id="customerServicesSelectionList" style="display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Dynamically populated core products with their subproducts inside groups -->
-                </div>
-            </div>
-            <div class="modal-footer" style="padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
-                    Total Estimado: <span id="customerServicesSelectedTotal" style="color: var(--color-primary);">R$ 0,00</span>
-                </div>
-                <button type="button" class="btn btn-primary" id="btnConfirmCustomerServicesSelectionModal">Confirmar Seleção</button>
-            </div>
-        </div>
-    </div>
+
     <!-- MODAL: CUSTOMIZAR WIDGETS DO DASHBOARD -->
     <div class="modal" id="dashboardCustomizationModal" style="z-index: 2000;">
         <div class="modal-content" style="max-width: 440px;">

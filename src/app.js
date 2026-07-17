@@ -137,168 +137,7 @@ const defaultMarketingAssets = [
     { id: "ma4", title: "SEO Orgânico - Blog de Tecnologia", category: "organic", status: "active", url: "https://webcolabs.com.br/blog", metrics: "850 acessos orgânicos/mês", cost: "R$ 300,00/mês", notes: "Artigos otimizados para busca local." }
 ];
 
-let currentCustomerSelectedProductIds = [];
 
-function populateCustomerServicesSelectionList(selectedProductIds = []) {
-    const env = getEnv();
-    const listContainer = document.getElementById("customerServicesSelectionList");
-    if (!listContainer) return;
-    listContainer.innerHTML = "";
-
-    const cores = env.products.filter(p => p.isCore !== false);
-    const subs = env.products.filter(p => p.isCore === false);
-
-    const renderedSubIds = new Set();
-
-    cores.forEach(c => {
-        const coreWrapper = document.createElement("div");
-        coreWrapper.className = "service-selection-group";
-        coreWrapper.style = "border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; background: var(--bg-card); margin-bottom: 8px;";
-
-        const hasAddons = c.suggestedAddons && c.suggestedAddons.length > 0;
-
-        const coreHeader = document.createElement("div");
-        coreHeader.style = `display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: ${hasAddons ? "8px" : "0"};`;
-        coreHeader.innerHTML = `
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
-                <input type="checkbox" class="customer-service-checkbox core-service" value="${c.id}" data-price="${c.price}" data-name="${c.name}" data-billing="${c.type}">
-                <span>${c.name}</span>
-            </label>
-            <span style="color: var(--text-secondary); font-size: 12px;">${formatCurrency(c.price)}${c.type === 'monthly' ? '/mês' : ''}</span>
-        `;
-        coreWrapper.appendChild(coreHeader);
-
-        if (hasAddons) {
-            const addonsWrapper = document.createElement("div");
-            addonsWrapper.style = "display: flex; flex-direction: column; gap: 6px; padding-left: 20px; border-left: 2px solid var(--border-color); margin-top: 4px;";
-            
-            c.suggestedAddons.forEach(subId => {
-                const sub = env.products.find(x => x.id === subId);
-                if (sub) {
-                    renderedSubIds.add(sub.id);
-                    const subItem = document.createElement("div");
-                    subItem.style = "display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary);";
-                    subItem.innerHTML = `
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
-                            <input type="checkbox" class="customer-service-checkbox sub-service" value="${sub.id}" data-price="${sub.price}" data-name="${sub.name}" data-billing="${sub.type}">
-                            <span>${sub.name} <span class="badge-recurrence single" style="font-size:9px; padding: 1px 4px; margin-left: 4px;">Subproduto</span></span>
-                        </label>
-                        <span style="font-size: 11px;">${formatCurrency(sub.price)}${sub.type === 'monthly' ? '/mês' : ''}</span>
-                    `;
-                    addonsWrapper.appendChild(subItem);
-                }
-            });
-            coreWrapper.appendChild(addonsWrapper);
-        }
-
-        listContainer.appendChild(coreWrapper);
-    });
-
-    const avulsos = subs.filter(s => !renderedSubIds.has(s.id));
-    if (avulsos.length > 0) {
-        const avulsosWrapper = document.createElement("div");
-        avulsosWrapper.className = "service-selection-group";
-        avulsosWrapper.style = "border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; background: var(--bg-card);";
-
-        const avulsosHeader = document.createElement("div");
-        avulsosHeader.style = "font-weight: 600; font-size: 12px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;";
-        avulsosHeader.innerText = "Subprodutos Avulsos";
-        avulsosWrapper.appendChild(avulsosHeader);
-
-        const avulsosList = document.createElement("div");
-        avulsosList.style = "display: flex; flex-direction: column; gap: 6px;";
-
-        avulsos.forEach(s => {
-            const subItem = document.createElement("div");
-            subItem.style = "display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary);";
-            subItem.innerHTML = `
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
-                    <input type="checkbox" class="customer-service-checkbox sub-service" value="${s.id}" data-price="${s.price}" data-name="${s.name}" data-billing="${s.type}">
-                    <span>${s.name}</span>
-                </label>
-                <span style="font-size: 11px;">${formatCurrency(s.price)}${s.type === 'monthly' ? '/mês' : ''}</span>
-            `;
-            avulsosList.appendChild(subItem);
-        });
-        avulsosWrapper.appendChild(avulsosList);
-        listContainer.appendChild(avulsosWrapper);
-    }
-
-    const checkboxes = listContainer.querySelectorAll(".customer-service-checkbox");
-    checkboxes.forEach(cb => {
-        cb.checked = selectedProductIds.includes(cb.value);
-        cb.addEventListener("change", () => {
-            updateCustomerServicesSelectedTotal();
-        });
-    });
-
-    updateCustomerServicesSelectedTotal();
-}
-
-function updateCustomerServicesSelectedTotal() {
-    const listContainer = document.getElementById("customerServicesSelectionList");
-    const totalEl = document.getElementById("customerServicesSelectedTotal");
-    if (!listContainer || !totalEl) return;
-
-    const checked = Array.from(listContainer.querySelectorAll(".customer-service-checkbox:checked"));
-    let total = 0;
-    checked.forEach(cb => {
-        total += parseFloat(cb.dataset.price) || 0;
-    });
-
-    totalEl.innerText = formatCurrency(total);
-}
-
-function updateCustomerServicesFormSummary() {
-    const summaryContainer = document.getElementById("customerSelectedServicesSummary");
-    const btnText = document.getElementById("btnOpenCustomerServicesSelectionModalText");
-    if (!btnText) return;
-
-    btnText.innerText = `Vincular Produtos / Serviços (${currentCustomerSelectedProductIds.length})`;
-
-    if (currentCustomerSelectedProductIds.length > 0) {
-        const env = getEnv();
-        let totalVal = 0;
-        let names = [];
-        let hasMonthly = false;
-
-        currentCustomerSelectedProductIds.forEach(pid => {
-            const p = env.products.find(x => x.id === pid);
-            if (p) {
-                totalVal += p.price;
-                names.push(`${p.name} (${formatCurrency(p.price)}${p.type === 'monthly' ? '/mês' : ''})`);
-                if (p.type === 'monthly') {
-                    hasMonthly = true;
-                }
-            }
-        });
-
-        if (summaryContainer) {
-            summaryContainer.style.display = "block";
-            summaryContainer.style.backgroundColor = "rgba(16, 185, 129, 0.03)";
-            summaryContainer.style.border = "1px solid rgba(16, 185, 129, 0.1)";
-            summaryContainer.innerHTML = `
-                <div style="font-weight: 600; font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-secondary); margin-bottom: 8px;">Serviços Selecionados:</div>
-                <div style="display:flex; flex-direction:column; gap:6px;">
-                    ${names.map(name => `
-                        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-primary);">
-                            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--color-primary); flex-shrink:0;"></span>
-                            <span>${name}</span>
-                        </div>
-                    `).join("")}
-                </div>
-                <div style="margin-top: 10px; font-weight: 600; font-size:12px; border-top: 1px solid var(--border-color); padding-top: 8px; display:flex; justify-content:space-between; align-items:center; color:var(--text-primary);">
-                    <span>Total Contratado:</span>
-                    <span style="color:var(--color-primary); font-size:13px;">${formatCurrency(totalVal)} ${hasMonthly ? '(Mensal)' : '(Taxa Única)'}</span>
-                </div>
-            `;
-        }
-    } else {
-        if (summaryContainer) {
-            summaryContainer.style.display = "none";
-        }
-    }
-}
 
 function applyDashboardCustomization() {
     let settings = {
@@ -726,7 +565,7 @@ function renderAll() {
     safeRun("populateContactDropdowns", populateContactDropdowns);
     safeRun("populateConversionProductsDropdown", populateConversionProductsDropdown);
     safeRun("populateEventContactsDropdown", populateEventContactsDropdown);
-    safeRun("populateCustomerServicesSelectionList", () => populateCustomerServicesSelectionList(currentCustomerSelectedProductIds));
+    safeRun("populateCustomerProductsDropdown", populateCustomerProductsDropdown);
     safeRun("updateCalendarNotifications", updateCalendarNotifications);
     
     safeCreateIcons();
@@ -2625,9 +2464,19 @@ function openAddCustomer(preFill = null) {
     
     updateContactsTriggerText();
     
-    currentCustomerSelectedProductIds = [];
-    populateCustomerServicesSelectionList(currentCustomerSelectedProductIds);
-    updateCustomerServicesFormSummary();
+    const prodSelect = document.getElementById("customerProduct");
+    if (prodSelect) prodSelect.value = "custom";
+    const customContainer = document.getElementById("customerProductNameCustomContainer");
+    if (customContainer) customContainer.style.display = "none";
+    const customInput = document.getElementById("customerProductNameCustom");
+    if (customInput) {
+        customInput.value = "";
+        customInput.required = false;
+    }
+    const priceInput = document.getElementById("customerPrice");
+    if (priceInput) priceInput.value = "";
+    const billingInput = document.getElementById("customerBillingType");
+    if (billingInput) billingInput.value = "single";
     
     const statusInput = document.getElementById("customerStatus");
     if (statusInput) statusInput.value = "active";
@@ -2756,18 +2605,48 @@ function openEditCustomer(id) {
     const nicheInput = document.getElementById("customerNiche");
     if (nicheInput) nicheInput.value = cust.niche || "Outro";
     
-    if (cust.productIds) {
-        currentCustomerSelectedProductIds = [...cust.productIds];
-    } else {
-        const matchingProd = env.products.find(p => p.name === cust.productName);
-        if (matchingProd) {
-            currentCustomerSelectedProductIds = [matchingProd.id];
-        } else {
-            currentCustomerSelectedProductIds = [];
+    const prodSelect = document.getElementById("customerProduct");
+    const customContainer = document.getElementById("customerProductNameCustomContainer");
+    const customInput = document.getElementById("customerProductNameCustom");
+    const priceInput = document.getElementById("customerPrice");
+    const billingInput = document.getElementById("customerBillingType");
+    
+    let isCustom = true;
+    let prodIdToSet = "custom";
+    let customNameToSet = cust.productName || "";
+    
+    const prodId = cust.productIds && cust.productIds.length > 0 ? cust.productIds[0] : null;
+    if (prodId) {
+        const hasProd = env.products.some(p => p.id === prodId);
+        if (hasProd) {
+            isCustom = false;
+            prodIdToSet = prodId;
+        }
+    } else if (cust.productName) {
+        const matching = env.products.find(p => p.name === cust.productName);
+        if (matching) {
+            isCustom = false;
+            prodIdToSet = matching.id;
         }
     }
-    populateCustomerServicesSelectionList(currentCustomerSelectedProductIds);
-    updateCustomerServicesFormSummary();
+    
+    if (prodSelect) prodSelect.value = prodIdToSet;
+    if (priceInput) priceInput.value = cust.value || 0;
+    if (billingInput) billingInput.value = cust.type || "single";
+    
+    if (isCustom) {
+        if (customContainer) customContainer.style.display = "block";
+        if (customInput) {
+            customInput.value = customNameToSet;
+            customInput.required = true;
+        }
+    } else {
+        if (customContainer) customContainer.style.display = "none";
+        if (customInput) {
+            customInput.value = "";
+            customInput.required = false;
+        }
+    }
     
     // Set date and document fields
     const startDateInput = document.getElementById("customerStartDate");
@@ -5180,67 +5059,37 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Customer Services Selection Modal controls
-    const btnOpenCustServices = document.getElementById("btnOpenCustomerServicesSelectionModal");
-    if (btnOpenCustServices) {
-        btnOpenCustServices.addEventListener("click", () => {
-            const modal = document.getElementById("customerServicesSelectionModal");
-            if (modal) {
-                modal.classList.add("active");
-                const searchInput = document.getElementById("searchCustomerServicesSelection");
-                if (searchInput) {
-                    searchInput.value = "";
-                    searchInput.dispatchEvent(new Event("input"));
-                }
-            }
-        });
-    }
-
-    const btnCloseCustServices = document.getElementById("btnCloseCustomerServicesSelectionModal");
-    if (btnCloseCustServices) {
-        btnCloseCustServices.addEventListener("click", () => {
-            document.getElementById("customerServicesSelectionModal").classList.remove("active");
-        });
-    }
-
-    const btnConfirmCustServices = document.getElementById("btnConfirmCustomerServicesSelectionModal");
-    if (btnConfirmCustServices) {
-        btnConfirmCustServices.addEventListener("click", () => {
-            document.getElementById("customerServicesSelectionModal").classList.remove("active");
+    // Customer Product Selection change listener
+    const customerProductSelect = document.getElementById("customerProduct");
+    if (customerProductSelect) {
+        customerProductSelect.addEventListener("change", (e) => {
+            const val = e.target.value;
+            const customContainer = document.getElementById("customerProductNameCustomContainer");
+            const customInput = document.getElementById("customerProductNameCustom");
+            const priceInput = document.getElementById("customerPrice");
+            const billingInput = document.getElementById("customerBillingType");
             
-            const listContainer = document.getElementById("customerServicesSelectionList");
-            if (listContainer) {
-                const checked = Array.from(listContainer.querySelectorAll(".customer-service-checkbox:checked"));
-                currentCustomerSelectedProductIds = checked.map(cb => cb.value);
-            }
-            updateCustomerServicesFormSummary();
-        });
-    }
-
-    const searchCustServicesInput = document.getElementById("searchCustomerServicesSelection");
-    if (searchCustServicesInput) {
-        searchCustServicesInput.addEventListener("input", (e) => {
-            const query = e.target.value.toLowerCase();
-            const groups = document.querySelectorAll("#customerServicesSelectionList .service-selection-group");
-            groups.forEach(group => {
-                const labels = group.querySelectorAll("label");
-                let hasMatch = false;
-                labels.forEach(lbl => {
-                    const text = lbl.textContent.toLowerCase();
-                    if (text.includes(query)) {
-                        lbl.parentElement.style.display = "flex";
-                        hasMatch = true;
-                    } else {
-                        lbl.parentElement.style.display = "none";
-                    }
-                });
-                
-                if (hasMatch) {
-                    group.style.display = "block";
-                } else {
-                    group.style.display = "none";
+            if (val === "custom") {
+                if (customContainer) customContainer.style.display = "block";
+                if (customInput) {
+                    customInput.required = true;
+                    customInput.value = "";
                 }
-            });
+                if (priceInput) priceInput.value = "";
+                if (billingInput) billingInput.value = "single";
+            } else {
+                if (customContainer) customContainer.style.display = "none";
+                if (customInput) {
+                    customInput.required = false;
+                    customInput.value = "";
+                }
+                const env = getEnv();
+                const prod = env.products.find(p => p.id === val);
+                if (prod) {
+                    if (priceInput) priceInput.value = prod.price;
+                    if (billingInput) billingInput.value = prod.type;
+                }
+            }
         });
     }
 
@@ -5333,19 +5182,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
             const status = document.getElementById("customerStatus").value;
 
+            const productIdVal = document.getElementById("customerProduct").value;
             let productName = "Serviço Customizado";
-            let price = 0;
-            let billingType = "single";
+            let productIds = [];
             
-            if (currentCustomerSelectedProductIds.length > 0) {
-                const selectedProds = currentCustomerSelectedProductIds.map(pid => env.products.find(x => x.id === pid)).filter(Boolean);
-                if (selectedProds.length > 0) {
-                    productName = selectedProds.map(p => p.name).join(" + ");
-                    price = selectedProds.reduce((sum, p) => sum + p.price, 0);
-                    const hasMonthly = selectedProds.some(p => p.type === "monthly");
-                    billingType = hasMonthly ? "monthly" : "single";
+            if (productIdVal === "custom") {
+                productName = document.getElementById("customerProductNameCustom").value || "Serviço Customizado";
+            } else {
+                const prod = env.products.find(x => x.id === productIdVal);
+                if (prod) {
+                    productName = prod.name;
+                    productIds = [productIdVal];
                 }
             }
+            
+            const price = parseFloat(document.getElementById("customerPrice").value) || 0;
+            const billingType = document.getElementById("customerBillingType").value;
 
             if (id) {
                 const cust = env.customers.find(c => c.id === id);
@@ -5355,7 +5207,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     cust.name = name;
                     cust.company = company;
                     cust.niche = niche;
-                    cust.productIds = [...currentCustomerSelectedProductIds];
+                    cust.productIds = [...productIds];
                     cust.productName = productName;
                     cust.value = price;
                     cust.type = billingType;
@@ -5373,7 +5225,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     name: name,
                     company: company,
                     niche: niche,
-                    productIds: [...currentCustomerSelectedProductIds],
+                    productIds: [...productIds],
                     productName: productName,
                     value: price,
                     type: billingType,
