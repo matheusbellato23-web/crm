@@ -2039,27 +2039,27 @@
                                 <option value="yearly">Recorrente Anual</option>
                             </select>
                         </div>
-                    <div class="form-group">
-                        <label for="customerPaymentOption">Condição de Pagamento *</label>
-                        <select id="customerPaymentOption" class="form-control" required>
-                            <option value="full">Pagamento Total</option>
-                            <option value="partial">50% Pago, 50% na Entrega (Pendente)</option>
-                        </select>
-                    </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="customerPaymentDueDate">Data de Vencimento / Pagamento</label>
+                            <label for="customerPaymentOption">Condição de Pagamento</label>
+                            <select id="customerPaymentOption" class="form-control">
+                                <option value="full">Pagamento Total</option>
+                                <option value="partial">50% Pago, 50% na Entrega</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPaymentDueDate">Data de Vencimento</label>
                             <input type="date" id="customerPaymentDueDate" class="form-control">
                         </div>
-                        <div class="form-group" style="justify-content:flex-end; padding-top:8px;">
-                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-                                <input type="checkbox" id="customerCountBalance" checked style="width:16px;height:16px;cursor:pointer;">
-                                <span style="font-size:13px;font-weight:500;color:var(--text-primary);">Contabilizar no saldo financeiro</span>
-                            </label>
-                            <span style="font-size:11px;color:var(--text-muted);margin-top:4px;">Se desmarcado, não soma na receita</span>
-                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;">
+                            <input type="checkbox" id="customerCountBalance" checked style="width:16px;height:16px;cursor:pointer;">
+                            Contabilizar no saldo financeiro
+                        </label>
                     </div>
 
                     <div class="form-row">
