@@ -257,6 +257,8 @@ function getEnv() {
     if (!state.environments[env].contracts) state.environments[env].contracts = [...defaultContractsList];
     if (!state.environments[env].events) state.environments[env].events = [...defaultEvents];
     if (!state.environments[env].marketingAssets) state.environments[env].marketingAssets = [...defaultMarketingAssets];
+    if (!state.environments[env].niches) state.environments[env].niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Turismo", "Saúde / Estética", "Outro"];
+    if (state.environments[env].balanceAdjustment === undefined) state.environments[env].balanceAdjustment = 0;
     return state.environments[env];
 }
 
@@ -572,14 +574,62 @@ function renderAll() {
 }
 
 // 1. Dashboard Render
+// State for dashboard period filter
+let dashPeriod = 'month';
+
+function getDashPeriodRange() {
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    if (dashPeriod === 'all') return { start: '2000-01-01', end: '2099-12-31' };
+    if (dashPeriod === 'year') {
+        return { start: `${now.getFullYear()}-01-01`, end: `${now.getFullYear()}-12-31` };
+    }
+    if (dashPeriod === 'quarter') {
+        const q = Math.floor(now.getMonth() / 3);
+        const qStart = new Date(now.getFullYear(), q * 3, 1).toISOString().split('T')[0];
+        const qEnd = new Date(now.getFullYear(), q * 3 + 3, 0).toISOString().split('T')[0];
+        return { start: qStart, end: qEnd };
+    }
+    // month (default)
+    const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+    return { start: monthStart, end: monthEnd };
+}
+
 function renderDashboard() {
     applyDashboardCustomization();
     const env = getEnv();
-    
-    // KPIs: calculate LTV from customers
-    const totalSalesLTV = env.customers.reduce((sum, cust) => {
+    const range = getDashPeriodRange();
+
+    // Setup period filter buttons
+    const filterGroup = document.getElementById('dashPeriodFilterGroup');
+    if (filterGroup) {
+        filterGroup.querySelectorAll('.period-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.period === dashPeriod);
+            btn.onclick = () => {
+                dashPeriod = btn.dataset.period;
+                renderDashboard();
+            };
+        });
+    }
+
+    // Filter customers in period
+    const filteredCustomers = env.customers.filter(c => {
+        const d = c.createdAt ? c.createdAt.split('T')[0] : '2000-01-01';
+        return d >= range.start && d <= range.end;
+    });
+
+    // Filter invoices in period
+    const filteredInvoices = env.invoices.filter(inv => {
+        const d = inv.dueDate || '';
+        return d >= range.start && d <= range.end;
+    });
+
+    // KPIs
+    const totalSalesLTV = filteredCustomers.reduce((sum, cust) => {
+        if (cust.countBalance === false) return sum;
         if (cust.status === "active") {
-            return sum + (cust.type === "monthly" ? cust.value * 6 : cust.type === "yearly" ? cust.value : cust.value);
+            return sum + (cust.type === "monthly" ? cust.value * 6 : cust.value);
         }
         return sum + (cust.type === "single" ? cust.value : 0);
     }, 0);
@@ -595,7 +645,6 @@ function renderDashboard() {
     document.getElementById("kpiConversionRate").innerText = `${conversionRate}%`;
     document.getElementById("kpiPendingTasks").innerText = pendingTasksCount;
 
-    // Update Conversion Badge Description
     const conversionBadge = document.getElementById("kpiConversionBadge");
     if (conversionRate >= 25) {
         conversionBadge.innerText = "Alta Conversão";
@@ -605,7 +654,6 @@ function renderDashboard() {
         conversionBadge.className = "kpi-badge warning";
     }
 
-    // Update Pending Task Badge text
     const badge = document.getElementById("kpiTaskStatusBadge");
     if (pendingTasksCount === 0) {
         badge.innerText = "Tudo em dia";
@@ -615,7 +663,58 @@ function renderDashboard() {
         badge.className = "kpi-badge warning";
     }
 
-    // Render Recent Leads Table
+    // Balance card
+    const totalRevenue = env.invoices
+        .filter(inv => inv.status === 'paid')
+        .filter(inv => {
+            const c = env.customers.find(cu => (cu.company || cu.name) === inv.company && cu.countBalance !== false);
+            return c !== undefined || true; // include unless explicitly excluded
+        })
+        .reduce((sum, inv) => sum + inv.value, 0);
+    const totalExpenses = env.expenses.reduce((sum, e) => sum + e.value, 0);
+    const balance = totalRevenue - totalExpenses + (env.balanceAdjustment || 0);
+    const balanceEl = document.getElementById('dashBalanceValue');
+    if (balanceEl) balanceEl.innerText = formatCurrency(balance);
+    const balanceSubEl = document.getElementById('dashBalanceSub');
+    if (balanceSubEl) {
+        const adj = env.balanceAdjustment || 0;
+        balanceSubEl.innerText = `Receitas ${formatCurrency(totalRevenue)} − Despesas ${formatCurrency(totalExpenses)}${adj !== 0 ? ` + Ajuste ${formatCurrency(adj)}` : ''}`;
+    }
+
+    // Top products
+    const productRevMap = {};
+    env.invoices.forEach(inv => {
+        if (!inv.productName) return;
+        if (!productRevMap[inv.productName]) productRevMap[inv.productName] = 0;
+        productRevMap[inv.productName] += inv.value;
+    });
+    const topProducts = Object.entries(productRevMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    const maxVal = topProducts.length > 0 ? topProducts[0][1] : 1;
+    const topListEl = document.getElementById('dashTopProductsList');
+    if (topListEl) {
+        if (topProducts.length === 0) {
+            topListEl.innerHTML = `<div style="color:var(--text-muted);font-size:12px;padding:10px 0;">Sem dados de receita ainda.</div>`;
+        } else {
+            topListEl.innerHTML = topProducts.map(([name, val], i) => `
+                <div class="top-product-item">
+                    <div class="top-product-rank">${i + 1}</div>
+                    <div class="top-product-info">
+                        <div class="top-product-name" title="${name}">${name}</div>
+                        <div class="top-product-bar-row">
+                            <div class="top-product-bar">
+                                <div class="top-product-bar-fill" style="width:${Math.round((val/maxVal)*100)}%"></div>
+                            </div>
+                            <span class="top-product-value">${formatCurrency(val)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Recent Leads Table
     const recentLeads = [...env.contacts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
     const tbody = document.getElementById("recentLeadsTableBody");
     tbody.innerHTML = "";
@@ -637,7 +736,7 @@ function renderDashboard() {
         tbody.appendChild(tr);
     });
 
-    // Render Urgent Tasks List (top 4 uncompleted tasks)
+    // Urgent Tasks
     const urgentTasks = env.tasks.filter(t => !t.completed).sort((a, b) => {
         const priorities = { high: 3, medium: 2, low: 1 };
         return priorities[b.priority] - priorities[a.priority];
@@ -825,6 +924,7 @@ function renderContacts() {
                     </div>
                 </td>
                 <td>${c.company || "-"}</td>
+                <td><span class="niche-tag">${c.niche || "Outro"}</span></td>
                 <td>
                     <div class="contact-comm-info">
                         <span>${c.email}</span>
@@ -1310,18 +1410,32 @@ function updateContactStatus(id, newStatus) {
 }
 
 // 4. Customers Management Render
+// State for customers tab filter
+let custTabFilter = 'active';
+
 function renderCustomers() {
     const env = getEnv();
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
     
+    // Bind tab buttons
+    const tabBtns = document.querySelectorAll('.customers-tab-btn');
+    tabBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.custtab === custTabFilter);
+        btn.onclick = () => { custTabFilter = btn.dataset.custtab; renderCustomers(); };
+    });
+    
     let filtered = [...env.customers];
+    
+    // Filter by tab
+    if (custTabFilter === 'active') filtered = filtered.filter(c => c.status === 'active');
+    else if (custTabFilter === 'inactive') filtered = filtered.filter(c => c.status !== 'active');
     
     if (searchVal) {
         filtered = filtered.filter(cust => 
-            cust.name.toLowerCase().includes(searchVal) ||
+            (cust.name || '').toLowerCase().includes(searchVal) ||
             (cust.company && cust.company.toLowerCase().includes(searchVal)) ||
             (cust.niche && cust.niche.toLowerCase().includes(searchVal)) ||
-            cust.productName.toLowerCase().includes(searchVal)
+            (cust.productName || '').toLowerCase().includes(searchVal)
         );
     }
     
@@ -1416,22 +1530,20 @@ function renderCustomers() {
             tr.innerHTML = `
                 <td>
                     <div class="col-contact-info">
-                        <div class="contact-avatar">${getInitials(group.clientName)}</div>
+                        <div class="contact-avatar">${getInitials(group.company || group.clientName)}</div>
                         <div>
-                            <span style="font-weight: 600; display: block;">${group.clientName}</span>
-                            ${contactNames.length > 0 ? `<span style="font-size: 10px; color: var(--text-secondary); display: block; margin-top: 2px;">Contatos: ${contactNames.join(", ")}</span>` : ''}
+                            <span style="font-weight: 600; display: block; font-size:13px;">${group.company || group.clientName || '-'}</span>
                         </div>
                     </div>
                 </td>
-                <td>${group.company || "-"}</td>
-                <td><span style="font-size: 11px; color: var(--text-secondary); background: var(--bg-app); padding: 2px 6px; border-radius: 4px;">${group.niche || "Outro"}</span></td>
+                <td><span class="niche-tag">${group.niche || 'Outro'}</span></td>
                 <td>
-                    <button class="btn btn-secondary btn-xs btn-view-client-services" style="font-size: 11px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 6px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-app); color: var(--text-primary); cursor: pointer; font-weight: 500;">
+                    <button class="btn btn-secondary btn-xs btn-view-client-services" style="font-size: 11px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 6px; border-radius: 4px;">
                         <i data-lucide="list" style="width:12px;height:12px;"></i>
                         <span>${serviceCountText}</span>
                     </button>
                 </td>
-                <td><strong>${formatCurrency(mrrValue)} / mês</strong></td>
+                <td><strong style="color:var(--color-teal);">${formatCurrency(mrrValue)}/mês</strong></td>
                 <td><strong>${formatCurrency(totalActiveValue)}</strong></td>
                 <td>
                     <span class="badge-status ${group.status}">
@@ -1440,8 +1552,12 @@ function renderCustomers() {
                 </td>
                 <td>
                     <div class="kanban-card-actions" style="display: flex; gap: 6px;">
-                        <button class="btn btn-secondary btn-xs btn-add-service-to-client" style="font-size: 10px; padding: 4px 8px; display: flex; align-items: center; gap: 4px; border-radius: 4px; border: 1px solid var(--border-color); background: transparent; color: var(--text-primary); font-weight: 500; cursor: pointer;">
-                            <i data-lucide="plus" style="width:10px;height:10px;"></i> Contratar
+                        <button class="btn-icon-only btn-edit-customer" title="Editar Cliente" data-key="${key}"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>
+                        <button class="btn-icon-only btn-toggle-customer-status" title="${group.status === 'active' ? 'Inativar' : 'Ativar'}" data-key="${key}">
+                            <i data-lucide="${group.status === 'active' ? 'user-x' : 'user-check'}" style="width:13px;height:13px;"></i>
+                        </button>
+                        <button class="btn btn-secondary btn-xs btn-add-service-to-client" style="font-size: 10px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="plus" style="width:10px;height:10px;"></i> Serviço
                         </button>
                     </div>
                 </td>
@@ -1450,6 +1566,24 @@ function renderCustomers() {
             // Bind click to open details modal
             tr.querySelector(".btn-view-client-services").onclick = () => {
                 openClientServicesModal(key);
+            };
+
+            // Bind edit customer button
+            tr.querySelector(".btn-edit-customer").onclick = () => {
+                openEditCustomerModal(key, group);
+            };
+
+            // Bind toggle status button
+            tr.querySelector(".btn-toggle-customer-status").onclick = () => {
+                // Toggle all services in this group
+                const newStatus = group.status === 'active' ? 'inactive' : 'active';
+                group.services.forEach(s => {
+                    const cust = env.customers.find(c => c.id === s.id);
+                    if (cust) cust.status = newStatus;
+                });
+                saveState();
+                renderCustomers();
+                showToast(`Cliente ${newStatus === 'active' ? 'ativado' : 'inativado'} com sucesso!`, 'success');
             };
 
             // Bind quick add service button
@@ -1487,6 +1621,47 @@ function deleteCustomer(id) {
         saveState();
         renderAll();
     }
+}
+
+// Open edit customer modal
+function openEditCustomerModal(key, group) {
+    const env = getEnv();
+    document.getElementById('editCustomerKey').value = key;
+    document.getElementById('editCustomerCompany').value = group.company || '';
+    document.getElementById('editCustomerStatus').value = group.status || 'active';
+    
+    // Populate niche dropdown
+    const nicheSelect = document.getElementById('editCustomerNiche');
+    nicheSelect.innerHTML = (env.niches || []).map(n => 
+        `<option value="${n}" ${n === group.niche ? 'selected' : ''}>${n}</option>`
+    ).join('');
+    
+    document.getElementById('editCustomerModal').classList.add('active');
+}
+
+// Render niches list in the manage modal
+function renderNichesList() {
+    const env = getEnv();
+    const list = document.getElementById('nichesList');
+    if (!list) return;
+    list.innerHTML = (env.niches || []).map(n => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg-app);border:1px solid var(--border-color);border-radius:var(--radius-sm);">
+            <span style="font-size:13px;font-weight:500;">${n}</span>
+            <button class="btn-icon-only btn-remove-niche" data-niche="${n}" title="Remover">
+                <i data-lucide="x" style="width:12px;height:12px;"></i>
+            </button>
+        </div>
+    `).join('');
+    // Bind remove buttons
+    list.querySelectorAll('.btn-remove-niche').forEach(btn => {
+        btn.onclick = () => {
+            const niche = btn.dataset.niche;
+            env.niches = env.niches.filter(n => n !== niche);
+            saveState();
+            renderNichesList();
+        };
+    });
+    safeCreateIcons();
 }
 
 // 5. Products Management Render
@@ -2035,9 +2210,103 @@ function deleteProduct(id) {
 }
 
 // 6. Tasks Management Render
+// Tasks view state
+let tasksView = 'list'; // 'list' or 'kanban'
+
+function renderTasksKanban(env, tasks) {
+    const kanbanPanel = document.getElementById('tasksKanbanPanel');
+    if (!kanbanPanel) return;
+    
+    // Clear existing cards (but keep headers)
+    ['kanbanColTodo', 'kanbanColDoing', 'kanbanColDone'].forEach(colId => {
+        const col = document.getElementById(colId);
+        if (!col) return;
+        // Remove all task-kanban-cards
+        col.querySelectorAll('.task-kanban-card').forEach(c => c.remove());
+    });
+    
+    const statusMap = { todo: 'kanbanColTodo', doing: 'kanbanColDoing', done: 'kanbanColDone' };
+    const counts = { todo: 0, doing: 0, done: 0 };
+    
+    tasks.forEach(task => {
+        const kanbanStatus = task.kanbanStatus || (task.completed ? 'done' : 'todo');
+        const colId = statusMap[kanbanStatus] || 'kanbanColTodo';
+        const col = document.getElementById(colId);
+        if (!col) return;
+        
+        counts[kanbanStatus] = (counts[kanbanStatus] || 0) + 1;
+        
+        const card = document.createElement('div');
+        card.className = 'task-kanban-card';
+        card.draggable = true;
+        card.dataset.taskId = task.id;
+        card.innerHTML = `
+            <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${task.title}</div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                <span class="task-priority-badge ${task.priority}" style="font-size:10px;">${task.priority}</span>
+                ${task.dueDate ? `<span style="font-size:10px;color:var(--text-muted);">📅 ${formatDate(task.dueDate)}</span>` : ''}
+            </div>
+        `;
+        
+        // Drag events
+        card.addEventListener('dragstart', () => { card.style.opacity = '0.5'; window._dragTaskId = task.id; });
+        card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+        
+        col.appendChild(card);
+    });
+    
+    // Update counts
+    Object.keys(counts).forEach(status => {
+        const countEl = document.getElementById(`kanbanCount${status.charAt(0).toUpperCase() + status.slice(1)}`);
+        if (countEl) countEl.innerText = counts[status];
+    });
+    
+    // Drop targets on columns
+    kanbanPanel.querySelectorAll('.tasks-kanban-col').forEach(col => {
+        col.ondragover = e => e.preventDefault();
+        col.ondrop = e => {
+            e.preventDefault();
+            const taskId = window._dragTaskId;
+            if (!taskId) return;
+            const targetStatus = col.dataset.kanbanStatus;
+            const task = env.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.kanbanStatus = targetStatus;
+                task.completed = targetStatus === 'done';
+                saveState();
+                renderTasksKanban(env, env.tasks);
+            }
+        };
+    });
+}
+
 function renderTasks() {
     const env = getEnv();
-    const activeFilter = document.querySelector(".tasks-filters li.active").getAttribute("data-task-filter");
+    
+    // Setup view toggle
+    const btnList = document.getElementById('btnTasksViewList');
+    const btnKanban = document.getElementById('btnTasksViewKanban');
+    const listPanel = document.getElementById('tasksListPanel');
+    const kanbanPanel = document.getElementById('tasksKanbanPanel');
+    
+    if (btnList && btnKanban) {
+        btnList.classList.toggle('active', tasksView === 'list');
+        btnKanban.classList.toggle('active', tasksView === 'kanban');
+        btnList.onclick = () => { tasksView = 'list'; renderTasks(); };
+        btnKanban.onclick = () => { tasksView = 'kanban'; renderTasks(); };
+    }
+    if (listPanel) listPanel.classList.toggle('hidden', tasksView === 'kanban');
+    if (kanbanPanel) kanbanPanel.classList.toggle('hidden', tasksView === 'list');
+    
+    if (tasksView === 'kanban') {
+        renderTasksKanban(env, env.tasks);
+        document.getElementById("tasksBadgeAll").innerText = env.tasks.length;
+        document.getElementById("tasksBadgePending").innerText = env.tasks.filter(t => !t.completed).length;
+        document.getElementById("tasksBadgeCompleted").innerText = env.tasks.filter(t => t.completed).length;
+        return;
+    }
+    
+    const activeFilter = document.querySelector(".tasks-filters li.active")?.getAttribute("data-task-filter") || 'all';
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
     
     let filtered = [...env.tasks];
@@ -2480,6 +2749,25 @@ function openAddCustomer(preFill = null) {
     
     const statusInput = document.getElementById("customerStatus");
     if (statusInput) statusInput.value = "active";
+    
+    // Populate niches dropdown dynamically
+    const nicheSelect = document.getElementById("customerNiche");
+    if (nicheSelect) {
+        const env = getEnv();
+        const currentVal = nicheSelect.value;
+        nicheSelect.innerHTML = (env.niches || ["Negócio Local", "E-commerce", "Saúde / Estética", "Outro"]).map(n => 
+            `<option value="${n}">${n}</option>`
+        ).join('') + '<option value="custom">+ Personalizado</option>';
+        // Restore value if preFill had a niche
+        if (preFill && preFill.niche) nicheSelect.value = preFill.niche;
+    }
+
+    // Reset payment due date
+    const dueDateInput = document.getElementById("customerPaymentDueDate");
+    if (dueDateInput) dueDateInput.value = "";
+    const countBalChk = document.getElementById("customerCountBalance");
+    if (countBalChk) countBalChk.checked = true;
+    
     const titleInput = document.getElementById("customerModalTitle");
     if (titleInput) titleInput.innerText = "Adicionar Serviço ao Cliente";
     const modalInput = document.getElementById("customerModal");
@@ -4173,11 +4461,19 @@ function openDayPreview(dateString) {
 // 11. Finance View Control
 function renderFinance() {
     const env = getEnv();
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Auto-mark overdue
+    env.invoices.forEach(inv => {
+        if (inv.status === 'pending' && inv.dueDate && inv.dueDate < today) {
+            inv.status = 'overdue';
+        }
+    });
     
     // Sub-tab toggling
     const selectSubTab = (activeId, activePanelId) => {
-        const tabs = ["tabInvoices", "tabExpenses", "tabFiscalNotes"];
-        const panels = ["panelInvoices", "panelExpenses", "panelFiscalNotes"];
+        const tabs = ["tabInvoices", "tabExpenses", "tabByClient", "tabOverdue", "tabFiscalNotes"];
+        const panels = ["panelInvoices", "panelExpenses", "panelByClient", "panelOverdue", "panelFiscalNotes"];
         
         tabs.forEach(tabId => {
             const el = document.getElementById(tabId);
@@ -4196,13 +4492,16 @@ function renderFinance() {
         });
     };
 
-    document.getElementById("tabInvoices").onclick = () => selectSubTab("tabInvoices", "panelInvoices");
-    document.getElementById("tabExpenses").onclick = () => selectSubTab("tabExpenses", "panelExpenses");
-    
+    const tabInvoices = document.getElementById("tabInvoices");
+    const tabExpenses = document.getElementById("tabExpenses");
+    const tabByClient = document.getElementById("tabByClient");
+    const tabOverdue = document.getElementById("tabOverdue");
     const tabFN = document.getElementById("tabFiscalNotes");
-    if (tabFN) {
-        tabFN.onclick = () => selectSubTab("tabFiscalNotes", "panelFiscalNotes");
-    }
+    if (tabInvoices) tabInvoices.onclick = () => selectSubTab("tabInvoices", "panelInvoices");
+    if (tabExpenses) tabExpenses.onclick = () => selectSubTab("tabExpenses", "panelExpenses");
+    if (tabByClient) tabByClient.onclick = () => { selectSubTab("tabByClient", "panelByClient"); renderByClient(env); };
+    if (tabOverdue) tabOverdue.onclick = () => { selectSubTab("tabOverdue", "panelOverdue"); renderOverdue(env); };
+    if (tabFN) tabFN.onclick = () => selectSubTab("tabFiscalNotes", "panelFiscalNotes");
 
     // Calculate Profitability Metrics
     const totalRevenue = env.invoices.reduce((sum, inv) => sum + inv.value, 0);
@@ -5008,6 +5307,108 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // === NEW FEATURE MODALS ===
+
+    // Manage Niches Modal
+    const btnManageNiches = document.getElementById('btnManageNiches');
+    if (btnManageNiches) {
+        btnManageNiches.addEventListener('click', () => {
+            renderNichesList();
+            // Populate add niche select in customer form
+            const env = getEnv();
+            const nicheSelect = document.getElementById('customerNiche');
+            if (nicheSelect) {
+                nicheSelect.innerHTML = (env.niches || []).map(n => `<option value="${n}">${n}</option>`).join('') + '<option value="custom">+ Personalizado</option>';
+            }
+            document.getElementById('manageNichesModal').classList.add('active');
+        });
+    }
+    const btnCloseNichesModal = document.getElementById('btnCloseNichesModal');
+    if (btnCloseNichesModal) btnCloseNichesModal.addEventListener('click', () => document.getElementById('manageNichesModal').classList.remove('active'));
+    const btnCloseNichesModalFooter = document.getElementById('btnCloseNichesModalFooter');
+    if (btnCloseNichesModalFooter) btnCloseNichesModalFooter.addEventListener('click', () => document.getElementById('manageNichesModal').classList.remove('active'));
+
+    const btnAddNiche = document.getElementById('btnAddNiche');
+    if (btnAddNiche) {
+        btnAddNiche.addEventListener('click', () => {
+            const input = document.getElementById('newNicheInput');
+            const val = input.value.trim();
+            if (!val) return;
+            const env = getEnv();
+            if (!env.niches.includes(val)) {
+                env.niches.push(val);
+                saveState();
+                renderNichesList();
+                // Update dropdown in customer form
+                const nicheSelect = document.getElementById('customerNiche');
+                if (nicheSelect) {
+                    nicheSelect.innerHTML = env.niches.map(n => `<option value="${n}">${n}</option>`).join('') + '<option value="custom">+ Personalizado</option>';
+                }
+            }
+            input.value = '';
+        });
+    }
+
+    // Adjust Balance Modal
+    const btnAdjustBalance = document.getElementById('btnAdjustBalance');
+    if (btnAdjustBalance) {
+        btnAdjustBalance.addEventListener('click', () => {
+            const env = getEnv();
+            document.getElementById('balanceAdjustInput').value = env.balanceAdjustment || 0;
+            document.getElementById('adjustBalanceModal').classList.add('active');
+        });
+    }
+    const btnCloseAdjustBalance = document.getElementById('btnCloseAdjustBalanceModal');
+    if (btnCloseAdjustBalance) btnCloseAdjustBalance.addEventListener('click', () => document.getElementById('adjustBalanceModal').classList.remove('active'));
+    const btnCancelAdjustBalance = document.getElementById('btnCancelAdjustBalance');
+    if (btnCancelAdjustBalance) btnCancelAdjustBalance.addEventListener('click', () => document.getElementById('adjustBalanceModal').classList.remove('active'));
+    
+    const btnSaveAdjust = document.getElementById('btnSaveAdjustBalance');
+    if (btnSaveAdjust) {
+        btnSaveAdjust.addEventListener('click', () => {
+            const env = getEnv();
+            const val = parseFloat(document.getElementById('balanceAdjustInput').value) || 0;
+            env.balanceAdjustment = val;
+            saveState();
+            document.getElementById('adjustBalanceModal').classList.remove('active');
+            renderDashboard();
+            showToast('Saldo ajustado com sucesso!', 'success');
+        });
+    }
+
+    // Edit Customer Modal
+    const btnCloseEditCustomer = document.getElementById('btnCloseEditCustomerModal');
+    if (btnCloseEditCustomer) btnCloseEditCustomer.addEventListener('click', () => document.getElementById('editCustomerModal').classList.remove('active'));
+    const btnCancelEditCustomer = document.getElementById('btnCancelEditCustomer');
+    if (btnCancelEditCustomer) btnCancelEditCustomer.addEventListener('click', () => document.getElementById('editCustomerModal').classList.remove('active'));
+
+    const editCustomerFormEl = document.getElementById('editCustomerForm');
+    if (editCustomerFormEl) {
+        editCustomerFormEl.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const env = getEnv();
+            const key = document.getElementById('editCustomerKey').value;
+            const newCompany = document.getElementById('editCustomerCompany').value.trim();
+            const newNiche = document.getElementById('editCustomerNiche').value;
+            const newStatus = document.getElementById('editCustomerStatus').value;
+            
+            // Update all customers with matching company/name key
+            env.customers.forEach(cust => {
+                const custKey = String(cust.company || cust.name || '').trim();
+                if (custKey === key) {
+                    if (newCompany) cust.company = newCompany;
+                    cust.niche = newNiche;
+                    cust.status = newStatus;
+                }
+            });
+            
+            saveState();
+            document.getElementById('editCustomerModal').classList.remove('active');
+            renderCustomers();
+            showToast('Cliente atualizado com sucesso!', 'success');
+        });
+    }
+
     // Dashboard Customization Modal controls
     const btnOpenDashCustom = document.getElementById("btnOpenDashboardCustomizationModal");
     if (btnOpenDashCustom) {
@@ -5198,6 +5599,15 @@ window.addEventListener("DOMContentLoaded", () => {
             
             const price = parseFloat(document.getElementById("customerPrice").value) || 0;
             const billingType = document.getElementById("customerBillingType").value;
+            const paymentOption = document.getElementById("customerPaymentOption")?.value || 'full';
+            const paymentDueDate = document.getElementById("customerPaymentDueDate")?.value || "";
+            const countBalance = document.getElementById("customerCountBalance")?.checked !== false;
+
+            // Determine final status based on payment option
+            let finalStatus = document.getElementById("customerStatus").value;
+            if (paymentOption === 'partial') {
+                finalStatus = 'pending_partial';
+            }
 
             if (id) {
                 const cust = env.customers.find(c => c.id === id);
@@ -5211,7 +5621,10 @@ window.addEventListener("DOMContentLoaded", () => {
                     cust.productName = productName;
                     cust.value = price;
                     cust.type = billingType;
-                    cust.status = status;
+                    cust.status = finalStatus;
+                    cust.paymentTerm = paymentOption;
+                    cust.paymentDueDate = paymentDueDate;
+                    cust.countBalance = countBalance;
                     cust.startDate = startDate;
                     cust.endDate = endDate;
                     cust.lastServiceDate = lastServiceDate;
@@ -5229,7 +5642,10 @@ window.addEventListener("DOMContentLoaded", () => {
                     productName: productName,
                     value: price,
                     type: billingType,
-                    status: status,
+                    status: finalStatus,
+                    paymentTerm: paymentOption,
+                    paymentDueDate: paymentDueDate,
+                    countBalance: countBalance,
                     startDate: startDate,
                     endDate: endDate,
                     lastServiceDate: lastServiceDate,
@@ -5238,18 +5654,36 @@ window.addEventListener("DOMContentLoaded", () => {
                 };
                 env.customers.push(newCust);
 
-                // Auto-generate invoice
+                // Auto-generate invoice with correct due date
+                const invoiceDueDate = paymentDueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+                const invoiceValue = paymentOption === 'partial' ? price * 0.5 : price;
+
                 const newInvoice = {
                     id: "FAT-" + Date.now().toString().substring(8),
                     customerName: name,
                     company: company || "-",
                     niche: niche,
                     productName: productName,
-                    value: price,
-                    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+                    value: invoiceValue,
+                    dueDate: invoiceDueDate,
                     status: "pending"
                 };
                 env.invoices.push(newInvoice);
+
+                // If 50% condition — generate second invoice for remainder (on delivery)
+                if (paymentOption === 'partial') {
+                    const secondInvoice = {
+                        id: "FAT-D" + Date.now().toString().substring(8),
+                        customerName: name,
+                        company: company || "-",
+                        niche: niche,
+                        productName: productName + " (2ª Parcela — Na Entrega)",
+                        value: price * 0.5,
+                        dueDate: "",
+                        status: "pending_delivery"
+                    };
+                    env.invoices.push(secondInvoice);
+                }
 
                 // Auto-generate contract draft
                 const newCon = {
@@ -5361,6 +5795,100 @@ function updateCalendarNotifications() {
         `;
         list.appendChild(item);
     });
+}
+
+// Render finance "Por Cliente" panel
+function renderByClient(env) {
+    const tbody = document.getElementById('byClientTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    // Group invoices by company
+    const clientMap = {};
+    env.invoices.forEach(inv => {
+        const key = inv.company || inv.customerName || 'Desconhecido';
+        if (!clientMap[key]) {
+            clientMap[key] = { name: inv.customerName || key, company: key, niche: inv.niche || '-', paid: 0, pending: 0, overdue: 0 };
+        }
+        if (inv.status === 'paid') clientMap[key].paid += inv.value;
+        else if (inv.status === 'overdue') clientMap[key].overdue += inv.value;
+        else clientMap[key].pending += inv.value;
+    });
+    
+    const sorted = Object.values(clientMap).sort((a, b) => (b.paid + b.pending + b.overdue) - (a.paid + a.pending + a.overdue));
+    
+    if (sorted.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Nenhuma fatura registrada.</td></tr>`;
+        return;
+    }
+    
+    sorted.forEach(c => {
+        const isOverdue = c.overdue > 0;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <div class="col-contact-info">
+                    <div class="contact-avatar">${getInitials(c.company)}</div>
+                    <div>
+                        <span style="font-weight:600;display:block;">${c.company}</span>
+                        <span style="font-size:11px;color:var(--text-muted);">${c.name !== c.company ? c.name : ''}</span>
+                    </div>
+                </div>
+            </td>
+            <td><span class="niche-tag">${c.niche}</span></td>
+            <td><strong style="color:var(--color-success);">${formatCurrency(c.paid)}</strong></td>
+            <td><strong style="color:var(--color-warning);">${formatCurrency(c.pending)}</strong></td>
+            <td>${c.overdue > 0 ? `<strong style="color:var(--color-danger);">${formatCurrency(c.overdue)}</strong>` : '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td>${isOverdue ? '<span class="badge-overdue">⚠ Inadimplente</span>' : '<span class="badge-status active">Em dia</span>'}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Render finance "Inadimplência" panel
+function renderOverdue(env) {
+    const overdueBody = document.getElementById('overdueTableBody');
+    const overdueEmpty = document.getElementById('overdueEmptyState');
+    if (!overdueBody) return;
+    overdueBody.innerHTML = '';
+    
+    const today = new Date();
+    const overdue = env.invoices.filter(inv => inv.status === 'overdue' || 
+        (inv.status === 'pending' && inv.dueDate && inv.dueDate < today.toISOString().split('T')[0]));
+    
+    if (overdue.length === 0) {
+        if (overdueEmpty) overdueEmpty.classList.remove('hidden');
+        return;
+    }
+    if (overdueEmpty) overdueEmpty.classList.add('hidden');
+    
+    overdue.forEach(inv => {
+        const dueDate = new Date(inv.dueDate);
+        const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${inv.id}</strong></td>
+            <td>${inv.customerName || inv.company}<br><small style="color:var(--text-muted);">${inv.company || ''}</small></td>
+            <td>${inv.productName || '-'}</td>
+            <td style="color:var(--color-danger);">${formatDate(inv.dueDate)}</td>
+            <td><span class="badge-overdue">${daysLate > 0 ? `${daysLate} dias` : 'Hoje'}</span></td>
+            <td><strong style="color:var(--color-danger);">${formatCurrency(inv.value)}</strong></td>
+            <td>
+                <button class="btn btn-secondary btn-xs btn-pay-overdue" style="font-size:11px;padding:4px 8px;display:flex;align-items:center;gap:4px;">
+                    <i data-lucide="check" style="width:11px;height:11px;"></i> Recebido
+                </button>
+            </td>
+        `;
+        tr.querySelector('.btn-pay-overdue').onclick = () => {
+            inv.status = 'paid';
+            saveState();
+            renderOverdue(env);
+            renderFinance();
+            showToast('Fatura marcada como recebida!', 'success');
+        };
+        overdueBody.appendChild(tr);
+    });
+    safeCreateIcons();
 }
 
 function renderFiscalNotes() {

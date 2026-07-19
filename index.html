@@ -204,7 +204,7 @@
                 <ul>
                     <li class="nav-item" data-view="customers">
                         <i data-lucide="gem"></i>
-                        <span>Clientes Ativos</span>
+                        <span>Clientes</span>
                     </li>
                     <li class="nav-item" data-view="finance">
                         <i data-lucide="dollar-sign"></i>
@@ -270,10 +270,18 @@
                         <h1 class="view-title">Dashboard</h1>
                         <p class="view-subtitle">Visão geral do desempenho de vendas e tráfego pago da Web Co.</p>
                     </div>
-                    <button class="btn btn-secondary" id="btnOpenDashboardCustomizationModal" style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                        <i data-lucide="sliders" style="width: 14px; height: 14px;"></i>
-                        <span>Customizar Widgets</span>
-                    </button>
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <div class="period-filter-group" id="dashPeriodFilterGroup">
+                            <button class="period-btn active" data-period="month">Este Mês</button>
+                            <button class="period-btn" data-period="quarter">Trimestre</button>
+                            <button class="period-btn" data-period="year">Ano</button>
+                            <button class="period-btn" data-period="all">Todo Período</button>
+                        </div>
+                        <button class="btn btn-secondary" id="btnOpenDashboardCustomizationModal" style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <i data-lucide="sliders" style="width: 14px; height: 14px;"></i>
+                            <span>Widgets</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- KPI Cards -->
@@ -324,6 +332,27 @@
                         <div class="kpi-data">
                             <span class="kpi-title">Tarefas Pendentes</span>
                             <span class="kpi-value" id="kpiPendingTasks">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Balance + Top Products Row -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;" id="widgetBalanceRow">
+                    <div class="balance-card">
+                        <span class="balance-label">Saldo Total</span>
+                        <span class="balance-value" id="dashBalanceValue">R$ 0,00</span>
+                        <span class="balance-sub" id="dashBalanceSub">Receitas contabilizadas − Despesas</span>
+                        <button class="balance-adjust-btn" id="btnAdjustBalance">
+                            <span>⚙ Ajustar Saldo Inicial</span>
+                        </button>
+                    </div>
+                    <div class="chart-card" style="flex:1;">
+                        <div class="chart-header">
+                            <h3>Top Produtos por Receita</h3>
+                            <span class="chart-legend">Ranking mensal</span>
+                        </div>
+                        <div class="top-products-list" id="dashTopProductsList">
+                            <div style="color:var(--text-muted);font-size:12px;padding:10px 0;">Carregando...</div>
                         </div>
                     </div>
                 </div>
@@ -437,6 +466,7 @@
                                 <tr>
                                     <th>Contato</th>
                                     <th>Empresa</th>
+                                    <th>Nicho</th>
                                     <th>Email/Telefone</th>
                                     <th>Valor Estimado</th>
                                     <th>Estágio</th>
@@ -619,13 +649,19 @@
             <section id="customersView" class="view-section">
                 <div class="view-header flex-header">
                     <div>
-                        <h1 class="view-title">Clientes e Recorrência</h1>
-                        <p class="view-subtitle">Acompanhe as mensalidades ativas (Google Ads/Suporte) e faturamento de clientes.</p>
+                        <h1 class="view-title">Clientes</h1>
+                        <p class="view-subtitle">Gerencie todos os seus clientes, serviços e recorrências.</p>
                     </div>
-                    <button class="btn btn-primary" id="btnCreateCustomer">
-                        <i data-lucide="plus"></i>
-                        <span>Adicionar Cliente</span>
-                    </button>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <button class="btn btn-secondary" id="btnManageNiches" style="display:flex;align-items:center;gap:6px;">
+                            <i data-lucide="tag" style="width:14px;height:14px;"></i>
+                            <span>Nichos</span>
+                        </button>
+                        <button class="btn btn-primary" id="btnCreateCustomer" style="display:flex;align-items:center;gap:6px;">
+                            <i data-lucide="plus" style="width:14px;height:14px;"></i>
+                            <span>Adicionar Cliente</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Customer Financial Cards -->
@@ -668,17 +704,23 @@
                     </div>
                 </div>
 
+                <!-- Sub-tabs Active/Inactive -->
+                <div class="customers-tabs">
+                    <button class="customers-tab-btn active" id="custTabActive" data-custtab="active">Ativos</button>
+                    <button class="customers-tab-btn" id="custTabInactive" data-custtab="inactive">Inativos</button>
+                    <button class="customers-tab-btn" id="custTabAll" data-custtab="all">Todos</button>
+                </div>
+
                 <div class="table-card">
                     <div class="table-container">
                         <table class="data-table" id="customersTable">
                             <thead>
                                 <tr>
-                                    <th>Cliente</th>
                                     <th>Empresa</th>
                                     <th>Nicho</th>
-                                    <th>Produto Adquirido</th>
-                                    <th>Tipo de Cobrança</th>
-                                    <th>Valor do Contrato</th>
+                                    <th>Serviços</th>
+                                    <th>MRR</th>
+                                    <th>Total</th>
                                     <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
@@ -960,10 +1002,18 @@
                         <h1 class="view-title">Tarefas & Lembretes</h1>
                         <p class="view-subtitle">Organize sua rotina comercial interna na Web Co.</p>
                     </div>
-                    <div class="header-filters">
-                        <button class="btn btn-primary" id="btnAddTask">
-                            <i data-lucide="plus"></i>
-                            <span>Adicionar Tarefa</span>
+                    <div class="header-filters" style="display:flex;align-items:center;gap:8px;">
+                        <div class="view-toggle-pill" id="tasksViewToggle">
+                            <button class="active" id="btnTasksViewList" data-taskview="list">
+                                <i data-lucide="list" style="width:12px;height:12px;"></i> Lista
+                            </button>
+                            <button id="btnTasksViewKanban" data-taskview="kanban">
+                                <i data-lucide="kanban" style="width:12px;height:12px;"></i> Kanban
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" id="btnAddTask" style="display:flex;align-items:center;gap:6px;">
+                            <i data-lucide="plus" style="width:14px;height:14px;"></i>
+                            <span>Nova Tarefa</span>
                         </button>
                     </div>
                 </div>
@@ -990,12 +1040,33 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="tasks-list-panel">
+                    <div class="tasks-list-panel" id="tasksListPanel">
                         <div class="tasks-list" id="tasksListContainer"></div>
                         <div class="table-empty-state hidden" id="tasksEmptyState">
                             <i data-lucide="clipboard-list" class="empty-icon"></i>
                             <h3>Tudo limpo por aqui!</h3>
                             <p>Crie novas tarefas para organizar seu fluxo de trabalho.</p>
+                        </div>
+                    </div>
+                    <!-- Tasks Kanban Panel -->
+                    <div class="tasks-kanban-board hidden" id="tasksKanbanPanel">
+                        <div class="tasks-kanban-col" id="kanbanColTodo" data-kanban-status="todo">
+                            <div class="tasks-kanban-col-header">
+                                <span class="tasks-kanban-col-title">A Fazer</span>
+                                <span class="tasks-kanban-count" id="kanbanCountTodo">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-kanban-col" id="kanbanColDoing" data-kanban-status="doing">
+                            <div class="tasks-kanban-col-header">
+                                <span class="tasks-kanban-col-title">Em Andamento</span>
+                                <span class="tasks-kanban-count" id="kanbanCountDoing">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-kanban-col" id="kanbanColDone" data-kanban-status="done">
+                            <div class="tasks-kanban-col-header">
+                                <span class="tasks-kanban-col-title">Concluído</span>
+                                <span class="tasks-kanban-count" id="kanbanCountDone">0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1247,13 +1318,19 @@
                         <div class="tasks-menu-card">
                             <ul class="finance-filters" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:4px;">
                                 <li class="active-tab-li active" id="tabInvoices" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
-                                    <i data-lucide="receipt" style="width:14px;height:14px;"></i> <span>Faturas (Receitas)</span>
+                                    <i data-lucide="receipt" style="width:14px;height:14px;"></i> <span>Faturas</span>
                                 </li>
                                 <li class="active-tab-li" id="tabExpenses" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
-                                    <i data-lucide="minus-square" style="width:14px;height:14px;"></i> <span>Despesas Operacionais</span>
+                                    <i data-lucide="minus-square" style="width:14px;height:14px;"></i> <span>Despesas</span>
+                                </li>
+                                <li class="active-tab-li" id="tabByClient" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
+                                    <i data-lucide="user-check" style="width:14px;height:14px;"></i> <span>Por Cliente</span>
+                                </li>
+                                <li class="active-tab-li" id="tabOverdue" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
+                                    <i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> <span>Inadimplência</span>
                                 </li>
                                 <li class="active-tab-li" id="tabFiscalNotes" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
-                                    <i data-lucide="file-text" style="width:14px;height:14px;"></i> <span>Notas Fiscais (NF-e)</span>
+                                    <i data-lucide="file-text" style="width:14px;height:14px;"></i> <span>Notas Fiscais</span>
                                 </li>
                             </ul>
                         </div>
@@ -1299,6 +1376,61 @@
                                         <!-- Dynamic despesas -->
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+
+                        <!-- By Client Panel -->
+                        <div class="table-card hidden" id="panelByClient">
+                            <div class="table-container">
+                                <table class="data-table" id="byClientTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Empresa / Cliente</th>
+                                            <th>Nicho</th>
+                                            <th>Total Recebido</th>
+                                            <th>Pendente</th>
+                                            <th>Inadimplente</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="byClientTableBody">
+                                        <!-- Dynamic por cliente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Overdue Panel -->
+                        <div class="table-card hidden" id="panelOverdue">
+                            <div style="padding:14px 16px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <i data-lucide="alert-triangle" style="width:16px;height:16px;color:var(--color-danger);"></i>
+                                    <span style="font-size:14px;font-weight:600;">Clientes Inadimplentes</span>
+                                </div>
+                                <span style="font-size:12px;color:var(--text-muted);">Faturas vencidas não pagas</span>
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table" id="overdueTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Fatura</th>
+                                            <th>Cliente</th>
+                                            <th>Produto</th>
+                                            <th>Vencimento</th>
+                                            <th>Dias em Atraso</th>
+                                            <th>Valor</th>
+                                            <th>Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="overdueTableBody">
+                                        <!-- Dynamic inadimplência -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-empty-state hidden" id="overdueEmptyState">
+                                <i data-lucide="check-circle-2" class="empty-icon" style="color:var(--color-success);"></i>
+                                <h3>Nenhuma inadimplência! 🎉</h3>
+                                <p>Todos os clientes estão em dia com os pagamentos.</p>
                             </div>
                         </div>
 
@@ -1907,6 +2039,27 @@
                                 <option value="yearly">Recorrente Anual</option>
                             </select>
                         </div>
+                    <div class="form-group">
+                        <label for="customerPaymentOption">Condição de Pagamento *</label>
+                        <select id="customerPaymentOption" class="form-control" required>
+                            <option value="full">Pagamento Total</option>
+                            <option value="partial">50% Pago, 50% na Entrega (Pendente)</option>
+                        </select>
+                    </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerPaymentDueDate">Data de Vencimento / Pagamento</label>
+                            <input type="date" id="customerPaymentDueDate" class="form-control">
+                        </div>
+                        <div class="form-group" style="justify-content:flex-end; padding-top:8px;">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                <input type="checkbox" id="customerCountBalance" checked style="width:16px;height:16px;cursor:pointer;">
+                                <span style="font-size:13px;font-weight:500;color:var(--text-primary);">Contabilizar no saldo financeiro</span>
+                            </label>
+                            <span style="font-size:11px;color:var(--text-muted);margin-top:4px;">Se desmarcado, não soma na receita</span>
+                        </div>
                     </div>
 
                     <div class="form-row">
@@ -1946,6 +2099,95 @@
             </form>
         </div>
     </div>
+    <!-- MODAL: GERENCIAR NICHOS -->
+    <div class="modal" id="manageNichesModal">
+        <div class="modal-content" style="max-width:480px;">
+            <div class="modal-header">
+                <h3>Gerenciar Nichos</h3>
+                <button class="btn-close" id="btnCloseNichesModal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group" style="flex:1;">
+                        <label for="newNicheInput">Adicionar Nicho</label>
+                        <input type="text" id="newNicheInput" class="form-control" placeholder="Ex: Saúde e Estética">
+                    </div>
+                    <div class="form-group" style="justify-content:flex-end;">
+                        <button class="btn btn-primary" id="btnAddNiche" style="margin-top:auto;">Adicionar</button>
+                    </div>
+                </div>
+                <div id="nichesList" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:300px;overflow-y:auto;">
+                    <!-- Dynamic niches list -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btnCloseNichesModalFooter">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AJUSTAR SALDO -->
+    <div class="modal" id="adjustBalanceModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-header">
+                <h3>Ajustar Saldo Inicial</h3>
+                <button class="btn-close" id="btnCloseAdjustBalanceModal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;">
+                    Define um valor de ajuste manual para o saldo. Use para iniciar a contabilidade a partir de um saldo conhecido, ou para corrigir diferenças.
+                </p>
+                <div class="form-group" style="margin-top:8px;">
+                    <label for="balanceAdjustInput">Valor do Ajuste (R$)</label>
+                    <input type="number" id="balanceAdjustInput" class="form-control" step="0.01" placeholder="Ex: 1500.00 ou -500.00">
+                </div>
+                <p style="font-size:11px;color:var(--text-muted);">
+                    Saldo Final = Receitas − Despesas + Ajuste. Use valores negativos para deduzir.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btnCancelAdjustBalance">Cancelar</button>
+                <button class="btn btn-primary" id="btnSaveAdjustBalance">Salvar Ajuste</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDITAR CLIENTE -->
+    <div class="modal" id="editCustomerModal">
+        <div class="modal-content" style="max-width:440px;">
+            <div class="modal-header">
+                <h3>Editar Cliente</h3>
+                <button class="btn-close" id="btnCloseEditCustomerModal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="editCustomerForm">
+                <input type="hidden" id="editCustomerKey">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editCustomerCompany">Empresa</label>
+                        <input type="text" id="editCustomerCompany" class="form-control" placeholder="Nome da empresa">
+                    </div>
+                    <div class="form-group">
+                        <label for="editCustomerNiche">Nicho</label>
+                        <select id="editCustomerNiche" class="form-control">
+                            <!-- Dynamic options -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCustomerStatus">Status</label>
+                        <select id="editCustomerStatus" class="form-control">
+                            <option value="active">Ativo</option>
+                            <option value="inactive">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelEditCustomer">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL: DETALHES DOS SERVIÇOS DO CLIENTE -->
     <div class="modal" id="clientServicesModal">
         <div class="modal-content" style="max-width: 950px; width: 100%;">
