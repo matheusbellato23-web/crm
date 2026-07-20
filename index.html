@@ -412,6 +412,51 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Forecast / Projeção Section -->
+                <div style="margin-top:20px;" id="widgetForecast">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                        <div>
+                            <h3 style="font-size:15px;font-weight:700;margin:0;">📈 Previsão Financeira</h3>
+                            <p style="font-size:12px;color:var(--text-muted);margin:2px 0 0;">Baseada nos seus clientes ativos e recorrências cadastradas</p>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+                        <div class="kpi-card" style="padding:16px;">
+                            <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">MRR Atual</div>
+                            <div style="font-size:22px;font-weight:800;color:var(--color-primary);" id="forecastMRR">R$ 0,00</div>
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Receita mensal recorrente</div>
+                        </div>
+                        <div class="kpi-card" style="padding:16px;">
+                            <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Próximos 30 dias</div>
+                            <div style="font-size:22px;font-weight:800;color:var(--color-accent);" id="forecastNext30">R$ 0,00</div>
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">MRR + faturas pendentes</div>
+                        </div>
+                        <div class="kpi-card" style="padding:16px;">
+                            <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Projeção 3 Meses</div>
+                            <div style="font-size:22px;font-weight:800;color:var(--color-success);" id="forecastQuarter">R$ 0,00</div>
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">MRR × 3</div>
+                        </div>
+                        <div class="kpi-card" style="padding:16px;">
+                            <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Clientes Ativos</div>
+                            <div style="font-size:22px;font-weight:800;color:var(--color-teal);" id="forecastActiveClients">0</div>
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;" id="forecastChurnRisk">—</div>
+                        </div>
+                    </div>
+                    <div class="chart-card" style="margin-top:12px;">
+                        <div class="chart-header">
+                            <h3>Pagamentos Previstos — Próximos 30 Dias</h3>
+                        </div>
+                        <table class="data-table" style="margin-top:8px;">
+                            <thead><tr>
+                                <th>Cliente</th><th>Serviço</th><th>Vencimento</th><th>Valor</th><th>Status</th>
+                            </tr></thead>
+                            <tbody id="forecastPaymentsBody">
+                                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:16px;">Sem pagamentos previstos.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
             <!-- Contacts View -->
@@ -2044,14 +2089,27 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="customerPaymentOption">Condição de Pagamento</label>
-                            <select id="customerPaymentOption" class="form-control">
+                            <select id="customerPaymentOption" class="form-control" onchange="togglePartialDates(this.value)">
                                 <option value="full">Pagamento Total</option>
-                                <option value="partial">50% Pago, 50% na Entrega</option>
+                                <option value="partial">50% Agora + 50% na Entrega</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="customerPaymentDueDate">Data de Vencimento</label>
+                            <label for="customerPaymentDueDate">Data do 1º Pagamento</label>
                             <input type="date" id="customerPaymentDueDate" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row" id="partialSecondDateRow" style="display:none;">
+                        <div class="form-group">
+                            <label for="customerPaymentDueDate2" style="color:var(--color-warning);font-weight:600;">📦 Data da Entrega / 2º Pagamento</label>
+                            <input type="date" id="customerPaymentDueDate2" class="form-control" style="border-color:var(--color-warning);">
+                        </div>
+                        <div class="form-group" style="justify-content:flex-end;padding-top:8px;">
+                            <div style="background:var(--color-warning-bg);border-radius:var(--radius-sm);padding:10px 12px;">
+                                <p style="font-size:11px;color:var(--color-warning);font-weight:600;margin:0;">⚠ Condição 50/50</p>
+                                <p style="font-size:11px;color:var(--text-secondary);margin:4px 0 0;">Fatura 1 (entrada) gerada com a 1ª data. Fatura 2 (entrega) pendente até a data informada.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -2575,6 +2633,92 @@
                 <button type="button" class="btn btn-secondary" id="btnCancelDashboardCustomizationModal" style="flex: 1;">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="btnSaveDashboardCustomization" style="flex: 1;">Confirmar Seleção</button>
             </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL: AJUSTAR SALDO -->
+    <div class="modal" id="adjustBalanceModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-header">
+                <h3>Ajustar Saldo Inicial</h3>
+                <button class="btn-close" id="btnCloseAdjustBalanceModal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:12px;">
+                    Define um ajuste manual no saldo. Use para zerar e recomeçar a contabilidade a partir de um valor conhecido.
+                </p>
+                <div class="form-group">
+                    <label for="balanceAdjustInput">Valor do Ajuste (R$)</label>
+                    <input type="number" id="balanceAdjustInput" class="form-control" step="0.01" placeholder="Ex: 1500.00 ou -500.00">
+                </div>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">
+                    Saldo Final = Receitas − Despesas + Ajuste. Use negativo para deduzir.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btnCancelAdjustBalance">Cancelar</button>
+                <button class="btn btn-primary" id="btnSaveAdjustBalance">Salvar Ajuste</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: GERENCIAR NICHOS -->
+    <div class="modal" id="manageNichesModal">
+        <div class="modal-content" style="max-width:480px;">
+            <div class="modal-header">
+                <h3>Gerenciar Nichos</h3>
+                <button class="btn-close" id="btnCloseNichesModal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group" style="flex:1;">
+                        <label for="newNicheInput">Novo Nicho</label>
+                        <input type="text" id="newNicheInput" class="form-control" placeholder="Ex: Gráfica, Saúde, Moda...">
+                    </div>
+                    <div class="form-group" style="justify-content:flex-end;">
+                        <button class="btn btn-primary" id="btnAddNiche" style="margin-top:auto;">Adicionar</button>
+                    </div>
+                </div>
+                <div id="nichesList" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:280px;overflow-y:auto;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btnCloseNichesModalFooter">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDITAR CLIENTE -->
+    <div class="modal" id="editCustomerModal">
+        <div class="modal-content" style="max-width:440px;">
+            <div class="modal-header">
+                <h3>Editar Cliente</h3>
+                <button class="btn-close" id="btnCloseEditCustomerModal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="editCustomerForm">
+                <input type="hidden" id="editCustomerKey">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editCustomerCompany">Empresa</label>
+                        <input type="text" id="editCustomerCompany" class="form-control" placeholder="Nome da empresa">
+                    </div>
+                    <div class="form-group">
+                        <label for="editCustomerNiche">Nicho</label>
+                        <select id="editCustomerNiche" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCustomerStatus">Status</label>
+                        <select id="editCustomerStatus" class="form-control">
+                            <option value="active">Ativo</option>
+                            <option value="inactive">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelEditCustomer">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
         </div>
     </div>
 

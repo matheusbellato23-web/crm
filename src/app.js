@@ -600,121 +600,107 @@ function renderDashboard() {
     applyDashboardCustomization();
     const env = getEnv();
     const range = getDashPeriodRange();
+    const today = new Date().toISOString().split('T')[0];
 
     // Setup period filter buttons
     const filterGroup = document.getElementById('dashPeriodFilterGroup');
     if (filterGroup) {
         filterGroup.querySelectorAll('.period-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.period === dashPeriod);
-            btn.onclick = () => {
-                dashPeriod = btn.dataset.period;
-                renderDashboard();
-            };
+            btn.onclick = () => { dashPeriod = btn.dataset.period; renderDashboard(); };
         });
     }
 
-    // Filter customers in period
-    const filteredCustomers = env.customers.filter(c => {
-        const d = c.createdAt ? c.createdAt.split('T')[0] : '2000-01-01';
-        return d >= range.start && d <= range.end;
-    });
+    // Filter customers & invoices by selected period
+    const filteredCustomers = (dashPeriod === 'all')
+        ? env.customers
+        : env.customers.filter(c => {
+            const d = (c.createdAt || '2000-01-01').split('T')[0];
+            return d >= range.start && d <= range.end;
+        });
 
-    // Filter invoices in period
-    const filteredInvoices = env.invoices.filter(inv => {
-        const d = inv.dueDate || '';
-        return d >= range.start && d <= range.end;
-    });
+    const filteredInvoices = (dashPeriod === 'all')
+        ? env.invoices
+        : env.invoices.filter(inv => {
+            const d = inv.dueDate || '';
+            return d >= range.start && d <= range.end;
+        });
 
-    // KPIs
-    const totalSalesLTV = filteredCustomers.reduce((sum, cust) => {
-        if (cust.countBalance === false) return sum;
-        if (cust.status === "active") {
-            return sum + (cust.type === "monthly" ? cust.value * 6 : cust.value);
-        }
-        return sum + (cust.type === "single" ? cust.value : 0);
-    }, 0);
+    // === KPIs (dados reais) ===
+    // Receita do período: soma de faturas pagas no período
+    const periodRevenue = filteredInvoices
+        .filter(inv => inv.status === 'paid')
+        .reduce((sum, inv) => sum + (inv.value || 0), 0);
 
-    const activePipelineValue = env.contacts.filter(c => ['contacted', 'proposal', 'negotiating'].includes(c.status)).reduce((sum, c) => sum + c.value, 0);
+    const activePipelineValue = env.contacts
+        .filter(c => ['contacted', 'proposal', 'negotiating'].includes(c.status))
+        .reduce((sum, c) => sum + (c.value || 0), 0);
+
     const totalDeals = env.contacts.length;
     const wonDeals = env.contacts.filter(c => c.status === 'won').length;
     const conversionRate = totalDeals > 0 ? Math.round((wonDeals / totalDeals) * 100) : 0;
     const pendingTasksCount = env.tasks.filter(t => !t.completed).length;
 
-    document.getElementById("kpiTotalSales").innerText = formatCurrency(totalSalesLTV);
+    document.getElementById("kpiTotalSales").innerText = formatCurrency(periodRevenue);
     document.getElementById("kpiActivePipeline").innerText = formatCurrency(activePipelineValue);
     document.getElementById("kpiConversionRate").innerText = `${conversionRate}%`;
     document.getElementById("kpiPendingTasks").innerText = pendingTasksCount;
 
     const conversionBadge = document.getElementById("kpiConversionBadge");
-    if (conversionRate >= 25) {
-        conversionBadge.innerText = "Alta Conversão";
-        conversionBadge.className = "kpi-badge positive";
-    } else {
-        conversionBadge.innerText = "Trabalhar Leads";
-        conversionBadge.className = "kpi-badge warning";
-    }
+    conversionBadge.innerText = conversionRate >= 25 ? "Alta Conversão" : "Trabalhar Leads";
+    conversionBadge.className = conversionRate >= 25 ? "kpi-badge positive" : "kpi-badge warning";
 
-    const badge = document.getElementById("kpiTaskStatusBadge");
-    if (pendingTasksCount === 0) {
-        badge.innerText = "Tudo em dia";
-        badge.className = "kpi-badge positive";
-    } else {
-        badge.innerText = "Ações pendentes";
-        badge.className = "kpi-badge warning";
-    }
+    const taskBadge = document.getElementById("kpiTaskStatusBadge");
+    taskBadge.innerText = pendingTasksCount === 0 ? "Tudo em dia" : `${pendingTasksCount} pendentes`;
+    taskBadge.className = pendingTasksCount === 0 ? "kpi-badge positive" : "kpi-badge warning";
 
-    // Balance card
+    // === Saldo Total (todas as receitas recebidas - despesas + ajuste) ===
     const totalRevenue = env.invoices
         .filter(inv => inv.status === 'paid')
-        .filter(inv => {
-            const c = env.customers.find(cu => (cu.company || cu.name) === inv.company && cu.countBalance !== false);
-            return c !== undefined || true; // include unless explicitly excluded
-        })
-        .reduce((sum, inv) => sum + inv.value, 0);
-    const totalExpenses = env.expenses.reduce((sum, e) => sum + e.value, 0);
+        .reduce((sum, inv) => sum + (inv.value || 0), 0);
+    const totalExpenses = (env.expenses || []).reduce((sum, e) => sum + (e.value || 0), 0);
     const balance = totalRevenue - totalExpenses + (env.balanceAdjustment || 0);
+
     const balanceEl = document.getElementById('dashBalanceValue');
-    if (balanceEl) balanceEl.innerText = formatCurrency(balance);
+    if (balanceEl) {
+        balanceEl.innerText = formatCurrency(balance);
+        balanceEl.style.color = balance >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+    }
     const balanceSubEl = document.getElementById('dashBalanceSub');
     if (balanceSubEl) {
         const adj = env.balanceAdjustment || 0;
-        balanceSubEl.innerText = `Receitas ${formatCurrency(totalRevenue)} − Despesas ${formatCurrency(totalExpenses)}${adj !== 0 ? ` + Ajuste ${formatCurrency(adj)}` : ''}`;
+        balanceSubEl.innerText = `Recebido ${formatCurrency(totalRevenue)} − Despesas ${formatCurrency(totalExpenses)}${adj !== 0 ? ` + Ajuste ${formatCurrency(adj)}` : ''}`;
     }
 
-    // Top products
+    // === Top Produtos (do período selecionado, ou tudo se vazio) ===
+    const invSource = filteredInvoices.length > 0 ? filteredInvoices : env.invoices;
     const productRevMap = {};
-    env.invoices.forEach(inv => {
-        if (!inv.productName) return;
-        if (!productRevMap[inv.productName]) productRevMap[inv.productName] = 0;
-        productRevMap[inv.productName] += inv.value;
+    invSource.forEach(inv => {
+        const key = inv.productName || 'Outros';
+        productRevMap[key] = (productRevMap[key] || 0) + (inv.value || 0);
     });
     const topProducts = Object.entries(productRevMap)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
+        .filter(([, v]) => v > 0)
+        .sort((a, b) => b[1] - a[1]).slice(0, 5);
     const maxVal = topProducts.length > 0 ? topProducts[0][1] : 1;
     const topListEl = document.getElementById('dashTopProductsList');
     if (topListEl) {
-        if (topProducts.length === 0) {
-            topListEl.innerHTML = `<div style="color:var(--text-muted);font-size:12px;padding:10px 0;">Sem dados de receita ainda.</div>`;
-        } else {
-            topListEl.innerHTML = topProducts.map(([name, val], i) => `
+        topListEl.innerHTML = topProducts.length === 0
+            ? `<div style="color:var(--text-muted);font-size:12px;padding:10px 0;">Nenhum produto registrado ainda.</div>`
+            : topProducts.map(([name, val], i) => `
                 <div class="top-product-item">
                     <div class="top-product-rank">${i + 1}</div>
                     <div class="top-product-info">
                         <div class="top-product-name" title="${name}">${name}</div>
                         <div class="top-product-bar-row">
-                            <div class="top-product-bar">
-                                <div class="top-product-bar-fill" style="width:${Math.round((val/maxVal)*100)}%"></div>
-                            </div>
+                            <div class="top-product-bar"><div class="top-product-bar-fill" style="width:${Math.round((val/maxVal)*100)}%"></div></div>
                             <span class="top-product-value">${formatCurrency(val)}</span>
                         </div>
                     </div>
-                </div>
-            `).join('');
-        }
+                </div>`).join('');
     }
 
-    // Recent Leads Table
+    // === Leads Recentes ===
     const recentLeads = [...env.contacts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
     const tbody = document.getElementById("recentLeadsTableBody");
     tbody.innerHTML = "";
@@ -723,25 +709,17 @@ function renderDashboard() {
         tr.style.cursor = "pointer";
         tr.addEventListener("click", () => openContactDetails(lead.id));
         tr.innerHTML = `
-            <td>
-                <div class="col-contact-info">
-                    <div class="contact-avatar">${getInitials(lead.name)}</div>
-                    <span>${lead.name}</span>
-                </div>
-            </td>
+            <td><div class="col-contact-info"><div class="contact-avatar">${getInitials(lead.name)}</div><span>${lead.name}</span></div></td>
             <td>${lead.company || "-"}</td>
             <td><strong>${formatCurrency(lead.value)}</strong></td>
-            <td><span class="status-badge ${lead.status}">${translateStatus(lead.status)}</span></td>
-        `;
+            <td><span class="status-badge ${lead.status}">${translateStatus(lead.status)}</span></td>`;
         tbody.appendChild(tr);
     });
 
-    // Urgent Tasks
-    const urgentTasks = env.tasks.filter(t => !t.completed).sort((a, b) => {
-        const priorities = { high: 3, medium: 2, low: 1 };
-        return priorities[b.priority] - priorities[a.priority];
-    }).slice(0, 4);
-
+    // === Tarefas Urgentes ===
+    const urgentTasks = env.tasks.filter(t => !t.completed)
+        .sort((a, b) => ({ high: 3, medium: 2, low: 1 }[b.priority] - { high: 3, medium: 2, low: 1 }[a.priority]))
+        .slice(0, 4);
     const urgentTasksContainer = document.getElementById("urgentTasksList");
     urgentTasksContainer.innerHTML = "";
     if (urgentTasks.length === 0) {
@@ -763,16 +741,88 @@ function renderDashboard() {
                         <span>📅 ${formatDate(task.dueDate)}</span>
                         <span class="task-priority-badge ${task.priority}">${task.priority}</span>
                     </div>
-                </div>
-            `;
-            div.querySelector("input").addEventListener("change", (e) => {
-                toggleTaskComplete(task.id, e.target.checked);
-            });
+                </div>`;
+            div.querySelector("input").addEventListener("change", (e) => toggleTaskComplete(task.id, e.target.checked));
             urgentTasksContainer.appendChild(div);
         });
     }
 
+    renderForecast(env);
     renderCharts();
+}
+
+// === FORECAST / PREVISÃO ===
+function renderForecast(env) {
+    if (!env) env = getEnv();
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const in30 = new Date(today); in30.setDate(today.getDate() + 30);
+    const in30Str = in30.toISOString().split('T')[0];
+
+    // MRR real: clientes mensais ativos
+    const mrr = env.customers
+        .filter(c => c.status === 'active' && c.type === 'monthly')
+        .reduce((sum, c) => sum + (c.value || 0), 0);
+
+    // Faturas pendentes nos próximos 30 dias
+    const pendingNext30 = env.invoices
+        .filter(inv => ['pending', 'pending_delivery'].includes(inv.status) && inv.dueDate >= todayStr && inv.dueDate <= in30Str)
+        .reduce((sum, inv) => sum + (inv.value || 0), 0);
+
+    const next30Total = mrr + pendingNext30;
+    const quarter = mrr * 3;
+
+    const activeClients = [...new Set(
+        env.customers.filter(c => c.status === 'active').map(c => c.company || c.name)
+    )].length;
+
+    const churnRisk = env.customers
+        .filter(c => c.status === 'active' && c.endDate && c.endDate >= todayStr && c.endDate <= in30Str).length;
+
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+    set('forecastMRR', formatCurrency(mrr));
+    set('forecastNext30', formatCurrency(next30Total));
+    set('forecastQuarter', formatCurrency(quarter));
+    set('forecastActiveClients', activeClients);
+    set('forecastChurnRisk', churnRisk > 0 ? `⚠ ${churnRisk} contrato(s) vencendo em 30 dias` : 'Sem risco de churn próximo');
+
+    // Tabela de pagamentos previstos
+    const tbody = document.getElementById('forecastPaymentsBody');
+    if (!tbody) return;
+
+    const upcoming = env.invoices
+        .filter(inv => ['pending', 'pending_delivery', 'overdue'].includes(inv.status) && inv.dueDate)
+        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+        .slice(0, 10);
+
+    if (upcoming.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:16px;">Sem pagamentos previstos. Adicione clientes com data de vencimento.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = upcoming.map(inv => {
+        const isOverdue = inv.dueDate < todayStr;
+        const statusHtml = isOverdue
+            ? `<span class="badge-overdue">Vencida</span>`
+            : inv.status === 'pending_delivery'
+            ? `<span class="badge-status pending_delivery">Na Entrega</span>`
+            : `<span style="background:var(--color-warning-bg);color:var(--color-warning);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;">Pendente</span>`;
+        return `<tr>
+            <td>${inv.customerName || inv.company || '-'}</td>
+            <td style="font-size:12px;color:var(--text-secondary);">${inv.productName || '-'}</td>
+            <td style="color:${isOverdue ? 'var(--color-danger)' : 'inherit'};font-weight:${isOverdue ? '600' : '400'};">${formatDate(inv.dueDate)}</td>
+            <td><strong>${formatCurrency(inv.value)}</strong></td>
+            <td>${statusHtml}</td>
+        </tr>`;
+    }).join('');
+}
+
+// Toggle segunda data ao selecionar condição 50%
+function togglePartialDates(val) {
+    const row = document.getElementById('partialSecondDateRow');
+    if (row) row.style.display = val === 'partial' ? 'grid' : 'none';
+    const label1 = document.querySelector('label[for="customerPaymentDueDate"]');
+    if (label1) label1.textContent = val === 'partial' ? 'Data do 1º Pagamento (Entrada)' : 'Data do 1º Pagamento';
 }
 
 function translateStatus(status) {
@@ -2765,6 +2815,12 @@ function openAddCustomer(preFill = null) {
     // Reset payment due date
     const dueDateInput = document.getElementById("customerPaymentDueDate");
     if (dueDateInput) dueDateInput.value = "";
+    const dueDateInput2 = document.getElementById("customerPaymentDueDate2");
+    if (dueDateInput2) dueDateInput2.value = "";
+    const partialRow = document.getElementById("partialSecondDateRow");
+    if (partialRow) partialRow.style.display = 'none';
+    const payOptSel = document.getElementById("customerPaymentOption");
+    if (payOptSel) payOptSel.value = 'full';
     const countBalChk = document.getElementById("customerCountBalance");
     if (countBalChk) countBalChk.checked = true;
     
@@ -5601,6 +5657,7 @@ window.addEventListener("DOMContentLoaded", () => {
             const billingType = document.getElementById("customerBillingType").value;
             const paymentOption = document.getElementById("customerPaymentOption")?.value || 'full';
             const paymentDueDate = document.getElementById("customerPaymentDueDate")?.value || "";
+            const paymentDueDate2 = document.getElementById("customerPaymentDueDate2")?.value || "";
             const countBalance = document.getElementById("customerCountBalance")?.checked !== false;
 
             // Determine final status based on payment option
@@ -5624,6 +5681,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     cust.status = finalStatus;
                     cust.paymentTerm = paymentOption;
                     cust.paymentDueDate = paymentDueDate;
+                    cust.paymentDueDate2 = paymentDueDate2;
                     cust.countBalance = countBalance;
                     cust.startDate = startDate;
                     cust.endDate = endDate;
@@ -5645,6 +5703,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     status: finalStatus,
                     paymentTerm: paymentOption,
                     paymentDueDate: paymentDueDate,
+                    paymentDueDate2: paymentDueDate2,
                     countBalance: countBalance,
                     startDate: startDate,
                     endDate: endDate,
@@ -5679,7 +5738,7 @@ window.addEventListener("DOMContentLoaded", () => {
                         niche: niche,
                         productName: productName + " (2ª Parcela — Na Entrega)",
                         value: price * 0.5,
-                        dueDate: "",
+                        dueDate: paymentDueDate2 || "",
                         status: "pending_delivery"
                     };
                     env.invoices.push(secondInvoice);
