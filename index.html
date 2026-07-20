@@ -1290,22 +1290,46 @@
                 </div>
 
                 <!-- Advanced Profitability KPIs -->
-                <div class="kpi-grid">
+                <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
                     <div class="kpi-card">
                         <div class="kpi-card-header">
-                            <div class="kpi-icon-wrapper sales" style="background: rgba(16, 185, 129, 0.1); color: var(--color-success);">
-                                <i data-lucide="trending-up"></i>
+                            <div class="kpi-icon-wrapper sales" style="background:rgba(16,185,129,.12);color:var(--color-success);">
+                                <i data-lucide="check-circle"></i>
                             </div>
-                            <span class="kpi-badge positive">Bruto</span>
+                            <span class="kpi-badge positive">Recebido</span>
                         </div>
                         <div class="kpi-data">
-                            <span class="kpi-title">Receita Bruta</span>
+                            <span class="kpi-title">Receita Recebida</span>
                             <span class="kpi-value" id="finKpiTotalRevenue">R$ 0,00</span>
                         </div>
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-card-header">
-                            <div class="kpi-icon-wrapper conversion" style="background: rgba(239, 68, 68, 0.1); color: var(--color-danger);">
+                            <div class="kpi-icon-wrapper pipeline" style="background:rgba(245,158,11,.12);color:var(--color-warning);">
+                                <i data-lucide="clock"></i>
+                            </div>
+                            <span class="kpi-badge warning">A Receber</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Faturas Pendentes</span>
+                            <span class="kpi-value" id="finKpiPending">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper conversion" style="background:rgba(239,68,68,.12);color:var(--color-danger);">
+                                <i data-lucide="alert-triangle"></i>
+                            </div>
+                            <span class="kpi-badge negative">Inadimplência</span>
+                        </div>
+                        <div class="kpi-data">
+                            <span class="kpi-title">Faturas Vencidas</span>
+                            <span class="kpi-value" id="finKpiOverdue">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon-wrapper conversion" style="background:rgba(239,68,68,.12);color:var(--color-danger);">
                                 <i data-lucide="trending-down"></i>
                             </div>
                             <span class="kpi-badge negative">Saídas</span>
@@ -1317,10 +1341,10 @@
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-card-header">
-                            <div class="kpi-icon-wrapper pipeline" style="background: rgba(0, 140, 255, 0.1); color: var(--color-primary);">
+                            <div class="kpi-icon-wrapper sales" style="background:rgba(79,70,229,.12);color:var(--color-primary);">
                                 <i data-lucide="dollar-sign"></i>
                             </div>
-                            <span class="kpi-badge info">Sobras</span>
+                            <span class="kpi-badge info">Líquido</span>
                         </div>
                         <div class="kpi-data">
                             <span class="kpi-title">Lucro Líquido</span>
@@ -1329,7 +1353,7 @@
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-card-header">
-                            <div class="kpi-icon-wrapper tasks" style="background: rgba(13, 148, 136, 0.1); color: var(--color-teal);">
+                            <div class="kpi-icon-wrapper tasks" style="background:rgba(13,148,136,.12);color:var(--color-teal);">
                                 <i data-lucide="percent"></i>
                             </div>
                             <span class="kpi-badge positive" id="finKpiMarginBadge">Excelente</span>

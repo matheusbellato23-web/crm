@@ -4559,28 +4559,31 @@ function renderFinance() {
     if (tabOverdue) tabOverdue.onclick = () => { selectSubTab("tabOverdue", "panelOverdue"); renderOverdue(env); };
     if (tabFN) tabFN.onclick = () => selectSubTab("tabFiscalNotes", "panelFiscalNotes");
 
-    // Calculate Profitability Metrics
-    const totalRevenue = env.invoices.reduce((sum, inv) => sum + inv.value, 0);
-    const totalExpenses = env.expenses.reduce((sum, exp) => sum + exp.value, 0);
-    const netProfit = totalRevenue - totalExpenses;
-    const margin = totalRevenue > 0 ? Math.round((netProfit / totalRevenue) * 100) : 0;
+    // Calculate Profitability Metrics (dados reais)
+    const totalPaid     = env.invoices.filter(inv => inv.status === 'paid').reduce((s, i) => s + (i.value||0), 0);
+    const totalPending  = env.invoices.filter(inv => ['pending','pending_delivery'].includes(inv.status)).reduce((s, i) => s + (i.value||0), 0);
+    const totalOverdue  = env.invoices.filter(inv => inv.status === 'overdue').reduce((s, i) => s + (i.value||0), 0);
+    const totalExpenses = (env.expenses||[]).reduce((s, e) => s + (e.value||0), 0);
+    const netProfit     = totalPaid - totalExpenses;
+    const margin        = totalPaid > 0 ? Math.round((netProfit / totalPaid) * 100) : 0;
 
     // Update DOM KPIs
-    document.getElementById("finKpiTotalRevenue").innerText = formatCurrency(totalRevenue);
-    document.getElementById("finKpiTotalExpenses").innerText = formatCurrency(totalExpenses);
-    document.getElementById("finKpiNetProfit").innerText = formatCurrency(netProfit);
-    document.getElementById("finKpiMargin").innerText = `${margin}%`;
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+    setEl('finKpiTotalRevenue',  formatCurrency(totalPaid));
+    setEl('finKpiTotalExpenses', formatCurrency(totalExpenses));
+    setEl('finKpiNetProfit',     formatCurrency(netProfit));
+    setEl('finKpiMargin',        `${margin}%`);
 
-    const marginBadge = document.getElementById("finKpiMarginBadge");
-    if (margin >= 50) {
-        marginBadge.innerText = "Excelente";
-        marginBadge.className = "kpi-badge positive";
-    } else if (margin >= 20) {
-        marginBadge.innerText = "Saudável";
-        marginBadge.className = "kpi-badge positive";
-    } else {
-        marginBadge.innerText = "Atenção Margem";
-        marginBadge.className = "kpi-badge warning";
+    // Extra info badges (pending + overdue)
+    const pendingBadgeEl = document.getElementById('finKpiPending');
+    if (pendingBadgeEl) pendingBadgeEl.innerText = formatCurrency(totalPending);
+    const overdueBadgeEl = document.getElementById('finKpiOverdue');
+    if (overdueBadgeEl) overdueBadgeEl.innerText = formatCurrency(totalOverdue);
+
+    const marginBadge = document.getElementById('finKpiMarginBadge');
+    if (marginBadge) {
+        marginBadge.innerText  = margin >= 50 ? 'Excelente' : margin >= 20 ? 'Saudável' : 'Atenção Margem';
+        marginBadge.className  = margin >= 20 ? 'kpi-badge positive' : 'kpi-badge warning';
     }
 
     // Render Invoices Table
@@ -4589,42 +4592,43 @@ function renderFinance() {
     env.invoices.forEach(inv => {
         const tr = document.createElement("tr");
         
-        let statusText = "Pendente";
-        let statusBadge = "warning";
-        if (inv.status === "paid") { statusText = "Recebido"; statusBadge = "active"; }
-        else if (inv.status === "overdue") { statusText = "Atrasada"; statusBadge = "inactive"; }
+        // Status labels
+        let statusText = 'Pendente'; let statusClass = 'pending_partial';
+        if (inv.status === 'paid')             { statusText = 'Recebido';    statusClass = 'active'; }
+        else if (inv.status === 'overdue')     { statusText = 'Vencida';     statusClass = 'overdue'; }
+        else if (inv.status === 'pending_delivery') { statusText = 'Na Entrega'; statusClass = 'pending_delivery'; }
 
         tr.innerHTML = `
             <td><strong>${inv.id}</strong></td>
-            <td>${inv.customerName}<br><small style="color:var(--text-muted)">${inv.company}</small></td>
-            <td><span style="font-size:11px; background:var(--bg-app); padding:2px 6px; border-radius:4px;">${inv.niche}</span></td>
+            <td>${inv.customerName || '-'}<br><small style="color:var(--text-muted)">${inv.company || ''}</small></td>
+            <td><span style="font-size:11px;background:var(--bg-app);padding:2px 6px;border-radius:4px;">${inv.niche || '-'}</span></td>
             <td>${formatDate(inv.dueDate)}</td>
             <td><strong>${formatCurrency(inv.value)}</strong></td>
-            <td><span class="badge-status ${statusBadge}">${statusText}</span></td>
+            <td><span class="badge-status ${statusClass}">${statusText}</span></td>
             <td>
                 <div class="kanban-card-actions">
-                    ${inv.status !== 'paid' ? `<button class="btn-icon-only btn-pay-invoice" title="Confirmar Recebimento"><i data-lucide="check" style="width:14px;height:14px;"></i></button>` : ''}
-                    <button class="btn-icon-only btn-delete-invoice" title="Remover"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                    ${inv.status !== 'paid' ? `<button class="btn-icon-only btn-pay-invoice" title="Confirmar Recebimento" style="color:var(--color-success);"><i data-lucide="check" style="width:14px;height:14px;"></i></button>` : ''}
+                    <button class="btn-icon-only btn-delete-invoice" title="Remover" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                 </div>
-            </td>
-        `;
+            </td>`;
 
         if (inv.status !== 'paid') {
-            tr.querySelector(".btn-pay-invoice").onclick = () => {
-                inv.status = "paid";
+            tr.querySelector('.btn-pay-invoice').onclick = () => {
+                inv.status = 'paid';
                 saveState();
-                renderAll();
-                showToast("Fatura liquidada com sucesso!", "success");
+                renderFinance();
+                renderDashboard(); // atualiza saldo
+                showToast('✅ Recebimento confirmado! Saldo atualizado.', 'success');
             };
         }
-        tr.querySelector(".btn-delete-invoice").onclick = () => {
-            if (confirm("Remover esta fatura?")) {
+        tr.querySelector('.btn-delete-invoice').onclick = () => {
+            if (confirm('Remover esta fatura?')) {
                 env.invoices = env.invoices.filter(i => i.id !== inv.id);
                 saveState();
-                renderAll();
+                renderFinance();
+                renderDashboard();
             }
         };
-
         invoicesTbody.appendChild(tr);
     });
 
