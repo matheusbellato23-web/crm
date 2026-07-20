@@ -4608,6 +4608,7 @@ function renderFinance() {
             <td>
                 <div class="kanban-card-actions">
                     ${inv.status !== 'paid' ? `<button class="btn-icon-only btn-pay-invoice" title="Confirmar Recebimento" style="color:var(--color-success);"><i data-lucide="check" style="width:14px;height:14px;"></i></button>` : ''}
+                    <button class="btn-icon-only btn-edit-invoice" title="Editar" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
                     <button class="btn-icon-only btn-delete-invoice" title="Remover" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                 </div>
             </td>`;
@@ -4617,10 +4618,22 @@ function renderFinance() {
                 inv.status = 'paid';
                 saveState();
                 renderFinance();
-                renderDashboard(); // atualiza saldo
+                renderDashboard();
                 showToast('✅ Recebimento confirmado! Saldo atualizado.', 'success');
             };
         }
+        tr.querySelector('.btn-edit-invoice').onclick = () => {
+            const newVal = prompt('Editar valor da fatura (R$):', inv.value);
+            if (newVal === null) return;
+            const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
+            if (newDate === null) return;
+            inv.value = parseFloat(newVal) || inv.value;
+            inv.dueDate = newDate || inv.dueDate;
+            saveState();
+            renderFinance();
+            renderDashboard();
+            showToast('Fatura atualizada!', 'success');
+        };
         tr.querySelector('.btn-delete-invoice').onclick = () => {
             if (confirm('Remover esta fatura?')) {
                 env.invoices = env.invoices.filter(i => i.id !== inv.id);
@@ -4643,15 +4656,31 @@ function renderFinance() {
             <td>${formatDate(exp.date)}</td>
             <td style="color:var(--color-danger);"><strong>- ${formatCurrency(exp.value)}</strong></td>
             <td>
-                <button class="btn-icon-only btn-delete-expense" title="Remover"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
-            </td>
-        `;
+                <div class="kanban-card-actions">
+                    <button class="btn-icon-only btn-edit-expense" title="Editar" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                    <button class="btn-icon-only btn-delete-expense" title="Remover" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                </div>
+            </td>`;
+
+        tr.querySelector(".btn-edit-expense").onclick = () => {
+            const newDesc = prompt('Descrição da despesa:', exp.description);
+            if (newDesc === null) return;
+            const newVal = prompt('Valor (R$):', exp.value);
+            if (newVal === null) return;
+            exp.description = newDesc || exp.description;
+            exp.value = parseFloat(newVal) || exp.value;
+            saveState();
+            renderFinance();
+            renderDashboard();
+            showToast('Despesa atualizada!', 'success');
+        };
 
         tr.querySelector(".btn-delete-expense").onclick = () => {
             if (confirm("Deseja realmente excluir este custo operacional?")) {
                 env.expenses = env.expenses.filter(e => e.id !== exp.id);
                 saveState();
-                renderAll();
+                renderFinance();
+                renderDashboard();
             }
         };
 
@@ -5433,6 +5462,29 @@ window.addEventListener("DOMContentLoaded", () => {
             document.getElementById('adjustBalanceModal').classList.remove('active');
             renderDashboard();
             showToast('Saldo ajustado com sucesso!', 'success');
+        });
+    }
+
+    // Zerar mês atual
+    const btnZeroMonth = document.getElementById('btnZeroMonth');
+    if (btnZeroMonth) {
+        btnZeroMonth.addEventListener('click', () => {
+            if (!confirm('Isso irá arquivar todas as faturas pagas deste mês e zerar o ajuste de saldo. Deseja continuar?')) return;
+            const env = getEnv();
+            const now = new Date();
+            const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            // Archive paid invoices from this month
+            env.invoices.forEach(inv => {
+                if (inv.status === 'paid' && inv.dueDate && inv.dueDate.startsWith(monthStr)) {
+                    inv.status = 'archived';
+                }
+            });
+            env.balanceAdjustment = 0;
+            saveState();
+            document.getElementById('adjustBalanceModal').classList.remove('active');
+            renderDashboard();
+            renderFinance();
+            showToast('✅ Mês zerado! Faturas pagas arquivadas.', 'success');
         });
     }
 
