@@ -4528,42 +4528,41 @@ function renderFinance() {
     
     // Sub-tab toggling
     const selectSubTab = (activeId, activePanelId) => {
-        const tabs = ["tabInvoices", "tabExpenses", "tabByClient", "tabOverdue", "tabFiscalNotes"];
-        const panels = ["panelInvoices", "panelExpenses", "panelByClient", "panelOverdue", "panelFiscalNotes"];
-        
-        tabs.forEach(tabId => {
-            const el = document.getElementById(tabId);
-            if (el) {
-                if (tabId === activeId) el.classList.add("active");
-                else el.classList.remove("active");
-            }
-        });
-        
-        panels.forEach(panelId => {
-            const el = document.getElementById(panelId);
-            if (el) {
-                if (panelId === activePanelId) el.classList.remove("hidden");
-                else el.classList.add("hidden");
-            }
-        });
+        const tabs   = ['tabInvoices','tabExpenses','tabServices','tabByClient','tabOverdue','tabFiscalNotes'];
+        const panels = ['panelInvoices','panelExpenses','panelServices','panelByClient','panelOverdue','panelFiscalNotes'];
+        tabs.forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', id === activeId); });
+        panels.forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('hidden', id !== activePanelId); });
     };
 
-    const tabInvoices = document.getElementById("tabInvoices");
-    const tabExpenses = document.getElementById("tabExpenses");
-    const tabByClient = document.getElementById("tabByClient");
-    const tabOverdue = document.getElementById("tabOverdue");
-    const tabFN = document.getElementById("tabFiscalNotes");
-    if (tabInvoices) tabInvoices.onclick = () => selectSubTab("tabInvoices", "panelInvoices");
-    if (tabExpenses) tabExpenses.onclick = () => selectSubTab("tabExpenses", "panelExpenses");
-    if (tabByClient) tabByClient.onclick = () => { selectSubTab("tabByClient", "panelByClient"); renderByClient(env); };
-    if (tabOverdue) tabOverdue.onclick = () => { selectSubTab("tabOverdue", "panelOverdue"); renderOverdue(env); };
-    if (tabFN) tabFN.onclick = () => selectSubTab("tabFiscalNotes", "panelFiscalNotes");
+    const tabInvoices = document.getElementById('tabInvoices');
+    const tabExpenses = document.getElementById('tabExpenses');
+    const tabServices = document.getElementById('tabServices');
+    const tabByClient = document.getElementById('tabByClient');
+    const tabOverdue  = document.getElementById('tabOverdue');
+    const tabFN       = document.getElementById('tabFiscalNotes');
+    if (tabInvoices) tabInvoices.onclick = () => selectSubTab('tabInvoices', 'panelInvoices');
+    if (tabExpenses) tabExpenses.onclick = () => selectSubTab('tabExpenses', 'panelExpenses');
+    if (tabServices) tabServices.onclick = () => { selectSubTab('tabServices', 'panelServices'); renderServices(); };
+    if (tabByClient) tabByClient.onclick = () => { selectSubTab('tabByClient', 'panelByClient'); renderByClient(env); };
+    if (tabOverdue)  tabOverdue.onclick  = () => { selectSubTab('tabOverdue',  'panelOverdue');  renderOverdue(env); };
+    if (tabFN)       tabFN.onclick       = () => selectSubTab('tabFiscalNotes', 'panelFiscalNotes');
+
+    // Wire 'Novo Serviço' button
+    const btnAddService = document.getElementById('btnAddService');
+    if (btnAddService) btnAddService.onclick = () => openServiceModal();
 
     // Calculate Profitability Metrics (dados reais)
     const totalPaid     = env.invoices.filter(inv => inv.status === 'paid').reduce((s, i) => s + (i.value||0), 0);
     const totalPending  = env.invoices.filter(inv => ['pending','pending_delivery'].includes(inv.status)).reduce((s, i) => s + (i.value||0), 0);
     const totalOverdue  = env.invoices.filter(inv => inv.status === 'overdue').reduce((s, i) => s + (i.value||0), 0);
-    const totalExpenses = (env.expenses||[]).reduce((s, e) => s + (e.value||0), 0);
+    // Expenses = lançamentos pontuais + custo mensal dos serviços contratados ativos
+    const monthlyServiceCost = (env.contractedServices||[]).filter(s => s.status === 'active').reduce((sum, s) => {
+        if (s.recurrence === 'monthly')   return sum + (s.value||0);
+        if (s.recurrence === 'quarterly') return sum + (s.value||0) / 3;
+        if (s.recurrence === 'annual')    return sum + (s.value||0) / 12;
+        return sum;
+    }, 0);
+    const totalExpenses = (env.expenses||[]).reduce((s, e) => s + (e.value||0), 0) + monthlyServiceCost;
     const netProfit     = totalPaid - totalExpenses;
     const margin        = totalPaid > 0 ? Math.round((netProfit / totalPaid) * 100) : 0;
 
@@ -6004,6 +6003,139 @@ function renderOverdue(env) {
         overdueBody.appendChild(tr);
     });
     safeCreateIcons();
+}
+
+// ===== SERVIÇOS CONTRATADOS =====
+function renderServices() {
+    const env = getEnv();
+    if (!env.contractedServices) env.contractedServices = [];
+
+    const tbody = document.getElementById('servicesTableBody');
+    if (!tbody) return;
+
+    // KPIs
+    const active = env.contractedServices.filter(s => s.status === 'active');
+    const monthly = active.reduce((sum, s) => {
+        if (s.recurrence === 'monthly')   return sum + (s.value||0);
+        if (s.recurrence === 'quarterly') return sum + (s.value||0) / 3;
+        if (s.recurrence === 'annual')    return sum + (s.value||0) / 12;
+        return sum;
+    }, 0);
+    const annual = monthly * 12;
+
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+    set('svcKpiMonthly', formatCurrency(monthly));
+    set('svcKpiAnnual',  formatCurrency(annual));
+    set('svcKpiCount',   active.length);
+
+    if (env.contractedServices.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px;">Nenhum serviço contratado. Clique em "Novo Serviço" para adicionar.</td></tr>`;
+        return;
+    }
+
+    const recurrenceLabel = { monthly: 'Mensal', quarterly: 'Trimestral', annual: 'Anual' };
+    const statusBadge = {
+        active:    `<span style="background:var(--color-success-bg);color:var(--color-success);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;">Ativo</span>`,
+        paused:    `<span style="background:var(--color-warning-bg);color:var(--color-warning);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;">Pausado</span>`,
+        cancelled: `<span style="background:var(--color-danger-bg);color:var(--color-danger);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;">Cancelado</span>`
+    };
+
+    const today = new Date().toISOString().split('T')[0];
+    tbody.innerHTML = '';
+    env.contractedServices.forEach(svc => {
+        const tr = document.createElement('tr');
+        const isOverdue = svc.nextDue && svc.nextDue < today && svc.status === 'active';
+        tr.innerHTML = `
+            <td><strong>${svc.name}</strong>${svc.notes ? `<br><small style="color:var(--text-muted)">${svc.notes}</small>` : ''}</td>
+            <td><span style="font-size:11px;background:var(--bg-app);padding:2px 6px;border-radius:4px;">${svc.category||'-'}</span></td>
+            <td>${svc.supplier||'-'}</td>
+            <td><span style="font-size:11px;font-weight:600;">${recurrenceLabel[svc.recurrence]||svc.recurrence}</span></td>
+            <td style="color:${isOverdue ? 'var(--color-danger)' : 'inherit'};font-weight:${isOverdue ? '600' : '400'};">${formatDate(svc.nextDue)||'-'}</td>
+            <td><strong style="color:var(--color-danger);">${formatCurrency(svc.value)}</strong></td>
+            <td>${statusBadge[svc.status]||'-'}</td>
+            <td>
+                <div class="kanban-card-actions">
+                    <button class="btn-icon-only btn-edit-svc" title="Editar" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                    <button class="btn-icon-only btn-delete-svc" title="Excluir" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                </div>
+            </td>`;
+
+        tr.querySelector('.btn-edit-svc').onclick   = () => openServiceModal(svc.id);
+        tr.querySelector('.btn-delete-svc').onclick = () => {
+            if (confirm(`Remover "${svc.name}"?`)) {
+                env.contractedServices = env.contractedServices.filter(s => s.id !== svc.id);
+                saveState();
+                renderServices();
+                renderFinance();
+            }
+        };
+        tbody.appendChild(tr);
+    });
+    safeCreateIcons();
+}
+
+function openServiceModal(id = null) {
+    const env = getEnv();
+    const modal = document.getElementById('serviceModal');
+    if (!modal) return;
+
+    const form = document.getElementById('serviceForm');
+    form.reset();
+    document.getElementById('serviceEditId').value = '';
+
+    if (id) {
+        const svc = (env.contractedServices||[]).find(s => s.id === id);
+        if (svc) {
+            document.getElementById('serviceModalTitle').textContent = 'Editar Serviço';
+            document.getElementById('serviceEditId').value  = id;
+            document.getElementById('serviceName').value    = svc.name||'';
+            document.getElementById('serviceCategory').value = svc.category||'SaaS';
+            document.getElementById('serviceSupplier').value = svc.supplier||'';
+            document.getElementById('serviceValue').value   = svc.value||'';
+            document.getElementById('serviceRecurrence').value = svc.recurrence||'monthly';
+            document.getElementById('serviceNextDue').value = svc.nextDue||'';
+            document.getElementById('serviceStatus').value  = svc.status||'active';
+            document.getElementById('serviceNotes').value   = svc.notes||'';
+        }
+    } else {
+        document.getElementById('serviceModalTitle').textContent = 'Novo Serviço Contratado';
+    }
+
+    modal.classList.add('active');
+
+    // Close handlers (re-bind each time)
+    document.getElementById('btnCloseServiceModal').onclick  = () => modal.classList.remove('active');
+    document.getElementById('btnCancelServiceModal').onclick = () => modal.classList.remove('active');
+
+    const serviceForm = document.getElementById('serviceForm');
+    serviceForm.onsubmit = (e) => {
+        e.preventDefault();
+        if (!env.contractedServices) env.contractedServices = [];
+        const editId = document.getElementById('serviceEditId').value;
+        const data = {
+            id:          editId || 'SVC-' + Date.now(),
+            name:        document.getElementById('serviceName').value.trim(),
+            category:    document.getElementById('serviceCategory').value,
+            supplier:    document.getElementById('serviceSupplier').value.trim(),
+            value:       parseFloat(document.getElementById('serviceValue').value)||0,
+            recurrence:  document.getElementById('serviceRecurrence').value,
+            nextDue:     document.getElementById('serviceNextDue').value,
+            status:      document.getElementById('serviceStatus').value,
+            notes:       document.getElementById('serviceNotes').value.trim(),
+            createdAt:   editId ? undefined : new Date().toISOString()
+        };
+        if (editId) {
+            const idx = env.contractedServices.findIndex(s => s.id === editId);
+            if (idx >= 0) env.contractedServices[idx] = { ...env.contractedServices[idx], ...data };
+        } else {
+            env.contractedServices.push(data);
+        }
+        saveState();
+        modal.classList.remove('active');
+        renderServices();
+        renderFinance();
+        showToast(editId ? 'Serviço atualizado!' : 'Serviço adicionado!', 'success');
+    };
 }
 
 function renderFiscalNotes() {
