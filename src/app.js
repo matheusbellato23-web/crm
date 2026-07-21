@@ -335,42 +335,6 @@ function ensureParanaEcoturismo() {
             { id: "CONTR-PARANA-4", contactId: contactId, proposalId: "DIRECT-PARANA-4", clientName: "Marcio", company: "Paraná Ecoturismo", productName: "Gestão de Google Ads", value: 400.00, recurrence: "monthly", startDate: "2026-07-13", endDate: "2026-08-13", status: "active" }
         );
 
-        // Add Tasks
-        if (!env.tasks.some(t => t.id === "t_parana_photos")) {
-            env.tasks.push({
-                id: "t_parana_photos",
-                title: "Corrigir fotos dos pacotes no site (Beto Carrero e Guartela Corporativo)",
-                contactId: contactId,
-                dueDate: "2026-07-22",
-                priority: "high",
-                completed: false
-            });
-        }
-
-        saveState();
-    } else {
-        // Ensure photo fix task and note exist even if client already seeded
-        const paranaContact = env.contacts.find(c => c.id === "c_parana_ecoturismo" || c.company === "Paraná Ecoturismo");
-        if (paranaContact && paranaContact.timeline) {
-            if (!paranaContact.timeline.some(t => t.id === "act_parana_photos_bug")) {
-                paranaContact.timeline.push({
-                    id: "act_parana_photos_bug",
-                    type: "note",
-                    description: "Reclamação via WhatsApp (Marcio): Fotos misturadas nos pacotes do site. (1) Pacote Beto Carrero com foto de brinde sem relação. (2) Pacote Guartela Corporativo com foto de Morretes e galeria misturada.",
-                    timestamp: "2026-07-21T22:49:00.000Z"
-                });
-            }
-        }
-        if (!env.tasks.some(t => t.id === "t_parana_photos")) {
-            env.tasks.push({
-                id: "t_parana_photos",
-                title: "Corrigir fotos dos pacotes no site (Beto Carrero e Guartela Corporativo)",
-                contactId: "c_parana_ecoturismo",
-                dueDate: "2026-07-22",
-                priority: "high",
-                completed: false
-            });
-        }
         saveState();
     }
 }
