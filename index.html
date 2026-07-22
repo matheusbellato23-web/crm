@@ -113,30 +113,103 @@
     
     <!-- LOGIN OVERLAY -->
     <div class="login-overlay" id="loginOverlay">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="logo">
-                    <div class="logo-icon">W</div>
-                    <span class="logo-text">Web Co.<span>CRM</span></span>
+        <!-- Ambient Animated Background Orbs & Grid -->
+        <div class="login-bg-orb orb-1"></div>
+        <div class="login-bg-orb orb-2"></div>
+        <div class="login-bg-grid"></div>
+
+        <div class="login-wrapper">
+            <!-- Left Side: Brand Showcase -->
+            <div class="login-brand-panel">
+                <div class="login-brand-header">
+                    <div class="logo">
+                        <div class="logo-icon" style="background: linear-gradient(135deg, #4F46E5, #06B6D4); font-weight: 800; font-size: 18px; color: #fff;">W</div>
+                        <span class="logo-text" style="color: #ffffff; font-size: 20px;">Web Co. <span style="color: #06B6D4; font-weight: 700;">CRM</span></span>
+                    </div>
+                    <span class="login-status-pill">
+                        <span class="status-dot-pulse"></span>
+                        Sistema Operacional v2.4
+                    </span>
                 </div>
-                <p>Insira suas credenciais administrativas para continuar</p>
+
+                <div class="login-brand-hero">
+                    <h2>Gestão Comercial &amp; Financeira Corporativa</h2>
+                    <p>Controle completo de leads, conversões de tráfego pago, faturamento, despesas operacionais e inteligência de negócios.</p>
+                </div>
+
+                <div class="login-metrics-grid">
+                    <div class="login-metric-card">
+                        <div class="metric-icon" style="color:#818cf8;"><i data-lucide="trending-up"></i></div>
+                        <div>
+                            <div class="metric-val">100% Real-time</div>
+                            <div class="metric-lbl">Indicadores &amp; KPIs de Vendas</div>
+                        </div>
+                    </div>
+                    <div class="login-metric-card">
+                        <div class="metric-icon" style="color:#34d399;"><i data-lucide="shield-check"></i></div>
+                        <div>
+                            <div class="metric-val">Criptografia SSL</div>
+                            <div class="metric-lbl">Segurança &amp; Privacidade</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="login-brand-footer">
+                    <span>© 2026 Web Co. Enterprise. Todos os direitos reservados.</span>
+                </div>
             </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginUser">Usuário</label>
-                    <input type="text" id="loginUser" class="form-control" placeholder="Admin" required autocomplete="username">
+
+            <!-- Right Side: Login Form Panel -->
+            <div class="login-card">
+                <div class="login-header">
+                    <h3>Acessar o Painel 👋</h3>
+                    <p>Insira suas credenciais administrativas para continuar</p>
                 </div>
-                <div class="form-group">
-                    <label for="loginPassword">Senha</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="••••••" required autocomplete="current-password">
+
+                <!-- Quick Access Chip for Demo -->
+                <button type="button" class="login-quick-chip" id="btnQuickAdminCredentials" title="Clique para preencher login rápido">
+                    <i data-lucide="key" style="width:13px;height:13px;"></i>
+                    <span>Preencher dados de Admin</span>
+                </button>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUser">Usuário</label>
+                        <div class="input-icon-wrapper">
+                            <i data-lucide="user" class="input-icon"></i>
+                            <input type="text" id="loginUser" class="form-control with-icon" placeholder="Nome de usuário" required autocomplete="username">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Senha</label>
+                        <div class="input-icon-wrapper">
+                            <i data-lucide="lock" class="input-icon"></i>
+                            <input type="password" id="loginPassword" class="form-control with-icon" placeholder="••••••••" required autocomplete="current-password">
+                            <button type="button" class="btn-toggle-password" id="btnToggleLoginPass" title="Mostrar/ocultar senha">
+                                <i data-lucide="eye" id="iconTogglePass" style="width:14px;height:14px;"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="login-error hidden" id="loginErrorMsg">
+                        <i data-lucide="alert-circle" style="width:14px;height:14px;flex-shrink:0;"></i>
+                        <span>Usuário ou senha incorretos!</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-login-submit" id="btnSubmitLogin">
+                        <span>Acessar Painel</span>
+                        <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+                    </button>
+                </form>
+
+                <div class="login-card-footer">
+                    <i data-lucide="lock" style="width:11px;height:11px;"></i>
+                    <span>Conexão encriptada de ponta a ponta</span>
                 </div>
-                <div class="login-error hidden" id="loginErrorMsg">
-                    Usuário ou senha incorretos!
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Acessar Painel</button>
-            </form>
+            </div>
         </div>
     </div>
+
 
     <!-- App Container (Hidden initially until logged in) -->
     <div class="app-container hidden" id="appContainer">

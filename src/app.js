@@ -3547,6 +3547,30 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
     }
 });
 
+// Login UI Quick Access & Password Toggle
+const btnQuickAdmin = document.getElementById("btnQuickAdminCredentials");
+if (btnQuickAdmin) {
+    btnQuickAdmin.addEventListener("click", () => {
+        document.getElementById("loginUser").value = "Admin";
+        document.getElementById("loginPassword").value = "080125";
+        showToast("Credenciais de Admin preenchidas!", "success");
+    });
+}
+
+const btnTogglePass = document.getElementById("btnToggleLoginPass");
+if (btnTogglePass) {
+    btnTogglePass.addEventListener("click", () => {
+        const passInput = document.getElementById("loginPassword");
+        const isPass = passInput.type === "password";
+        passInput.type = isPass ? "text" : "password";
+        const icon = document.getElementById("iconTogglePass");
+        if (icon) {
+            icon.setAttribute("data-lucide", isPass ? "eye-off" : "eye");
+            safeCreateIcons();
+        }
+    });
+}
+
 // Logout handler
 document.getElementById("btnLogout").addEventListener("click", () => {
     sessionStorage.removeItem("nexus_crm_logged_in");
