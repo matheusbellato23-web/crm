@@ -423,6 +423,27 @@ function formatDateBr(dateStr) {
     return dateStr;
 }
 
+function getCategoryBadgeHtml(category) {
+    const cat = category || 'Outros';
+    let catClass = 'outros';
+    if (cat.includes('Infra')) catClass = 'infra';
+    else if (cat.includes('Market') || cat.includes('Ads') || cat.includes('Tráfego')) catClass = 'marketing';
+    else if (cat.includes('Ferrament') || cat.includes('SaaS') || cat.includes('Software')) catClass = 'saas';
+    else if (cat.includes('Pesso') || cat.includes('Free')) catClass = 'pessoal';
+    else if (cat.includes('Operac') || cat.includes('Escritó')) catClass = 'operacional';
+    else if (cat.includes('Impost') || cat.includes('Taxa')) catClass = 'impostos';
+    else if (cat.includes('Comis')) catClass = 'comissoes';
+
+    return `<span class="category-badge ${catClass}">${cat}</span>`;
+}
+
+function getRecurrenceBadgeHtml(recurrence) {
+    const rec = recurrence || 'single';
+    const labels = { single: 'Pontual', monthly: 'Mensal', quarterly: 'Trimestral', annual: 'Anual' };
+    const label = labels[rec] || rec;
+    return `<span class="recurrence-badge ${rec}">${label}</span>`;
+}
+
 const getApiUrl = (path) => {
     const basePath = window.location.pathname.startsWith('/crm') ? '/crm' : '';
     return `${basePath}${path}`;
@@ -4654,16 +4675,15 @@ function renderFinance() {
     // Render Expenses Table
     const expensesTbody = document.getElementById("expensesTableBody");
     expensesTbody.innerHTML = "";
-    const recLabel = { single: 'Pontual', monthly: 'Mensal', quarterly: 'Trimestral', annual: 'Anual' };
     env.expenses.forEach(exp => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td><strong>${exp.description}</strong></td>
-            <td><span style="font-size:11px;background:var(--bg-app);padding:2px 6px;border-radius:4px;">${exp.category||'-'}</span></td>
+            <td>${getCategoryBadgeHtml(exp.category)}</td>
             <td>${exp.supplier||'-'}</td>
-            <td><span style="font-size:11px;font-weight:600;">${recLabel[exp.recurrence] || exp.recurrence || 'Pontual'}</span></td>
+            <td>${getRecurrenceBadgeHtml(exp.recurrence)}</td>
             <td>${formatDate(exp.date)}</td>
-            <td style="color:var(--color-danger);"><strong>- ${formatCurrency(exp.value)}</strong></td>
+            <td style="color:var(--color-danger);font-weight:700;">- ${formatCurrency(exp.value)}</td>
             <td>
                 <div class="kanban-card-actions">
                     <button class="btn-icon-only btn-edit-expense" title="Editar" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
@@ -6061,11 +6081,11 @@ function renderServices() {
         const isOverdue = svc.nextDue && svc.nextDue < today && svc.status === 'active';
         tr.innerHTML = `
             <td><strong>${svc.name}</strong>${svc.notes ? `<br><small style="color:var(--text-muted)">${svc.notes}</small>` : ''}</td>
-            <td><span style="font-size:11px;background:var(--bg-app);padding:2px 6px;border-radius:4px;">${svc.category||'-'}</span></td>
+            <td>${getCategoryBadgeHtml(svc.category)}</td>
             <td>${svc.supplier||'-'}</td>
-            <td><span style="font-size:11px;font-weight:600;">${recurrenceLabel[svc.recurrence]||svc.recurrence}</span></td>
+            <td>${getRecurrenceBadgeHtml(svc.recurrence)}</td>
             <td style="color:${isOverdue ? 'var(--color-danger)' : 'inherit'};font-weight:${isOverdue ? '600' : '400'};">${formatDate(svc.nextDue)||'-'}</td>
-            <td><strong style="color:var(--color-danger);">${formatCurrency(svc.value)}</strong></td>
+            <td style="color:var(--color-danger);font-weight:700;">${formatCurrency(svc.value)}</td>
             <td>${statusBadge[svc.status]||'-'}</td>
             <td>
                 <div class="kanban-card-actions">
