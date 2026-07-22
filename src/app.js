@@ -604,6 +604,27 @@ function renderAll() {
 // 1. Dashboard Render
 // State for dashboard period filter
 let dashPeriod = 'month';
+let finPeriod = 'month';
+let finInvoiceStatus = 'all';
+let finInvoiceSearch = '';
+
+function getFinPeriodRange() {
+    const now = new Date();
+    if (finPeriod === 'all') return { start: '2000-01-01', end: '2099-12-31' };
+    if (finPeriod === 'year') {
+        return { start: `${now.getFullYear()}-01-01`, end: `${now.getFullYear()}-12-31` };
+    }
+    if (finPeriod === 'quarter') {
+        const q = Math.floor(now.getMonth() / 3);
+        const qStart = new Date(now.getFullYear(), q * 3, 1).toISOString().split('T')[0];
+        const qEnd = new Date(now.getFullYear(), q * 3 + 3, 0).toISOString().split('T')[0];
+        return { start: qStart, end: qEnd };
+    }
+    // month (default)
+    const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+    return { start: monthStart, end: monthEnd };
+}
 
 function getDashPeriodRange() {
     const now = new Date();
@@ -4603,18 +4624,67 @@ function renderFinance() {
     const btnAddService = document.getElementById('btnAddService');
     if (btnAddService) btnAddService.onclick = () => openServiceModal();
 
-    // Calculate Profitability Metrics (dados reais)
-    const totalPaid     = env.invoices.filter(inv => inv.status === 'paid').reduce((s, i) => s + (i.value||0), 0);
-    const totalPending  = env.invoices.filter(inv => ['pending','pending_delivery'].includes(inv.status)).reduce((s, i) => s + (i.value||0), 0);
-    const totalOverdue  = env.invoices.filter(inv => inv.status === 'overdue').reduce((s, i) => s + (i.value||0), 0);
-    // Expenses = lançamentos pontuais + custo mensal dos serviços contratados ativos
+    // Wire period filter group in Finance
+    const finFilterGroup = document.getElementById('finPeriodFilterGroup');
+    if (finFilterGroup) {
+        finFilterGroup.querySelectorAll('.period-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.period === finPeriod);
+            btn.onclick = () => { finPeriod = btn.dataset.period; renderFinance(); };
+        });
+    }
+
+    // Wire invoice status filter group
+    const invStatusGroup = document.getElementById('invoiceStatusFilterGroup');
+    if (invStatusGroup) {
+        invStatusGroup.querySelectorAll('.period-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.status === finInvoiceStatus);
+            btn.onclick = () => { finInvoiceStatus = btn.dataset.status; renderFinance(); };
+        });
+    }
+
+    // Wire invoice search input
+    const invSearchInput = document.getElementById('invoiceSearchInput');
+    if (invSearchInput) {
+        invSearchInput.oninput = (e) => {
+            finInvoiceSearch = e.target.value.toLowerCase().trim();
+            renderFinance();
+        };
+    }
+
+    const range = getFinPeriodRange();
+
+    // Filter invoices & expenses by period
+    const filteredInvoices = (finPeriod === 'all')
+        ? env.invoices
+        : env.invoices.filter(inv => {
+            const d = inv.dueDate || '';
+            return d >= range.start && d <= range.end;
+        });
+
+    const filteredExpenses = (finPeriod === 'all')
+        ? env.expenses
+        : env.expenses.filter(exp => {
+            const d = exp.date || '';
+            return d >= range.start && d <= range.end;
+        });
+
+    // Calculate Profitability Metrics for period (dados reais)
+    const totalPaid     = filteredInvoices.filter(inv => inv.status === 'paid').reduce((s, i) => s + (i.value||0), 0);
+    const totalPending  = filteredInvoices.filter(inv => ['pending','pending_delivery'].includes(inv.status)).reduce((s, i) => s + (i.value||0), 0);
+    const totalOverdue  = filteredInvoices.filter(inv => inv.status === 'overdue').reduce((s, i) => s + (i.value||0), 0);
+
     const monthlyServiceCost = (env.contractedServices||[]).filter(s => s.status === 'active').reduce((sum, s) => {
         if (s.recurrence === 'monthly')   return sum + (s.value||0);
         if (s.recurrence === 'quarterly') return sum + (s.value||0) / 3;
         if (s.recurrence === 'annual')    return sum + (s.value||0) / 12;
         return sum;
     }, 0);
-    const totalExpenses = (env.expenses||[]).reduce((s, e) => s + (e.value||0), 0) + monthlyServiceCost;
+
+    let serviceMultiplier = 1;
+    if (finPeriod === 'quarter') serviceMultiplier = 3;
+    else if (finPeriod === 'year' || finPeriod === 'all') serviceMultiplier = 12;
+
+    const totalExpenses = (filteredExpenses||[]).reduce((s, e) => s + (e.value||0), 0) + (monthlyServiceCost * serviceMultiplier);
     const netProfit     = totalPaid - totalExpenses;
     const margin        = totalPaid > 0 ? Math.round((netProfit / totalPaid) * 100) : 0;
 
@@ -4625,7 +4695,6 @@ function renderFinance() {
     setEl('finKpiNetProfit',     formatCurrency(netProfit));
     setEl('finKpiMargin',        `${margin}%`);
 
-    // Extra info badges (pending + overdue)
     const pendingBadgeEl = document.getElementById('finKpiPending');
     if (pendingBadgeEl) pendingBadgeEl.innerText = formatCurrency(totalPending);
     const overdueBadgeEl = document.getElementById('finKpiOverdue');
@@ -4637,69 +4706,96 @@ function renderFinance() {
         marginBadge.className  = margin >= 20 ? 'kpi-badge positive' : 'kpi-badge warning';
     }
 
+    // Filter invoices for display in table (Status & Search)
+    let displayInvoices = [...filteredInvoices];
+    if (finInvoiceStatus !== 'all') {
+        if (finInvoiceStatus === 'pending') {
+            displayInvoices = displayInvoices.filter(i => ['pending', 'pending_delivery'].includes(i.status));
+        } else {
+            displayInvoices = displayInvoices.filter(i => i.status === finInvoiceStatus);
+        }
+    }
+    if (finInvoiceSearch) {
+        displayInvoices = displayInvoices.filter(i =>
+            (i.id || '').toLowerCase().includes(finInvoiceSearch) ||
+            (i.customerName || '').toLowerCase().includes(finInvoiceSearch) ||
+            (i.company || '').toLowerCase().includes(finInvoiceSearch) ||
+            (i.productName || '').toLowerCase().includes(finInvoiceSearch)
+        );
+    }
+
     // Render Invoices Table
     const invoicesTbody = document.getElementById("invoicesTableBody");
     invoicesTbody.innerHTML = "";
-    env.invoices.forEach(inv => {
-        const tr = document.createElement("tr");
-        
-        // Status labels
-        let statusText = 'Pendente'; let statusClass = 'pending_partial';
-        if (inv.status === 'paid')             { statusText = 'Recebido';    statusClass = 'active'; }
-        else if (inv.status === 'overdue')     { statusText = 'Vencida';     statusClass = 'overdue'; }
-        else if (inv.status === 'pending_delivery') { statusText = 'Na Entrega'; statusClass = 'pending_delivery'; }
+    if (displayInvoices.length === 0) {
+        invoicesTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:24px;">Nenhuma receita/fatura encontrada para este filtro.</td></tr>`;
+    } else {
+        displayInvoices.forEach(inv => {
+            const tr = document.createElement("tr");
+            let statusText = 'Pendente'; let statusClass = 'pending_partial';
+            if (inv.status === 'paid')             { statusText = 'Recebido';    statusClass = 'active'; }
+            else if (inv.status === 'overdue')     { statusText = 'Vencida';     statusClass = 'overdue'; }
+            else if (inv.status === 'pending_delivery') { statusText = 'Na Entrega'; statusClass = 'pending_delivery'; }
 
-        tr.innerHTML = `
-            <td><strong>${inv.id}</strong></td>
-            <td>${inv.customerName || '-'}<br><small style="color:var(--text-muted)">${inv.company || ''}</small></td>
-            <td><span style="font-size:11px;background:var(--bg-app);padding:2px 6px;border-radius:4px;">${inv.niche || '-'}</span></td>
-            <td>${formatDate(inv.dueDate)}</td>
-            <td><strong>${formatCurrency(inv.value)}</strong></td>
-            <td><span class="badge-status ${statusClass}">${statusText}</span></td>
-            <td>
-                <div class="kanban-card-actions">
-                    ${inv.status !== 'paid' ? `<button class="btn-icon-only btn-pay-invoice" title="Confirmar Recebimento" style="color:var(--color-success);"><i data-lucide="check" style="width:14px;height:14px;"></i></button>` : ''}
-                    <button class="btn-icon-only btn-edit-invoice" title="Editar" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
-                    <button class="btn-icon-only btn-delete-invoice" title="Remover" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
-                </div>
-            </td>`;
+            tr.innerHTML = `
+                <td><strong>${inv.id}</strong></td>
+                <td><strong>${inv.customerName || '-'}</strong><br><small style="color:var(--text-muted)">${inv.company || ''}</small></td>
+                <td><strong>${inv.productName || 'Serviço'}</strong><br><small style="color:var(--text-muted); font-size:10px;">${inv.niche || '-'}</small></td>
+                <td>${formatDate(inv.dueDate)}</td>
+                <td style="color:var(--color-primary); font-weight:700;">${formatCurrency(inv.value)}</td>
+                <td><span class="badge-status ${statusClass}">${statusText}</span></td>
+                <td>
+                    <div class="kanban-card-actions">
+                        ${inv.status !== 'paid' ? `<button class="btn-icon-only btn-pay-invoice" title="Confirmar Recebimento" style="color:var(--color-success);"><i data-lucide="check" style="width:14px;height:14px;"></i></button>` : ''}
+                        <button class="btn-icon-only btn-edit-invoice" title="Editar" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                        <button class="btn-icon-only btn-delete-invoice" title="Remover" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                    </div>
+                </td>`;
 
-        if (inv.status !== 'paid') {
-            tr.querySelector('.btn-pay-invoice').onclick = () => {
-                inv.status = 'paid';
-                saveState();
-                renderFinance();
-                renderDashboard();
-                showToast('✅ Recebimento confirmado! Saldo atualizado.', 'success');
-            };
-        }
-        tr.querySelector('.btn-edit-invoice').onclick = () => {
-            const newVal = prompt('Editar valor da fatura (R$):', inv.value);
-            if (newVal === null) return;
-            const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
-            if (newDate === null) return;
-            inv.value = parseFloat(newVal) || inv.value;
-            inv.dueDate = newDate || inv.dueDate;
-            saveState();
-            renderFinance();
-            renderDashboard();
-            showToast('Fatura atualizada!', 'success');
-        };
-        tr.querySelector('.btn-delete-invoice').onclick = () => {
-            if (confirm('Remover esta fatura?')) {
-                env.invoices = env.invoices.filter(i => i.id !== inv.id);
-                saveState();
-                renderFinance();
-                renderDashboard();
+            if (inv.status !== 'paid') {
+                tr.querySelector('.btn-pay-invoice').onclick = () => {
+                    inv.status = 'paid';
+                    saveState();
+                    renderFinance();
+                    renderDashboard();
+                    showToast('✅ Recebimento confirmado! Saldo atualizado.', 'success');
+                };
             }
-        };
-        invoicesTbody.appendChild(tr);
-    });
+            tr.querySelector('.btn-edit-invoice').onclick = () => {
+                const newVal = prompt('Editar valor da fatura (R$):', inv.value);
+                if (newVal === null) return;
+                const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
+                if (newDate === null) return;
+                inv.value = parseFloat(newVal) || inv.value;
+                inv.dueDate = newDate || inv.dueDate;
+                saveState();
+                renderFinance();
+                renderDashboard();
+                showToast('Fatura atualizada!', 'success');
+            };
+            tr.querySelector('.btn-delete-invoice').onclick = () => {
+                if (confirm('Remover esta fatura?')) {
+                    env.invoices = env.invoices.filter(i => i.id !== inv.id);
+                    saveState();
+                    renderFinance();
+                    renderDashboard();
+                }
+            };
+            invoicesTbody.appendChild(tr);
+        });
+    }
+
+    // Summary footer
+    const countInfo = document.getElementById('invoicesCountInfo');
+    if (countInfo) countInfo.innerText = `Exibindo ${displayInvoices.length} de ${filteredInvoices.length} receitas no período`;
+    const totalVal = displayInvoices.reduce((s, i) => s + (i.value || 0), 0);
+    const sumEl = document.getElementById('invoicesTotalVal');
+    if (sumEl) sumEl.innerText = formatCurrency(totalVal);
 
     // Render Expenses Table
     const expensesTbody = document.getElementById("expensesTableBody");
     expensesTbody.innerHTML = "";
-    env.expenses.forEach(exp => {
+    filteredExpenses.forEach(exp => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td><strong>${exp.description}</strong></td>
@@ -4741,30 +4837,31 @@ function renderFinance() {
     });
 
     renderFiscalNotes();
-    renderFinanceCharts(env);
+    renderFinanceCharts(env, filteredInvoices);
 }
 
-function renderFinanceCharts(env) {
+function renderFinanceCharts(env, activeInvoices) {
     if (cashFlowChart) cashFlowChart.destroy();
     if (revenueByNicheChart) revenueByNicheChart.destroy();
+
+    const invList = activeInvoices || env.invoices;
 
     const isDark = document.body.classList.contains('dark-theme');
     const chartLabelColor = isDark ? '#9ca3af' : '#4b5563';
     const gridColor = isDark ? '#2a2a40' : '#e5e7eb';
 
     // 1. Recurrent vs Pontual calculations
-    // Lookup product in catalog to check if monthly
-    const recurrentRevenue = env.invoices
+    const recurrentRevenue = invList
         .filter(inv => {
             const prod = defaultProducts.find(p => p.name === inv.productName);
             return prod ? prod.type === "monthly" : false;
         })
         .reduce((sum, inv) => sum + inv.value, 0);
 
-    const singleRevenue = env.invoices
+    const singleRevenue = invList
         .filter(inv => {
             const prod = defaultProducts.find(p => p.name === inv.productName);
-            return prod ? prod.type !== "monthly" : true; // Fallback to single if not found
+            return prod ? prod.type !== "monthly" : true;
         })
         .reduce((sum, inv) => sum + inv.value, 0);
 

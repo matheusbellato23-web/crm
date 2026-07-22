@@ -418,7 +418,7 @@ body {
 /* Sections */
 .view-section {
     display: none;
-    padding: 24px;
+    padding: 24px 24px 60px 24px;
     flex-direction: column;
     gap: 20px;
     height: calc(100vh - 60px);

@@ -1341,12 +1341,19 @@
 
             <!-- Finance View -->
             <section id="financeView" class="view-section">
-                <div class="view-header flex-header">
+                <div class="view-header flex-header" style="flex-wrap:wrap; gap:16px;">
                     <div>
                         <h1 class="view-title">Controle Financeiro</h1>
                         <p class="view-subtitle">Acompanhe fluxo de caixa, despesas, faturamento de faturas e margens de lucro operacionais.</p>
                     </div>
-                    <div style="display:flex; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <!-- Period Filter Group for Finance -->
+                        <div class="period-filter-group" id="finPeriodFilterGroup">
+                            <button type="button" class="period-btn active" data-period="month">Este Mês</button>
+                            <button type="button" class="period-btn" data-period="quarter">Este Trimestre</button>
+                            <button type="button" class="period-btn" data-period="year">Este Ano</button>
+                            <button type="button" class="period-btn" data-period="all">Todo o Período</button>
+                        </div>
                         <button class="btn btn-secondary" id="btnCreateExpense">
                             <i data-lucide="minus-circle"></i>
                             <span>Lançar Despesa</span>
@@ -1484,13 +1491,28 @@
                     <div class="tasks-list-panel" style="flex:1;">
                         <!-- Invoices Panel -->
                         <div class="table-card" id="panelInvoices">
-                            <div class="table-container">
+                            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+                                <div>
+                                    <h3 style="font-size:15px; font-weight:700; margin:0;">Receitas e Faturas do Período</h3>
+                                    <p style="font-size:12px; color:var(--text-muted); margin:2px 0 0;">Faturamento gerado pelas vendas de produtos e serviços.</p>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                    <div class="period-filter-group" id="invoiceStatusFilterGroup">
+                                        <button type="button" class="period-btn active" data-status="all">Todas</button>
+                                        <button type="button" class="period-btn" data-status="paid">Recebidas</button>
+                                        <button type="button" class="period-btn" data-status="pending">Pendentes</button>
+                                        <button type="button" class="period-btn" data-status="overdue">Vencidas</button>
+                                    </div>
+                                    <input type="text" id="invoiceSearchInput" class="form-control" placeholder="🔍 Buscar receita..." style="width:180px; height:32px; font-size:12px;">
+                                </div>
+                            </div>
+                            <div class="table-container" style="max-height:480px; overflow-y:auto;">
                                 <table class="data-table" id="invoicesTable">
                                     <thead>
                                         <tr>
                                             <th>Fatura</th>
                                             <th>Cliente</th>
-                                            <th>Nicho</th>
+                                            <th>Produto / Serviço</th>
                                             <th>Vencimento</th>
                                             <th>Valor</th>
                                             <th>Status</th>
@@ -1501,6 +1523,10 @@
                                         <!-- Dynamic faturas -->
                                     </tbody>
                                 </table>
+                            </div>
+                            <div id="invoicesSummaryFooter" style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px solid var(--border-color); font-size:12px; color:var(--text-secondary);">
+                                <span id="invoicesCountInfo">Exibindo 0 faturas</span>
+                                <div>Total no Período: <strong id="invoicesTotalVal" style="color:var(--color-primary); font-size:14px;">R$ 0,00</strong></div>
                             </div>
                         </div>
 
