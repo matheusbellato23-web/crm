@@ -713,7 +713,7 @@ function renderDashboard() {
     const balanceEl = document.getElementById('dashBalanceValue');
     if (balanceEl) {
         balanceEl.innerText = formatCurrency(balance);
-        balanceEl.style.color = balance >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+        balanceEl.style.color = balance < 0 ? '#f87171' : '#ffffff';
     }
     const balanceSubEl = document.getElementById('dashBalanceSub');
     if (balanceSubEl) {
