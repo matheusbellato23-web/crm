@@ -46,9 +46,15 @@ const defaultTasks = [
 ];
 
 const defaultExpenses = [
-    { id: "exp1", description: "Hospedagem AWS & CDN Cloudflare", category: "Infraestrutura", value: 250.00, date: "2026-07-01" },
-    { id: "exp2", description: "Campanha Tráfego Pago Web Co.", category: "Marketing", value: 1200.00, date: "2026-07-05" },
-    { id: "exp3", description: "Assinatura Figma & Canva Pro", category: "Ferramentas", value: 180.00, date: "2026-07-08" }
+    { id: "exp1", description: "Hospedagem AWS & CDN Cloudflare", category: "Infraestrutura", supplier: "AWS / Cloudflare", recurrence: "monthly", value: 250.00, date: "2026-07-01" },
+    { id: "exp2", description: "Campanha Tráfego Pago Web Co.", category: "Marketing", supplier: "Google Ads", recurrence: "monthly", value: 1200.00, date: "2026-07-05" },
+    { id: "exp3", description: "Assinatura Figma & Canva Pro", category: "Ferramentas", supplier: "Figma / Canva", recurrence: "monthly", value: 180.00, date: "2026-07-08" }
+];
+
+const defaultContractedServices = [
+    { id: "svc1", name: "Google Workspace Pro", category: "SaaS", supplier: "Google", value: 120.00, recurrence: "monthly", nextDue: "2026-08-05", status: "active", notes: "Contas de e-mail corporativo da equipe" },
+    { id: "svc2", name: "Servidor Cloud VPS Hostinger", category: "Infraestrutura", supplier: "Hostinger", value: 180.00, recurrence: "monthly", nextDue: "2026-08-10", status: "active", notes: "Hospedagem VPS de alta performance dos sites" },
+    { id: "svc3", name: "Notion & Figma Team", category: "SaaS", supplier: "Notion / Figma", value: 150.00, recurrence: "monthly", nextDue: "2026-08-15", status: "active", notes: "Ferramentas de prototipação, design e gestão" }
 ];
 
 const defaultInvoices = [
@@ -254,6 +260,7 @@ function getEnv() {
     if (!state.environments[env].proposals) state.environments[env].proposals = [];
     if (!state.environments[env].invoices) state.environments[env].invoices = [...defaultInvoices];
     if (!state.environments[env].expenses) state.environments[env].expenses = [...defaultExpenses];
+    if (!state.environments[env].contractedServices || state.environments[env].contractedServices.length === 0) state.environments[env].contractedServices = [...defaultContractedServices];
     if (!state.environments[env].contracts) state.environments[env].contracts = [...defaultContractsList];
     if (!state.environments[env].events) state.environments[env].events = [...defaultEvents];
     if (!state.environments[env].marketingAssets) state.environments[env].marketingAssets = [...defaultMarketingAssets];
@@ -4647,11 +4654,14 @@ function renderFinance() {
     // Render Expenses Table
     const expensesTbody = document.getElementById("expensesTableBody");
     expensesTbody.innerHTML = "";
+    const recLabel = { single: 'Pontual', monthly: 'Mensal', quarterly: 'Trimestral', annual: 'Anual' };
     env.expenses.forEach(exp => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td><strong>${exp.description}</strong></td>
-            <td><span class="badge-recurrence single">${exp.category}</span></td>
+            <td><span style="font-size:11px;background:var(--bg-app);padding:2px 6px;border-radius:4px;">${exp.category||'-'}</span></td>
+            <td>${exp.supplier||'-'}</td>
+            <td><span style="font-size:11px;font-weight:600;">${recLabel[exp.recurrence] || exp.recurrence || 'Pontual'}</span></td>
             <td>${formatDate(exp.date)}</td>
             <td style="color:var(--color-danger);"><strong>- ${formatCurrency(exp.value)}</strong></td>
             <td>
@@ -5175,6 +5185,8 @@ window.addEventListener("DOMContentLoaded", () => {
         const env = getEnv();
         const description = document.getElementById("expenseDescription").value;
         const category = document.getElementById("expenseCategory").value;
+        const supplier = document.getElementById("expenseSupplier")?.value || "";
+        const recurrence = document.getElementById("expenseRecurrence")?.value || "single";
         const value = parseFloat(document.getElementById("expenseValue").value) || 0;
         const date = document.getElementById("expenseDate").value;
 
@@ -5182,6 +5194,8 @@ window.addEventListener("DOMContentLoaded", () => {
             id: "exp_" + Date.now(),
             description,
             category,
+            supplier,
+            recurrence,
             value,
             date
         };
