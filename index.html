@@ -1371,7 +1371,7 @@
 
                 <!-- Advanced Profitability KPIs -->
                 <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
-                    <div class="kpi-card">
+                    <div class="kpi-card" id="cardKpiPaid" style="cursor:pointer;" title="Clique para ver Receitas Recebidas">
                         <div class="kpi-card-header">
                             <div class="kpi-icon-wrapper sales" style="background:rgba(16,185,129,.12);color:var(--color-success);">
                                 <i data-lucide="check-circle"></i>
@@ -1383,7 +1383,7 @@
                             <span class="kpi-value" id="finKpiTotalRevenue">R$ 0,00</span>
                         </div>
                     </div>
-                    <div class="kpi-card">
+                    <div class="kpi-card" id="cardKpiPending" style="cursor:pointer;" title="Clique para ver Faturas Pendentes">
                         <div class="kpi-card-header">
                             <div class="kpi-icon-wrapper pipeline" style="background:rgba(245,158,11,.12);color:var(--color-warning);">
                                 <i data-lucide="clock"></i>
@@ -1395,7 +1395,7 @@
                             <span class="kpi-value" id="finKpiPending">R$ 0,00</span>
                         </div>
                     </div>
-                    <div class="kpi-card">
+                    <div class="kpi-card" id="cardKpiOverdue" style="cursor:pointer;" title="Clique para ver Faturas Vencidas">
                         <div class="kpi-card-header">
                             <div class="kpi-icon-wrapper conversion" style="background:rgba(239,68,68,.12);color:var(--color-danger);">
                                 <i data-lucide="alert-triangle"></i>
@@ -1407,7 +1407,7 @@
                             <span class="kpi-value" id="finKpiOverdue">R$ 0,00</span>
                         </div>
                     </div>
-                    <div class="kpi-card">
+                    <div class="kpi-card" id="cardKpiExpenses" style="cursor:pointer;" title="Clique para ver Despesas Operacionais">
                         <div class="kpi-card-header">
                             <div class="kpi-icon-wrapper conversion" style="background:rgba(239,68,68,.12);color:var(--color-danger);">
                                 <i data-lucide="trending-down"></i>
@@ -1467,7 +1467,7 @@
                         <div class="tasks-menu-card">
                             <ul class="finance-filters" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:4px;">
                                 <li class="active-tab-li active" id="tabInvoices" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
-                                    <i data-lucide="receipt" style="width:14px;height:14px;"></i> <span>Faturas</span>
+                                    <i data-lucide="receipt" style="width:14px;height:14px;"></i> <span>Receitas / Faturas</span>
                                 </li>
                                 <li class="active-tab-li" id="tabExpenses" style="padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-weight:500; font-size:12px; display:flex; align-items:center; gap:8px;">
                                     <i data-lucide="minus-square" style="width:14px;height:14px;"></i> <span>Despesas</span>

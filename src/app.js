@@ -4620,6 +4620,19 @@ function renderFinance() {
     if (tabOverdue)  tabOverdue.onclick  = () => { selectSubTab('tabOverdue',  'panelOverdue');  renderOverdue(env); };
     if (tabFN)       tabFN.onclick       = () => selectSubTab('tabFiscalNotes', 'panelFiscalNotes');
 
+    // Wire KPI card clicks to quickly view filtered revenues or expenses
+    const cardKpiPaid = document.getElementById('cardKpiPaid');
+    if (cardKpiPaid) cardKpiPaid.onclick = () => { selectSubTab('tabInvoices', 'panelInvoices'); finInvoiceStatus = 'paid'; renderFinance(); };
+
+    const cardKpiPending = document.getElementById('cardKpiPending');
+    if (cardKpiPending) cardKpiPending.onclick = () => { selectSubTab('tabInvoices', 'panelInvoices'); finInvoiceStatus = 'pending'; renderFinance(); };
+
+    const cardKpiOverdue = document.getElementById('cardKpiOverdue');
+    if (cardKpiOverdue) cardKpiOverdue.onclick = () => { selectSubTab('tabInvoices', 'panelInvoices'); finInvoiceStatus = 'overdue'; renderFinance(); };
+
+    const cardKpiExpenses = document.getElementById('cardKpiExpenses');
+    if (cardKpiExpenses) cardKpiExpenses.onclick = () => { selectSubTab('tabExpenses', 'panelExpenses'); };
+
     // Wire 'Novo Serviço' button
     const btnAddService = document.getElementById('btnAddService');
     if (btnAddService) btnAddService.onclick = () => openServiceModal();
