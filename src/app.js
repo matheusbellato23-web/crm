@@ -6150,15 +6150,17 @@ function renderOverdue(env) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><strong>${inv.id}</strong></td>
-            <td>${inv.customerName || inv.company}<br><small style="color:var(--text-muted);">${inv.company || ''}</small></td>
-            <td>${inv.productName || '-'}</td>
-            <td style="color:var(--color-danger);">${formatDate(inv.dueDate)}</td>
+            <td><strong>${inv.customerName || inv.company}</strong><br><small style="color:var(--text-muted);">${inv.company || ''}</small></td>
+            <td><strong>${inv.productName || '-'}</strong></td>
+            <td style="color:var(--color-danger); font-weight: 500;">${formatDate(inv.dueDate)}</td>
             <td><span class="badge-overdue">${daysLate > 0 ? `${daysLate} dias` : 'Hoje'}</span></td>
             <td><strong style="color:var(--color-danger);">${formatCurrency(inv.value)}</strong></td>
             <td>
-                <button class="btn btn-secondary btn-xs btn-pay-overdue" style="font-size:11px;padding:4px 8px;display:flex;align-items:center;gap:4px;">
-                    <i data-lucide="check" style="width:11px;height:11px;"></i> Recebido
-                </button>
+                <div class="kanban-card-actions">
+                    <button class="btn-icon-only btn-pay-overdue" title="Confirmar Recebimento" style="color:var(--color-success);"><i data-lucide="check" style="width:14px;height:14px;"></i></button>
+                    <button class="btn-icon-only btn-edit-overdue" title="Editar" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                    <button class="btn-icon-only btn-delete-overdue" title="Remover" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                </div>
             </td>
         `;
         tr.querySelector('.btn-pay-overdue').onclick = () => {
@@ -6166,7 +6168,31 @@ function renderOverdue(env) {
             saveState();
             renderOverdue(env);
             renderFinance();
-            showToast('Fatura marcada como recebida!', 'success');
+            renderDashboard();
+            showToast('✅ Fatura marcada como recebida! Saldo atualizado.', 'success');
+        };
+        tr.querySelector('.btn-edit-overdue').onclick = () => {
+            const newVal = prompt('Editar valor da fatura (R$):', inv.value);
+            if (newVal === null) return;
+            const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
+            if (newDate === null) return;
+            inv.value = parseFloat(newVal) || inv.value;
+            inv.dueDate = newDate || inv.dueDate;
+            saveState();
+            renderOverdue(env);
+            renderFinance();
+            renderDashboard();
+            showToast('Fatura atualizada!', 'success');
+        };
+        tr.querySelector('.btn-delete-overdue').onclick = () => {
+            if (confirm('Remover esta fatura vencida?')) {
+                env.invoices = env.invoices.filter(i => i.id !== inv.id);
+                saveState();
+                renderOverdue(env);
+                renderFinance();
+                renderDashboard();
+                showToast('Fatura removida!', 'info');
+            }
         };
         overdueBody.appendChild(tr);
     });
