@@ -1900,21 +1900,32 @@ textarea.form-control {
 
 /* Scrollbars */
 ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: var(--radius-full);
+    background-color: #cbd5e1;
+    border-radius: 99px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--text-muted);
+    background-color: #94a3b8;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+    background-color: #475569;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+    background-color: #64748b;
 }
 
 /* Shake Animation for incorrect password */
