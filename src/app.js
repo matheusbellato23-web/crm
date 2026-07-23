@@ -4867,7 +4867,10 @@ function renderFinance() {
     // Render Expenses Table
     const expensesTbody = document.getElementById("expensesTableBody");
     expensesTbody.innerHTML = "";
-    filteredExpenses.forEach(exp => {
+    if (filteredExpenses.length === 0) {
+        expensesTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:24px;">Nenhuma despesa registrada para este período.</td></tr>`;
+    } else {
+        filteredExpenses.forEach(exp => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td><strong>${exp.description}</strong></td>
@@ -4916,6 +4919,7 @@ function renderFinance() {
 
         expensesTbody.appendChild(tr);
     });
+    }
 
     renderFiscalNotes();
     renderFinanceCharts(env, filteredInvoices);
