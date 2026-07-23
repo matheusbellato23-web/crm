@@ -607,6 +607,39 @@ let dashPeriod = 'month';
 let finPeriod = 'month';
 let finInvoiceStatus = 'all';
 let finInvoiceSearch = '';
+let showFinCharts = true;
+
+window.editInvoiceById = function(id) {
+    const env = getEnv();
+    const inv = env.invoices.find(i => i.id === id);
+    if (!inv) return;
+    
+    switchView('finance');
+    
+    const today = new Date().toISOString().split('T')[0];
+    const isOverdue = inv.status === 'overdue' || (inv.status === 'pending' && inv.dueDate && inv.dueDate < today);
+    
+    if (isOverdue) {
+        const tabOverdue = document.getElementById('tabOverdue');
+        if (tabOverdue) tabOverdue.click();
+    } else {
+        const tabInvoices = document.getElementById('tabInvoices');
+        if (tabInvoices) tabInvoices.click();
+    }
+
+    setTimeout(() => {
+        const newVal = prompt('Editar valor da fatura (R$):', inv.value);
+        if (newVal === null) return;
+        const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
+        if (newDate === null) return;
+        inv.value = parseFloat(newVal) || inv.value;
+        inv.dueDate = newDate || inv.dueDate;
+        saveState();
+        renderFinance();
+        renderDashboard();
+        showToast('Fatura atualizada!', 'success');
+    }, 150);
+};
 
 function getFinPeriodRange() {
     const now = new Date();
@@ -856,8 +889,8 @@ function renderForecast(env) {
             : inv.status === 'pending_delivery'
             ? `<span class="badge-status pending_delivery">Na Entrega</span>`
             : `<span style="background:var(--color-warning-bg);color:var(--color-warning);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;">Pendente</span>`;
-        return `<tr>
-            <td>${inv.customerName || inv.company || '-'}</td>
+        return `<tr onclick="editInvoiceById('${inv.id}')" style="cursor:pointer;" title="Clique para gerenciar este lançamento" class="clickable-row-hover">
+            <td><strong>${inv.customerName || inv.company || '-'}</strong></td>
             <td style="font-size:12px;color:var(--text-secondary);">${inv.productName || '-'}</td>
             <td style="color:${isOverdue ? 'var(--color-danger)' : 'inherit'};font-weight:${isOverdue ? '600' : '400'};">${formatDate(inv.dueDate)}</td>
             <td><strong>${formatCurrency(inv.value)}</strong></td>
@@ -4633,6 +4666,23 @@ function renderFinance() {
     const cardKpiExpenses = document.getElementById('cardKpiExpenses');
     if (cardKpiExpenses) cardKpiExpenses.onclick = () => { selectSubTab('tabExpenses', 'panelExpenses'); };
 
+    // Wire Toggle Charts Button
+    const btnToggleCharts = document.getElementById('btnToggleFinCharts');
+    const chartsRow = document.getElementById('finChartsRow');
+    if (btnToggleCharts && chartsRow) {
+        btnToggleCharts.onclick = () => {
+            showFinCharts = !showFinCharts;
+            renderFinance();
+        };
+        if (showFinCharts) {
+            chartsRow.style.display = 'grid';
+            btnToggleCharts.innerHTML = `<i data-lucide="eye-off" style="width:14px;height:14px;"></i><span>Ocultar Gráficos</span>`;
+        } else {
+            chartsRow.style.display = 'none';
+            btnToggleCharts.innerHTML = `<i data-lucide="eye" style="width:14px;height:14px;"></i><span>Mostrar Gráficos</span>`;
+        }
+    }
+
     // Wire 'Novo Serviço' button
     const btnAddService = document.getElementById('btnAddService');
     if (btnAddService) btnAddService.onclick = () => openServiceModal();
@@ -4774,7 +4824,7 @@ function renderFinance() {
                     showToast('✅ Recebimento confirmado! Saldo atualizado.', 'success');
                 };
             }
-            tr.querySelector('.btn-edit-invoice').onclick = () => {
+            const editFn = () => {
                 const newVal = prompt('Editar valor da fatura (R$):', inv.value);
                 if (newVal === null) return;
                 const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
@@ -4786,6 +4836,15 @@ function renderFinance() {
                 renderDashboard();
                 showToast('Fatura atualizada!', 'success');
             };
+            tr.querySelector('.btn-edit-invoice').onclick = editFn;
+
+            // Make cells clickable to edit (excluding the actions td)
+            const cells = tr.querySelectorAll('td');
+            for (let i = 0; i < cells.length - 1; i++) {
+                cells[i].style.cursor = 'pointer';
+                cells[i].onclick = editFn;
+            }
+
             tr.querySelector('.btn-delete-invoice').onclick = () => {
                 if (confirm('Remover esta fatura?')) {
                     env.invoices = env.invoices.filter(i => i.id !== inv.id);
@@ -4824,7 +4883,7 @@ function renderFinance() {
                 </div>
             </td>`;
 
-        tr.querySelector(".btn-edit-expense").onclick = () => {
+        const editExpFn = () => {
             const newDesc = prompt('Descrição da despesa:', exp.description);
             if (newDesc === null) return;
             const newVal = prompt('Valor (R$):', exp.value);
@@ -4836,6 +4895,15 @@ function renderFinance() {
             renderDashboard();
             showToast('Despesa atualizada!', 'success');
         };
+
+        tr.querySelector(".btn-edit-expense").onclick = editExpFn;
+
+        // Make cells clickable to edit (excluding the actions td)
+        const cells = tr.querySelectorAll('td');
+        for (let i = 0; i < cells.length - 1; i++) {
+            cells[i].style.cursor = 'pointer';
+            cells[i].onclick = editExpFn;
+        }
 
         tr.querySelector(".btn-delete-expense").onclick = () => {
             if (confirm("Deseja realmente excluir este custo operacional?")) {
@@ -4856,6 +4924,11 @@ function renderFinance() {
 function renderFinanceCharts(env, activeInvoices) {
     if (cashFlowChart) cashFlowChart.destroy();
     if (revenueByNicheChart) revenueByNicheChart.destroy();
+
+    const chartsRow = document.getElementById('finChartsRow');
+    if (chartsRow && chartsRow.style.display === 'none') {
+        return;
+    }
 
     const invList = activeInvoices || env.invoices;
 
@@ -6085,15 +6158,16 @@ function renderByClient(env) {
     if (!tbody) return;
     tbody.innerHTML = '';
     
-    // Group invoices by company
+    const todayStr = new Date().toISOString().split('T')[0];
     const clientMap = {};
     env.invoices.forEach(inv => {
-        const key = inv.company || inv.customerName || 'Desconhecido';
+        const isInvOverdue = inv.status === 'overdue' || (inv.status === 'pending' && inv.dueDate && inv.dueDate < todayStr);
+        const key = (inv.company && inv.company.trim() !== '-') ? inv.company.trim() : (inv.customerName || 'Desconhecido');
         if (!clientMap[key]) {
             clientMap[key] = { name: inv.customerName || key, company: key, niche: inv.niche || '-', paid: 0, pending: 0, overdue: 0 };
         }
         if (inv.status === 'paid') clientMap[key].paid += inv.value;
-        else if (inv.status === 'overdue') clientMap[key].overdue += inv.value;
+        else if (isInvOverdue) clientMap[key].overdue += inv.value;
         else clientMap[key].pending += inv.value;
     });
     
@@ -6171,7 +6245,7 @@ function renderOverdue(env) {
             renderDashboard();
             showToast('✅ Fatura marcada como recebida! Saldo atualizado.', 'success');
         };
-        tr.querySelector('.btn-edit-overdue').onclick = () => {
+        const editOverdueFn = () => {
             const newVal = prompt('Editar valor da fatura (R$):', inv.value);
             if (newVal === null) return;
             const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
@@ -6184,6 +6258,16 @@ function renderOverdue(env) {
             renderDashboard();
             showToast('Fatura atualizada!', 'success');
         };
+
+        tr.querySelector('.btn-edit-overdue').onclick = editOverdueFn;
+
+        // Make cells clickable to edit (excluding the actions td)
+        const cells = tr.querySelectorAll('td');
+        for (let i = 0; i < cells.length - 1; i++) {
+            cells[i].style.cursor = 'pointer';
+            cells[i].onclick = editOverdueFn;
+        }
+
         tr.querySelector('.btn-delete-overdue').onclick = () => {
             if (confirm('Remover esta fatura vencida?')) {
                 env.invoices = env.invoices.filter(i => i.id !== inv.id);
@@ -6254,7 +6338,16 @@ function renderServices() {
                 </div>
             </td>`;
 
-        tr.querySelector('.btn-edit-svc').onclick   = () => openServiceModal(svc.id);
+        const editSvcFn = () => openServiceModal(svc.id);
+        tr.querySelector('.btn-edit-svc').onclick = editSvcFn;
+
+        // Make cells clickable to edit (excluding the actions td)
+        const cells = tr.querySelectorAll('td');
+        for (let i = 0; i < cells.length - 1; i++) {
+            cells[i].style.cursor = 'pointer';
+            cells[i].onclick = editSvcFn;
+        }
+
         tr.querySelector('.btn-delete-svc').onclick = () => {
             if (confirm(`Remover "${svc.name}"?`)) {
                 env.contractedServices = env.contractedServices.filter(s => s.id !== svc.id);

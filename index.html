@@ -1354,6 +1354,10 @@
                             <button type="button" class="period-btn" data-period="year">Este Ano</button>
                             <button type="button" class="period-btn" data-period="all">Todo o Período</button>
                         </div>
+                        <button class="btn btn-secondary" id="btnToggleFinCharts" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); gap: 6px;">
+                            <i data-lucide="eye-off"></i>
+                            <span>Ocultar Gráficos</span>
+                        </button>
                         <button class="btn btn-secondary" id="btnCreateExpense">
                             <i data-lucide="minus-circle"></i>
                             <span>Lançar Despesa</span>
@@ -1446,7 +1450,7 @@
                 </div>
 
                 <!-- Financial Charts Layout -->
-                <div class="dashboard-grid" style="margin-top:14px;">
+                <div class="dashboard-grid" id="finChartsRow" style="margin-top:14px;">
                     <div class="chart-card">
                         <h3>Fluxo de Caixa (Recorrente vs Pontual)</h3>
                         <div class="chart-container" style="position:relative; height:120px;">
