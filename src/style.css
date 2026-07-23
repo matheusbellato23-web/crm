@@ -2281,20 +2281,26 @@ textarea.form-control {
     border-left: 2px solid var(--color-success);
 }
 
-/* Active tab styles for sub-tabs */
+/* Active tab styles for sub-tabs (Horizontal) */
 .active-tab-li {
     color: var(--text-secondary);
+    background: transparent;
+    border: 1.5px solid transparent;
+    border-bottom: none;
     transition: all var(--transition-fast);
 }
 
 .active-tab-li:hover {
-    background-color: var(--bg-card-hover);
     color: var(--text-primary);
+    background-color: var(--bg-card-hover);
 }
 
 .active-tab-li.active {
-    background-color: var(--color-primary-glow);
-    color: var(--color-primary);
+    background-color: var(--bg-card) !important;
+    color: var(--color-primary) !important;
+    border-color: var(--border-color) !important;
+    border-bottom: 2.5px solid var(--bg-card) !important; /* Visual connection to bottom panel */
+    font-weight: 700 !important;
 }
 
 /* Printing Contract details */
