@@ -93,17 +93,14 @@ body {
     font-family: var(--font-primary);
     background-color: var(--bg-app);
     color: var(--text-primary);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     transition: background-color var(--transition-normal), color var(--transition-normal);
     -webkit-font-smoothing: antialiased;
 }
 
-/* App Container Layout */
 .app-container {
     display: flex;
-    height: 100vh;
-    width: 100vw;
+    min-height: 100vh;
 }
 
 /* Sidebar Navigation */
@@ -115,6 +112,9 @@ body {
     flex-direction: column;
     flex-shrink: 0;
     z-index: 100;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
 .sidebar-header {
@@ -302,13 +302,11 @@ body {
     color: rgba(255,255,255,0.4);
 }
 
-/* Main Area Layout */
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     background-color: var(--bg-app);
 }
 
@@ -430,11 +428,9 @@ body {
 /* Sections */
 .view-section {
     display: none;
-    padding: 16px 20px 24px 20px;
+    padding: 16px 20px 48px 20px;
     flex-direction: column;
     gap: 14px;
-    height: calc(100vh - 60px);
-    overflow-y: auto;
 }
 
 .view-section.active {
