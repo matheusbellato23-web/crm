@@ -3073,3 +3073,31 @@ tr:hover .product-drag-handle {
 #syncIndicator { color: rgba(255,255,255,0.35) !important; }
 #syncIndicator span:first-child { } /* dot stays inline */
 
+/* Smooth document scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Animations for premium transitions */
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply premium transition to view sections when they become active */
+.view-section.active {
+    display: flex;
+    animation: slideUpFade 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Apply smooth animation when sub-tabs (tables/panels) are toggled */
+.table-card:not(.hidden) {
+    animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+

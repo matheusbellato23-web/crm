@@ -609,6 +609,11 @@ let finInvoiceStatus = 'all';
 let finInvoiceSearch = '';
 let showFinCharts = true;
 
+window.switchView = function(viewId) {
+    const targetItem = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+    if (targetItem) targetItem.click();
+};
+
 window.editInvoiceById = function(id) {
     const env = getEnv();
     const inv = env.invoices.find(i => i.id === id);
@@ -4638,6 +4643,11 @@ function renderFinance() {
         const panels = ['panelInvoices','panelExpenses','panelServices','panelByClient','panelOverdue','panelFiscalNotes'];
         tabs.forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', id === activeId); });
         panels.forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('hidden', id !== activePanelId); });
+        
+        const navEl = document.querySelector('.finance-tabs-nav');
+        if (navEl) {
+            navEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     };
 
     const tabInvoices = document.getElementById('tabInvoices');
