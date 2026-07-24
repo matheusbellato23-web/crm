@@ -3102,3 +3102,15 @@ html {
     animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Unify inner paddings for all table-card header components to align perfectly with table cells */
+.table-card > div:first-child:not(.table-container) {
+    padding: 20px 16px 14px 16px !important;
+    margin-bottom: 0 !important;
+}
+
+/* Specific padding and margin adjustments for contracted services KPI container */
+.table-card .services-kpi-row {
+    padding: 0 16px 16px 16px !important;
+    margin-bottom: 0 !important;
+}
+

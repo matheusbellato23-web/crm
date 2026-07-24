@@ -357,6 +357,17 @@
                     </div>
                 </div>
 
+                <!-- Overdue Tasks Banner -->
+                <div id="overdueTasksBanner" class="hidden" style="background: var(--color-danger-bg); border: 1.5px solid var(--color-danger); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; margin-top: 14px; cursor: pointer; transition: all var(--transition-fast);">
+                    <div style="display:flex; align-items:center; gap:10px; color: var(--color-danger); font-weight: 600; font-size: 13.5px;">
+                        <i data-lucide="alert-triangle" style="width:18px; height:18px;"></i>
+                        <span id="overdueTasksBannerText">Você possui 0 tarefas atrasadas comercialmente!</span>
+                    </div>
+                    <span style="font-size:12px; font-weight:700; color: var(--color-danger); text-decoration: underline; display:flex; align-items:center; gap:4px;">
+                        Ver tarefas <i data-lucide="arrow-right" style="width:12px; height:12px;"></i>
+                    </span>
+                </div>
+
                 <!-- KPI Cards -->
                 <div class="kpi-grid" id="widgetKpiGrid">
                     <div class="kpi-card">
@@ -1135,6 +1146,38 @@
                         </button>
                     </div>
                 </div>
+                
+                <!-- Task Overview KPI Grid -->
+                <div class="kpi-grid" id="taskKpiGrid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 16px; margin-top: 10px;">
+                    <div class="kpi-card" style="cursor:pointer;" id="cardTaskTotal">
+                        <div class="kpi-card-header">
+                            <span class="kpi-title">Total de Tarefas</span>
+                            <i data-lucide="list-todo" style="color:var(--color-primary);width:16px;height:16px;"></i>
+                        </div>
+                        <div class="kpi-value" id="taskKpiTotal">0</div>
+                    </div>
+                    <div class="kpi-card" style="cursor:pointer;" id="cardTaskPending">
+                        <div class="kpi-card-header">
+                            <span class="kpi-title">Tarefas Pendentes</span>
+                            <i data-lucide="clock" style="color:var(--color-warning);width:16px;height:16px;"></i>
+                        </div>
+                        <div class="kpi-value" id="taskKpiPending">0</div>
+                    </div>
+                    <div class="kpi-card" style="cursor:pointer;" id="cardTaskOverdue">
+                        <div class="kpi-card-header">
+                            <span class="kpi-title">Atrasadas / Vencidas</span>
+                            <i data-lucide="alert-triangle" style="color:var(--color-danger);width:16px;height:16px;"></i>
+                        </div>
+                        <div class="kpi-value" id="taskKpiOverdue" style="color:var(--color-danger);">0</div>
+                    </div>
+                    <div class="kpi-card" style="cursor:pointer;" id="cardTaskCompleted">
+                        <div class="kpi-card-header">
+                            <span class="kpi-title">Concluídas</span>
+                            <i data-lucide="check-circle-2" style="color:var(--color-success);width:16px;height:16px;"></i>
+                        </div>
+                        <div class="kpi-value" id="taskKpiCompleted">0</div>
+                    </div>
+                </div>
 
                 <div class="tasks-container">
                     <div class="tasks-sidebar">
@@ -1450,7 +1493,7 @@
                 </div>
 
                 <!-- Financial Charts Layout -->
-                <div class="dashboard-grid" id="finChartsRow" style="margin-top:14px;">
+                <div class="charts-grid" id="finChartsRow" style="margin-top:14px; grid-template-columns: 1fr 1fr;">
                     <div class="chart-card">
                         <h3>Fluxo de Caixa (Recorrente vs Pontual)</h3>
                         <div class="chart-container" style="position:relative; height:120px;">
@@ -1573,7 +1616,7 @@
                             </div>
 
                             <!-- KPI row for services -->
-                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+                            <div class="services-kpi-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
                                 <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:14px;">
                                     <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Custo Mensal Total</div>
                                     <div style="font-size:20px;font-weight:800;color:var(--color-danger);margin-top:4px;" id="svcKpiMonthly">R$ 0,00</div>

@@ -2420,6 +2420,49 @@ function renderTasksKanban(env, tasks) {
 function renderTasks() {
     const env = getEnv();
     
+    // Compute Task KPIs
+    const todayStr = new Date().toISOString().split('T')[0];
+    const totalCount = env.tasks.length;
+    const pendingCount = env.tasks.filter(t => !t.completed).length;
+    const overdueCount = env.tasks.filter(t => !t.completed && t.dueDate && t.dueDate < todayStr).length;
+    const completedCount = env.tasks.filter(t => t.completed).length;
+
+    const setTEl = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+    setTEl('taskKpiTotal', totalCount);
+    setTEl('taskKpiPending', pendingCount);
+    setTEl('taskKpiOverdue', overdueCount);
+    setTEl('taskKpiCompleted', completedCount);
+
+    // Style the overdue KPI card to indicate attention if overdueCount > 0
+    const cardTaskOverdue = document.getElementById('cardTaskOverdue');
+    if (cardTaskOverdue) {
+        if (overdueCount > 0) {
+            cardTaskOverdue.style.borderColor = 'var(--color-danger)';
+            cardTaskOverdue.style.background = 'rgba(239, 68, 68, 0.02)';
+        } else {
+            cardTaskOverdue.style.borderColor = '';
+            cardTaskOverdue.style.background = '';
+        }
+    }
+
+    // Wire KPI card clicks to filter list
+    const wireCard = (cardId, filterVal) => {
+        const card = document.getElementById(cardId);
+        if (card) {
+            card.onclick = () => {
+                window.taskActiveFilterOverride = filterVal;
+                document.querySelectorAll(".tasks-filters li").forEach(li => {
+                    li.classList.toggle('active', li.getAttribute("data-task-filter") === (filterVal === 'overdue' ? 'pending' : filterVal));
+                });
+                renderTasks();
+            };
+        }
+    };
+    wireCard('cardTaskTotal', 'all');
+    wireCard('cardTaskPending', 'pending');
+    wireCard('cardTaskOverdue', 'overdue');
+    wireCard('cardTaskCompleted', 'completed');
+
     // Setup view toggle
     const btnList = document.getElementById('btnTasksViewList');
     const btnKanban = document.getElementById('btnTasksViewKanban');
@@ -2443,7 +2486,7 @@ function renderTasks() {
         return;
     }
     
-    const activeFilter = document.querySelector(".tasks-filters li.active")?.getAttribute("data-task-filter") || 'all';
+    const activeFilter = window.taskActiveFilterOverride || document.querySelector(".tasks-filters li.active")?.getAttribute("data-task-filter") || 'all';
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
     
     let filtered = [...env.tasks];
@@ -2452,6 +2495,8 @@ function renderTasks() {
         filtered = filtered.filter(t => !t.completed);
     } else if (activeFilter === "completed") {
         filtered = filtered.filter(t => t.completed);
+    } else if (activeFilter === "overdue") {
+        filtered = filtered.filter(t => !t.completed && t.dueDate && t.dueDate < todayStr);
     }
 
     if (searchVal) {
@@ -3726,6 +3771,7 @@ if (filterStatus) {
 // Task Filter Tabs Navigation
 document.querySelectorAll(".tasks-filters li").forEach(tab => {
     tab.addEventListener("click", () => {
+        window.taskActiveFilterOverride = null;
         document.querySelectorAll(".tasks-filters li").forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
         renderTasks();
@@ -4342,16 +4388,50 @@ function renderContracts() {
                 <td>
                     <div class="kanban-card-actions">
                         <button class="btn-icon-only btn-view-contract" title="Visualizar Contrato"><i data-lucide="file-text" style="width:14px;height:14px;"></i></button>
+                        <button class="btn-icon-only btn-edit-contract" title="Editar Contrato" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
                         <button class="btn-icon-only btn-delete-contract" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                     </div>
                 </td>
             `;
 
+            const editContractFn = () => {
+                const newVal = prompt("Editar valor do contrato (R$):", con.value);
+                if (newVal === null) return;
+                const newStart = prompt("Editar início de vigência (AAAA-MM-DD):", con.startDate || "");
+                if (newStart === null) return;
+                const newEnd = prompt("Editar término de vigência (AAAA-MM-DD):", con.endDate || "");
+                if (newEnd === null) return;
+                const newStatus = prompt("Editar status (ativo, rascunho, encerrado):", con.status === "active" ? "ativo" : con.status === "expired" ? "encerrado" : "rascunho");
+                if (newStatus === null) return;
+
+                con.value = parseFloat(newVal) || con.value;
+                con.startDate = newStart || con.startDate;
+                con.endDate = newEnd || con.endDate;
+                
+                const statusVal = newStatus.trim().toLowerCase();
+                if (statusVal === "ativo") con.status = "active";
+                else if (statusVal === "encerrado") con.status = "expired";
+                else con.status = "draft";
+                
+                saveState();
+                renderContracts();
+                showToast("Contrato atualizado!", "success");
+            };
+
             tr.querySelector(".btn-view-contract").addEventListener("click", () => openViewContract(con.id));
+            tr.querySelector(".btn-edit-contract").onclick = editContractFn;
             tr.querySelector(".btn-delete-contract").addEventListener("click", () => deleteContract(con.id));
+
+            // Make cells clickable to edit (excluding the actions td)
+            const cells = tr.querySelectorAll('td');
+            for (let i = 0; i < cells.length - 1; i++) {
+                cells[i].style.cursor = 'pointer';
+                cells[i].onclick = editContractFn;
+            }
 
             tbody.appendChild(tr);
         });
+        safeCreateIcons();
     }
 }
 
@@ -6101,25 +6181,94 @@ function updateCalendarNotifications() {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toISOString().split("T")[0];
     
-    // Sort all events chronologically
-    const allEvents = [...(env.events || [])].sort((a,b) => a.date.localeCompare(b.date));
+    const overdueTasks = (env.tasks || []).filter(t => !t.completed && t.dueDate && t.dueDate < todayStr);
+    const todayTasks = (env.tasks || []).filter(t => !t.completed && t.dueDate && t.dueDate === todayStr);
     
-    // Filter events starting from today
+    const allEvents = [...(env.events || [])].sort((a,b) => a.date.localeCompare(b.date));
     const upcomingEvents = allEvents.filter(evt => evt.date >= todayStr);
     
-    // Count of today's events
     const todayEventsCount = allEvents.filter(evt => evt.date === todayStr).length;
+    const totalAlertsCount = todayEventsCount + overdueTasks.length + todayTasks.length;
     
-    if (todayEventsCount > 0) {
-        badge.innerText = todayEventsCount;
+    if (totalAlertsCount > 0) {
+        badge.innerText = totalAlertsCount;
         badge.classList.remove("hidden");
     } else {
         badge.classList.add("hidden");
     }
     
+    const overdueBanner = document.getElementById("overdueTasksBanner");
+    const overdueBannerText = document.getElementById("overdueTasksBannerText");
+    if (overdueBanner && overdueBannerText) {
+        if (overdueTasks.length > 0) {
+            overdueBannerText.innerHTML = `Você possui <strong>${overdueTasks.length} tarefas comerciais atrasadas</strong>!`;
+            overdueBanner.classList.remove("hidden");
+            overdueBanner.onclick = () => {
+                switchView('tasks');
+                window.taskActiveFilterOverride = 'overdue';
+                renderTasks();
+            };
+        } else {
+            overdueBanner.classList.add("hidden");
+        }
+    }
+    
     list.innerHTML = "";
+    
+    if (overdueTasks.length > 0 || todayTasks.length > 0) {
+        const taskSectionHeader = document.createElement("div");
+        taskSectionHeader.innerHTML = `<h4 style="font-size:12px; font-weight:700; color:var(--color-danger); margin-bottom:8px; display:flex; align-items:center; gap:6px;"><i data-lucide="alert-circle" style="width:14px;height:14px;"></i> Alertas de Tarefas (${overdueTasks.length + todayTasks.length})</h4>`;
+        list.appendChild(taskSectionHeader);
+        
+        overdueTasks.concat(todayTasks).forEach(t => {
+            const isOverdue = t.dueDate < todayStr;
+            const item = document.createElement("div");
+            item.style.padding = "10px 12px";
+            item.style.marginBottom = "8px";
+            item.style.background = isOverdue ? "rgba(239, 68, 68, 0.05)" : "rgba(245, 158, 11, 0.05)";
+            item.style.border = isOverdue ? "1px solid rgba(239, 68, 68, 0.2)" : "1px solid rgba(245, 158, 11, 0.2)";
+            item.style.borderRadius = "var(--radius-sm)";
+            item.style.display = "flex";
+            item.style.justifyContent = "space-between";
+            item.style.alignItems = "center";
+            item.style.cursor = "pointer";
+            
+            item.onclick = () => {
+                document.getElementById("notificationsModal").classList.remove("active");
+                switchView('tasks');
+                window.taskActiveFilterOverride = isOverdue ? 'overdue' : 'pending';
+                renderTasks();
+            };
+            
+            item.innerHTML = `
+                <div style="flex:1; padding-right:8px;">
+                    <span style="font-weight:600; font-size:12.5px; display:block; color:var(--text-primary);">${t.title}</span>
+                    <span style="font-size:11px; color:${isOverdue ? 'var(--color-danger)' : 'var(--color-warning)'};">${isOverdue ? 'Atrasada' : 'Vence Hoje'}: ${formatDate(t.dueDate)}</span>
+                </div>
+                <span class="badge-status ${isOverdue ? 'overdue' : 'pending_partial'}" style="font-size:9px; padding:2px 6px; flex-shrink:0;">${t.priority === 'high' ? 'Alta' : t.priority === 'medium' ? 'Média' : 'Baixa'}</span>
+            `;
+            list.appendChild(item);
+        });
+        
+        const divider = document.createElement("hr");
+        divider.style.border = "none";
+        divider.style.borderTop = "1px solid var(--border-color)";
+        divider.style.margin = "12px 0";
+        list.appendChild(divider);
+    }
+    
+    const eventsSectionHeader = document.createElement("div");
+    eventsSectionHeader.innerHTML = `<h4 style="font-size:12px; font-weight:700; color:var(--color-primary); margin-bottom:8px; display:flex; align-items:center; gap:6px;"><i data-lucide="calendar" style="width:14px;height:14px;"></i> Compromissos da Agenda</h4>`;
+    list.appendChild(eventsSectionHeader);
+    
     if (upcomingEvents.length === 0) {
-        list.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 13px;">Nenhum compromisso agendado a partir de hoje.</div>`;
+        const noEvts = document.createElement("div");
+        noEvts.style.textAlign = "center";
+        noEvts.style.color = "var(--text-muted)";
+        noEvts.style.padding = "10px 0";
+        noEvts.style.fontSize = "13px";
+        noEvts.innerText = "Nenhum compromisso agendado a partir de hoje.";
+        list.appendChild(noEvts);
         return;
     }
     
@@ -6132,6 +6281,7 @@ function updateCalendarNotifications() {
         item.style.display = "flex";
         item.style.flexDirection = "column";
         item.style.gap = "4px";
+        item.style.marginBottom = "8px";
         
         let dayLabel = formatDateBr(evt.date);
         let dayBadgeColor = "var(--color-primary)";
