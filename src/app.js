@@ -4637,17 +4637,11 @@ function renderFinance() {
         }
     });
     
-    // Sub-tab toggling
     const selectSubTab = (activeId, activePanelId) => {
         const tabs   = ['tabInvoices','tabExpenses','tabServices','tabByClient','tabOverdue','tabFiscalNotes'];
         const panels = ['panelInvoices','panelExpenses','panelServices','panelByClient','panelOverdue','panelFiscalNotes'];
         tabs.forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', id === activeId); });
         panels.forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('hidden', id !== activePanelId); });
-        
-        const navEl = document.querySelector('.finance-tabs-nav');
-        if (navEl) {
-            navEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
     };
 
     const tabInvoices = document.getElementById('tabInvoices');
@@ -4933,6 +4927,7 @@ function renderFinance() {
 
     renderFiscalNotes();
     renderFinanceCharts(env, filteredInvoices);
+    safeCreateIcons();
 }
 
 function renderFinanceCharts(env, activeInvoices) {

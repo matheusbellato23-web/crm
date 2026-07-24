@@ -675,6 +675,7 @@ body {
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     transition: box-shadow var(--transition-normal);
+    min-height: 480px;
 }
 .table-card:hover {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
