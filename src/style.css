@@ -178,10 +178,10 @@ body {
 
 .nav-section-title {
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: rgba(255,255,255,0.28);
+    color: rgba(255,255,255,0.45);
     padding: 16px 16px 6px;
     margin-top: 4px;
 }
@@ -191,28 +191,29 @@ body {
     align-items: center;
     gap: 10px;
     padding: 8px 14px;
-    color: rgba(255,255,255,0.55);
+    color: rgba(255,255,255,0.75);
     border-radius: var(--radius-sm);
     cursor: pointer;
     margin-bottom: 2px;
     margin-left: 6px;
     margin-right: 6px;
     transition: all var(--transition-fast);
-    font-weight: 400;
+    font-weight: 500;
     font-size: 13px;
     position: relative;
 }
 
 .nav-item:hover {
-    color: rgba(255,255,255,0.9);
+    color: #ffffff;
     background-color: rgba(255,255,255,0.07);
 }
 
 .nav-item.active {
     color: #ffffff;
-    background: linear-gradient(90deg, rgba(79,70,229,0.35) 0%, rgba(79,70,229,0.12) 100%);
-    font-weight: 500;
-    border: 1px solid rgba(79,70,229,0.25);
+    background: linear-gradient(90deg, rgba(79,70,229,0.45) 0%, rgba(79,70,229,0.18) 100%) !important;
+    font-weight: 600;
+    border: 1px solid rgba(129,140,248,0.45) !important;
+    box-shadow: 0 4px 12px rgba(79,70,229,0.15);
 }
 
 .nav-item.active::before {
@@ -3166,5 +3167,26 @@ html {
     border-color: var(--color-primary) !important;
     background: var(--color-primary-glow) !important;
     color: var(--color-primary) !important;
+}
+
+/* Vivid individual colors for sidebar navigation icons */
+.nav-item[data-view="dashboard"] i { color: #818cf8 !important; }
+.nav-item[data-view="contacts"] i { color: #34d399 !important; }
+.nav-item[data-view="kanban"] i { color: #22d3ee !important; }
+.nav-item[data-view="products"] i { color: #fb923c !important; }
+.nav-item[data-view="proposals"] i { color: #c084fc !important; }
+.nav-item[data-view="marketing"] i { color: #2dd4bf !important; }
+.nav-item[data-view="contracts"] i { color: #60a5fa !important; }
+.nav-item[data-view="tasks"] i { color: #f43f5e !important; }
+.nav-item[data-view="calendar"] i { color: #a78bfa !important; }
+.nav-item[data-view="customers"] i { color: #fbbf24 !important; }
+.nav-item[data-view="finance"] i { color: #4ade80 !important; }
+.nav-item[data-view="users"] i { color: #f472b6 !important; }
+
+/* Enhanced active icons style with subtle drop-shadow glow */
+.nav-item.active i {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    filter: drop-shadow(0 0 5px currentColor);
 }
 
