@@ -2377,14 +2377,29 @@ function renderTasksKanban(env, tasks) {
         card.className = 'task-kanban-card';
         card.draggable = true;
         card.dataset.taskId = task.id;
+        
+        const todayStr = new Date().toISOString().split('T')[0];
+        const isOverdue = kanbanStatus !== 'done' && task.dueDate && task.dueDate < todayStr;
+        const dateStyle = isOverdue ? 'color: var(--color-danger); font-weight: 700;' : 'color:var(--text-muted);';
+        const dateLabel = task.dueDate ? `<span style="font-size:10px; ${dateStyle}">📅 ${formatDate(task.dueDate)}${isOverdue ? ' (Atrasada)' : ''}</span>` : '';
+        
         card.innerHTML = `
             <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${task.title}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-                <span class="task-priority-badge ${task.priority}" style="font-size:10px;">${task.priority}</span>
-                ${task.dueDate ? `<span style="font-size:10px;color:var(--text-muted);">📅 ${formatDate(task.dueDate)}</span>` : ''}
+                <span class="task-priority-badge ${task.priority}" style="font-size:10px;">${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}</span>
+                ${dateLabel}
             </div>
         `;
         
+        card.style.cursor = 'pointer';
+        card.title = "Clique para editar esta tarefa";
+        card.onclick = (e) => {
+            // Prevent opening if the user is dragging the card
+            if (e.target.closest('.task-kanban-card')) {
+                openEditTaskModal(task.id);
+            }
+        };
+
         // Drag events
         card.addEventListener('dragstart', () => { card.style.opacity = '0.5'; window._dragTaskId = task.id; });
         card.addEventListener('dragend', () => { card.style.opacity = '1'; });
@@ -2527,6 +2542,11 @@ function renderTasks() {
             const contactName = task.contactId ? (env.contacts.find(c => c.id === task.contactId)?.name || "") : "";
             const div = document.createElement("div");
             div.className = `task-item ${task.completed ? 'completed' : ''}`;
+            
+            const isOverdue = !task.completed && task.dueDate && task.dueDate < todayStr;
+            const dateStyle = isOverdue ? 'color: var(--color-danger); font-weight: 700;' : '';
+            const overdueBadge = isOverdue ? `<span style="background:var(--color-danger-bg); color:var(--color-danger); font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px;">Atrasada</span>` : '';
+            
             div.innerHTML = `
                 <label class="task-checkbox-wrapper">
                     <input type="checkbox" class="task-toggle" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
@@ -2536,12 +2556,21 @@ function renderTasks() {
                     <span class="task-title-text">${task.title}</span>
                     <div class="task-meta">
                         ${contactName ? `<span>👤 ${contactName}</span>` : ""}
-                        <span>📅 ${formatDate(task.dueDate)}</span>
+                        <span style="${dateStyle}">📅 ${formatDate(task.dueDate)}</span>
+                        ${overdueBadge}
                         <span class="task-priority-badge ${task.priority}">${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}</span>
                     </div>
                 </div>
                 <button class="btn-icon-only btn-delete-task" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
             `;
+
+            // Click content area to edit
+            const contentArea = div.querySelector(".task-content");
+            if (contentArea) {
+                contentArea.style.cursor = "pointer";
+                contentArea.title = "Clique para editar esta tarefa";
+                contentArea.onclick = () => openEditTaskModal(task.id);
+            }
 
             div.querySelector(".task-toggle").addEventListener("change", (e) => {
                 toggleTaskComplete(task.id, e.target.checked);
@@ -3750,6 +3779,10 @@ document.getElementById("btnCloseDetailsModal").addEventListener("click", () => 
 
 // Add Task Modal Toggle
 document.getElementById("btnAddTask").addEventListener("click", () => {
+    const hiddenIdInput = document.getElementById("taskId");
+    if (hiddenIdInput) hiddenIdInput.value = "";
+    const modalHeader = document.querySelector("#taskModal .modal-header h3");
+    if (modalHeader) modalHeader.innerText = "Adicionar Nova Tarefa";
     document.getElementById("taskForm").reset();
     document.getElementById("taskModal").classList.add("active");
 });
@@ -3759,6 +3792,25 @@ document.getElementById("btnCloseTaskModal").addEventListener("click", () => {
 document.getElementById("btnCancelTaskModal").addEventListener("click", () => {
     document.getElementById("taskModal").classList.remove("active");
 });
+
+window.openEditTaskModal = function(id) {
+    const env = getEnv();
+    const task = env.tasks.find(t => t.id === id);
+    if (!task) return;
+    
+    const hiddenIdInput = document.getElementById("taskId");
+    if (hiddenIdInput) hiddenIdInput.value = task.id;
+    
+    const modalHeader = document.querySelector("#taskModal .modal-header h3");
+    if (modalHeader) modalHeader.innerText = "Editar Tarefa";
+    
+    document.getElementById("taskTitle").value = task.title || "";
+    document.getElementById("taskContact").value = task.contactId || "";
+    document.getElementById("taskDueDate").value = task.dueDate || "";
+    document.getElementById("taskPriority").value = task.priority || "medium";
+    
+    document.getElementById("taskModal").classList.add("active");
+};
 
 // Contacts filter dropdown listener
 const filterStatus = document.getElementById("filterStatus");
@@ -3881,21 +3933,36 @@ document.getElementById("activityForm").addEventListener("submit", (e) => {
 document.getElementById("taskForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const env = getEnv();
+    const taskId = document.getElementById("taskId")?.value || "";
     const title = document.getElementById("taskTitle").value;
     const contactId = document.getElementById("taskContact").value;
     const dueDate = document.getElementById("taskDueDate").value;
     const priority = document.getElementById("taskPriority").value;
 
-    const newTask = {
-        id: "t_" + Date.now(),
-        title,
-        contactId,
-        dueDate,
-        priority,
-        completed: false
-    };
+    if (taskId) {
+        // Edit existing task
+        const task = env.tasks.find(t => t.id === taskId);
+        if (task) {
+            task.title = title;
+            task.contactId = contactId;
+            task.dueDate = dueDate;
+            task.priority = priority;
+            showToast("Tarefa atualizada!", "success");
+        }
+    } else {
+        // Create new task
+        const newTask = {
+            id: "t_" + Date.now(),
+            title,
+            contactId,
+            dueDate,
+            priority,
+            completed: false
+        };
+        env.tasks.push(newTask);
+        showToast("Tarefa criada!", "success");
+    }
 
-    env.tasks.push(newTask);
     saveState();
     document.getElementById("taskModal").classList.remove("active");
     renderAll();
