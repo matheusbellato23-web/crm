@@ -3114,3 +3114,57 @@ html {
     margin-bottom: 0 !important;
 }
 
+/* Premium Icon Graphics & Hover Wrappers */
+.nav-item i {
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all var(--transition-fast) ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.nav-item.active i {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.4) 0%, rgba(79, 70, 229, 0.15) 100%) !important;
+    border-color: rgba(79, 70, 229, 0.4) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+}
+
+.btn-icon-only {
+    width: 30px !important;
+    height: 30px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: var(--bg-app) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+    transition: all var(--transition-fast) ease-in-out !important;
+    box-shadow: var(--shadow-sm) !important;
+    color: var(--text-secondary) !important;
+    cursor: pointer;
+}
+.btn-icon-only:hover {
+    transform: translateY(-1px) scale(1.05);
+    background: var(--bg-card) !important;
+    box-shadow: var(--shadow-md) !important;
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+.btn-icon-only.btn-delete-task:hover, 
+.btn-icon-only.btn-delete-contract:hover,
+.btn-icon-only.btn-delete-user:hover {
+    border-color: var(--color-danger) !important;
+    background: var(--color-danger-bg) !important;
+    color: var(--color-danger) !important;
+}
+.btn-icon-only.btn-edit-contract:hover,
+.btn-icon-only.btn-edit-task:hover,
+.btn-icon-only.btn-edit-user:hover {
+    border-color: var(--color-primary) !important;
+    background: var(--color-primary-glow) !important;
+    color: var(--color-primary) !important;
+}
+

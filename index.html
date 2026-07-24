@@ -284,6 +284,15 @@
                         <span>Controle Financeiro</span>
                     </li>
                 </ul>
+
+                <!-- Configurações Section -->
+                <div class="nav-section-title">Configurações</div>
+                <ul>
+                    <li class="nav-item" data-view="users">
+                        <i data-lucide="shield"></i>
+                        <span>Gerenciar Usuários</span>
+                    </li>
+                </ul>
             </nav>
             <div class="sidebar-footer">
                 <div class="theme-toggle" id="themeToggleBtn">
@@ -1132,6 +1141,9 @@
                         <p class="view-subtitle">Organize sua rotina comercial interna na Web Co.</p>
                     </div>
                     <div class="header-filters" style="display:flex;align-items:center;gap:8px;">
+                        <select id="filterTaskAssignee" class="form-control" style="width:160px; height:32px; font-size:12px; padding:2px 8px;">
+                            <option value="all">Filtrar por Usuário</option>
+                        </select>
                         <div class="view-toggle-pill" id="tasksViewToggle">
                             <button class="active" id="btnTasksViewList" data-taskview="list">
                                 <i data-lucide="list" style="width:12px;height:12px;"></i> Lista
@@ -1728,6 +1740,39 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users View -->
+            <section id="usersView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Gerenciamento de Usuários</h1>
+                        <p class="view-subtitle">Cadastre novos usuários de login, atribua tarefas e gerencie credenciais.</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnRegisterNewUser" style="display:flex;align-items:center;gap:6px;">
+                        <i data-lucide="plus" style="width:14px;height:14px;"></i>
+                        <span>Novo Usuário</span>
+                    </button>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-container">
+                        <table class="data-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Nome do Usuário</th>
+                                    <th>Login (Username)</th>
+                                    <th>Senha</th>
+                                    <th>Função</th>
+                                    <th style="text-align: right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Dynamic users list -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -2690,13 +2735,21 @@
                             <input type="date" id="taskDueDate" class="form-control" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="taskPriority">Prioridade</label>
-                        <select id="taskPriority" class="form-control">
-                            <option value="low">Baixa</option>
-                            <option value="medium" selected>Média</option>
-                            <option value="high">Alta</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskPriority">Prioridade</label>
+                            <select id="taskPriority" class="form-control">
+                                <option value="low">Baixa</option>
+                                <option value="medium" selected>Média</option>
+                                <option value="high">Alta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskAssignee">Responsável (Usuário)</label>
+                            <select id="taskAssignee" class="form-control">
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -2955,6 +3008,45 @@
                 <button type="button" class="btn btn-secondary" id="btnCancelDashboardCustomizationModal" style="flex: 1;">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="btnSaveDashboardCustomization" style="flex: 1;">Confirmar Seleção</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT USER -->
+    <div class="modal" id="userModal">
+        <div class="modal-content" style="max-width: 480px; width: 100%;">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Cadastrar Novo Usuário</h3>
+                <button class="btn-close" id="btnCloseUserModal">&times;</button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userFormId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="userFormName">Nome Completo *</label>
+                        <input type="text" id="userFormName" class="form-control" placeholder="Ex: João Silva" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userFormUsername">Login / Nome de Usuário *</label>
+                        <input type="text" id="userFormUsername" class="form-control" placeholder="Ex: joao.silva" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userFormPassword">Senha *</label>
+                        <input type="password" id="userFormPassword" class="form-control" placeholder="Ex: Senha123" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userFormRole">Função / Cargo</label>
+                        <select id="userFormRole" class="form-control">
+                            <option value="Colaborador">Colaborador</option>
+                            <option value="Gestor">Gestor</option>
+                            <option value="Administrador">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelUserModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Usuário</button>
+                </div>
+            </form>
         </div>
     </div>
 

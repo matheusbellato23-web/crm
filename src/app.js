@@ -514,6 +514,7 @@ async function init() {
     // Check session login
     const loggedIn = sessionStorage.getItem("nexus_crm_logged_in");
     const loggedEnv = sessionStorage.getItem("nexus_crm_env");
+    const loggedUser = sessionStorage.getItem("nexus_crm_username") || "Admin";
     
     if (loggedIn === "true" && loggedEnv) {
         state.currentEnv = loggedEnv;
@@ -521,7 +522,14 @@ async function init() {
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("appContainer").classList.remove("hidden");
         document.getElementById("appContainer").classList.add("logged-in");
-        document.getElementById("sidebarUsername").innerText = "Admin";
+        
+        const env = getEnv();
+        if (!env.users) {
+            env.users = [{ username: "Admin", password: "080125", name: "Admin", role: "Administrador" }];
+            saveState();
+        }
+        const matched = env.users.find(u => u.username.toLowerCase() === loggedUser.toLowerCase());
+        document.getElementById("sidebarUsername").innerText = matched ? (matched.name || matched.username) : loggedUser;
         
         // Setup initial view
         renderAll();
@@ -596,6 +604,8 @@ function renderAll() {
     safeRun("populateConversionProductsDropdown", populateConversionProductsDropdown);
     safeRun("populateEventContactsDropdown", populateEventContactsDropdown);
     safeRun("populateCustomerProductsDropdown", populateCustomerProductsDropdown);
+    safeRun("populateUserDropdowns", populateUserDropdowns);
+    safeRun("renderUsers", renderUsers);
     safeRun("updateCalendarNotifications", updateCalendarNotifications);
     
     safeCreateIcons();
@@ -2434,13 +2444,20 @@ function renderTasksKanban(env, tasks) {
 
 function renderTasks() {
     const env = getEnv();
+    const assigneeFilter = document.getElementById("filterTaskAssignee")?.value || "all";
     
-    // Compute Task KPIs
+    // Filter tasks by assignee first
+    let baseTasks = [...env.tasks];
+    if (assigneeFilter !== "all") {
+        baseTasks = baseTasks.filter(t => t.assignedTo === assigneeFilter);
+    }
+    
+    // Compute Task KPIs based on filtered tasks
     const todayStr = new Date().toISOString().split('T')[0];
-    const totalCount = env.tasks.length;
-    const pendingCount = env.tasks.filter(t => !t.completed).length;
-    const overdueCount = env.tasks.filter(t => !t.completed && t.dueDate && t.dueDate < todayStr).length;
-    const completedCount = env.tasks.filter(t => t.completed).length;
+    const totalCount = baseTasks.length;
+    const pendingCount = baseTasks.filter(t => !t.completed).length;
+    const overdueCount = baseTasks.filter(t => !t.completed && t.dueDate && t.dueDate < todayStr).length;
+    const completedCount = baseTasks.filter(t => t.completed).length;
 
     const setTEl = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
     setTEl('taskKpiTotal', totalCount);
@@ -2494,17 +2511,17 @@ function renderTasks() {
     if (kanbanPanel) kanbanPanel.classList.toggle('hidden', tasksView === 'list');
     
     if (tasksView === 'kanban') {
-        renderTasksKanban(env, env.tasks);
-        document.getElementById("tasksBadgeAll").innerText = env.tasks.length;
-        document.getElementById("tasksBadgePending").innerText = env.tasks.filter(t => !t.completed).length;
-        document.getElementById("tasksBadgeCompleted").innerText = env.tasks.filter(t => t.completed).length;
+        renderTasksKanban(env, baseTasks);
+        document.getElementById("tasksBadgeAll").innerText = baseTasks.length;
+        document.getElementById("tasksBadgePending").innerText = baseTasks.filter(t => !t.completed).length;
+        document.getElementById("tasksBadgeCompleted").innerText = baseTasks.filter(t => t.completed).length;
         return;
     }
     
     const activeFilter = window.taskActiveFilterOverride || document.querySelector(".tasks-filters li.active")?.getAttribute("data-task-filter") || 'all';
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
     
-    let filtered = [...env.tasks];
+    let filtered = [...baseTasks];
 
     if (activeFilter === "pending") {
         filtered = filtered.filter(t => !t.completed);
@@ -3657,16 +3674,25 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
     const pass = document.getElementById("loginPassword").value.trim();
     const errorMsg = document.getElementById("loginErrorMsg");
 
-    if (user === "Admin" && pass === "080125") {
+    const env = getEnv();
+    if (!env.users) {
+        env.users = [{ username: "Admin", password: "080125", name: "Admin", role: "Administrador" }];
+        saveState();
+    }
+
+    const matchedUser = env.users.find(u => u.username.toLowerCase() === user.toLowerCase() && u.password === pass);
+
+    if (matchedUser) {
         sessionStorage.setItem("nexus_crm_logged_in", "true");
         sessionStorage.setItem("nexus_crm_env", "webco");
+        sessionStorage.setItem("nexus_crm_username", matchedUser.username);
         state.currentEnv = "webco";
         
         errorMsg.classList.add("hidden");
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("appContainer").classList.remove("hidden");
         document.getElementById("appContainer").classList.add("logged-in");
-        document.getElementById("sidebarUsername").innerText = "Admin";
+        document.getElementById("sidebarUsername").innerText = matchedUser.name || matchedUser.username;
         
         ensureParanaEcoturismo();
         renderAll();
@@ -3808,6 +3834,7 @@ window.openEditTaskModal = function(id) {
     document.getElementById("taskContact").value = task.contactId || "";
     document.getElementById("taskDueDate").value = task.dueDate || "";
     document.getElementById("taskPriority").value = task.priority || "medium";
+    document.getElementById("taskAssignee").value = task.assignedTo || "Admin";
     
     document.getElementById("taskModal").classList.add("active");
 };
@@ -3817,6 +3844,13 @@ const filterStatus = document.getElementById("filterStatus");
 if (filterStatus) {
     filterStatus.addEventListener("change", () => {
         renderContacts();
+    });
+}
+
+const filterTaskAssignee = document.getElementById("filterTaskAssignee");
+if (filterTaskAssignee) {
+    filterTaskAssignee.addEventListener("change", () => {
+        renderTasks();
     });
 }
 
@@ -3938,6 +3972,7 @@ document.getElementById("taskForm").addEventListener("submit", (e) => {
     const contactId = document.getElementById("taskContact").value;
     const dueDate = document.getElementById("taskDueDate").value;
     const priority = document.getElementById("taskPriority").value;
+    const assignedTo = document.getElementById("taskAssignee")?.value || "Admin";
 
     if (taskId) {
         // Edit existing task
@@ -3947,6 +3982,7 @@ document.getElementById("taskForm").addEventListener("submit", (e) => {
             task.contactId = contactId;
             task.dueDate = dueDate;
             task.priority = priority;
+            task.assignedTo = assignedTo;
             showToast("Tarefa atualizada!", "success");
         }
     } else {
@@ -3957,6 +3993,7 @@ document.getElementById("taskForm").addEventListener("submit", (e) => {
             contactId,
             dueDate,
             priority,
+            assignedTo,
             completed: false
         };
         env.tasks.push(newTask);
@@ -6265,19 +6302,8 @@ function updateCalendarNotifications() {
     }
     
     const overdueBanner = document.getElementById("overdueTasksBanner");
-    const overdueBannerText = document.getElementById("overdueTasksBannerText");
-    if (overdueBanner && overdueBannerText) {
-        if (overdueTasks.length > 0) {
-            overdueBannerText.innerHTML = `Você possui <strong>${overdueTasks.length} tarefas comerciais atrasadas</strong>!`;
-            overdueBanner.classList.remove("hidden");
-            overdueBanner.onclick = () => {
-                switchView('tasks');
-                window.taskActiveFilterOverride = 'overdue';
-                renderTasks();
-            };
-        } else {
-            overdueBanner.classList.add("hidden");
-        }
+    if (overdueBanner) {
+        overdueBanner.classList.add("hidden");
     }
     
     list.innerHTML = "";
@@ -6888,4 +6914,150 @@ function renderImportHistory() {
     
     safeCreateIcons();
 }
+
+// ===== USER MANAGEMENT =====
+function renderUsers() {
+    const env = getEnv();
+    if (!env.users) {
+        env.users = [{ username: "Admin", password: "080125", name: "Admin", role: "Administrador" }];
+    }
+    
+    const tbody = document.getElementById("usersTableBody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    
+    env.users.forEach(u => {
+        const tr = document.createElement("tr");
+        const isDefaultAdmin = u.username.toLowerCase() === "admin";
+        
+        tr.innerHTML = `
+            <td><strong>${u.name || u.username}</strong></td>
+            <td><code>${u.username}</code></td>
+            <td><span style="-webkit-text-security: disc;">${u.password}</span></td>
+            <td><span class="badge-status ${isDefaultAdmin ? 'active' : 'pending_partial'}" style="font-size: 11px;">${u.role || 'Colaborador'}</span></td>
+            <td style="text-align: right;">
+                <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                    <button class="btn-icon-only btn-sm btn-edit-user" data-username="${u.username}" title="Editar Usuário" style="color:var(--color-primary);"><i data-lucide="pencil" style="width:12px;height:12px;"></i></button>
+                    ${!isDefaultAdmin ? `<button class="btn-icon-only btn-sm btn-delete-user" data-username="${u.username}" title="Excluir Usuário" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>` : ''}
+                </div>
+            </td>
+        `;
+        
+        tr.querySelector(".btn-edit-user").onclick = () => openUserEditModal(u.username);
+        if (!isDefaultAdmin) {
+            tr.querySelector(".btn-delete-user").onclick = () => {
+                if (confirm(`Excluir o usuário "${u.name || u.username}"?`)) {
+                    env.users = env.users.filter(x => x.username !== u.username);
+                    saveState();
+                    renderUsers();
+                    populateUserDropdowns();
+                    showToast("Usuário removido!", "info");
+                }
+            };
+        }
+        
+        tbody.appendChild(tr);
+    });
+    safeCreateIcons();
+}
+
+function openUserEditModal(username) {
+    const env = getEnv();
+    const u = env.users.find(x => x.username === username);
+    if (!u) return;
+    
+    document.getElementById("userFormId").value = u.username;
+    document.getElementById("userFormName").value = u.name || "";
+    document.getElementById("userFormUsername").value = u.username;
+    document.getElementById("userFormUsername").disabled = true;
+    document.getElementById("userFormPassword").value = u.password || "";
+    document.getElementById("userFormRole").value = u.role || "Colaborador";
+    
+    document.getElementById("userModalTitle").innerText = "Editar Usuário";
+    document.getElementById("userModal").classList.add("active");
+}
+
+function populateUserDropdowns() {
+    const env = getEnv();
+    if (!env.users) {
+        env.users = [{ username: "Admin", password: "080125", name: "Admin", role: "Administrador" }];
+    }
+    
+    const filterSelect = document.getElementById("filterTaskAssignee");
+    if (filterSelect) {
+        const currentVal = filterSelect.value;
+        filterSelect.innerHTML = `<option value="all">Filtrar por Usuário</option>`;
+        env.users.forEach(u => {
+            filterSelect.innerHTML += `<option value="${u.username}">${u.name || u.username}</option>`;
+        });
+        filterSelect.value = currentVal;
+    }
+    
+    const assignSelect = document.getElementById("taskAssignee");
+    if (assignSelect) {
+        const currentVal = assignSelect.value;
+        assignSelect.innerHTML = "";
+        env.users.forEach(u => {
+            assignSelect.innerHTML += `<option value="${u.username}">${u.name || u.username}</option>`;
+        });
+        assignSelect.value = currentVal || "Admin";
+    }
+}
+
+// User Modal Setup
+const btnRegisterNewUser = document.getElementById("btnRegisterNewUser");
+if (btnRegisterNewUser) {
+    btnRegisterNewUser.onclick = () => {
+        document.getElementById("userFormId").value = "";
+        document.getElementById("userFormUsername").disabled = false;
+        document.getElementById("userForm").reset();
+        document.getElementById("userModalTitle").innerText = "Cadastrar Novo Usuário";
+        document.getElementById("userModal").classList.add("active");
+    };
+}
+
+const btnCloseUserModal = document.getElementById("btnCloseUserModal");
+if (btnCloseUserModal) btnCloseUserModal.onclick = () => document.getElementById("userModal").classList.remove("active");
+
+const btnCancelUserModal = document.getElementById("btnCancelUserModal");
+if (btnCancelUserModal) btnCancelUserModal.onclick = () => document.getElementById("userModal").classList.remove("active");
+
+const userForm = document.getElementById("userForm");
+if (userForm) {
+    userForm.onsubmit = (e) => {
+        e.preventDefault();
+        const env = getEnv();
+        const editId = document.getElementById("userFormId").value;
+        const name = document.getElementById("userFormName").value.trim();
+        const username = document.getElementById("userFormUsername").value.trim();
+        const password = document.getElementById("userFormPassword").value.trim();
+        const role = document.getElementById("userFormRole").value;
+        
+        if (editId) {
+            const u = env.users.find(x => x.username === editId);
+            if (u) {
+                u.name = name;
+                u.password = password;
+                u.role = role;
+                showToast("Usuário atualizado com sucesso!", "success");
+            }
+        } else {
+            if (env.users.some(x => x.username.toLowerCase() === username.toLowerCase())) {
+                alert("Erro: Este nome de usuário já está cadastrado!");
+                return;
+            }
+            env.users.push({ username, password, name, role });
+            showToast("Usuário cadastrado com sucesso!", "success");
+        }
+        
+        saveState();
+        document.getElementById("userModal").classList.remove("active");
+        renderUsers();
+        populateUserDropdowns();
+    };
+}
+
+// Export functions to window
+window.renderUsers = renderUsers;
+window.populateUserDropdowns = populateUserDropdowns;
 
