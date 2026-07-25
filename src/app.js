@@ -533,6 +533,8 @@ async function init() {
         
         // Setup initial view
         renderAll();
+        const savedView = localStorage.getItem("nexus_crm_active_view") || "dashboard";
+        switchView(savedView);
     } else {
         document.getElementById("loginOverlay").classList.remove("hidden");
         document.getElementById("appContainer").classList.add("hidden");
@@ -2393,8 +2395,22 @@ function renderTasksKanban(env, tasks) {
         const dateStyle = isOverdue ? 'color: var(--color-danger); font-weight: 700;' : 'color:var(--text-muted);';
         const dateLabel = task.dueDate ? `<span style="font-size:10px; ${dateStyle}">📅 ${formatDate(task.dueDate)}${isOverdue ? ' (Atrasada)' : ''}</span>` : '';
         
+        let contactName = "";
+        if (task.contactId) {
+            const foundContact = env.contacts.find(c => c.id === task.contactId);
+            if (foundContact) {
+                contactName = foundContact.name;
+            } else {
+                const foundCustomer = env.customers.find(c => c.id === task.contactId);
+                if (foundCustomer) {
+                    contactName = foundCustomer.name || foundCustomer.clientName || "";
+                }
+            }
+        }
+
         card.innerHTML = `
             <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${task.title}</div>
+            ${contactName ? `<div style="font-size:10.5px;color:var(--text-secondary);margin-bottom:4px;">👤 ${contactName}</div>` : ''}
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
                 <span class="task-priority-badge ${task.priority}" style="font-size:10px;">${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}</span>
                 ${dateLabel}
@@ -2552,11 +2568,24 @@ function renderTasks() {
             if (a.completed !== b.completed) return a.completed ? 1 : -1;
             const p = { high: 3, medium: 2, low: 1 };
             if (p[b.priority] !== p[a.priority]) return p[b.priority] - p[a.priority];
+            if (!a.dueDate) return 1;
+            if (!b.dueDate) return -1;
             return new Date(a.dueDate) - new Date(b.dueDate);
         });
 
         filtered.forEach(task => {
-            const contactName = task.contactId ? (env.contacts.find(c => c.id === task.contactId)?.name || "") : "";
+            let contactName = "";
+            if (task.contactId) {
+                const foundContact = env.contacts.find(c => c.id === task.contactId);
+                if (foundContact) {
+                    contactName = foundContact.name;
+                } else {
+                    const foundCustomer = env.customers.find(c => c.id === task.contactId);
+                    if (foundCustomer) {
+                        contactName = foundCustomer.name || foundCustomer.clientName || "";
+                    }
+                }
+            }
             const div = document.createElement("div");
             div.className = `task-item ${task.completed ? 'completed' : ''}`;
             
@@ -2626,11 +2655,22 @@ function populateContactDropdowns() {
     const select = document.getElementById("taskContact");
     if (select) {
         select.innerHTML = `<option value="">Nenhum Contato</option>`;
-        const sorted = [...env.contacts].sort((a,b) => a.name.localeCompare(b.name));
-        sorted.forEach(c => {
+        
+        // Add Leads/Contacts
+        const sortedLeads = [...(env.contacts || [])].sort((a,b) => (a.name || "").localeCompare(b.name || ""));
+        sortedLeads.forEach(c => {
             const option = document.createElement("option");
             option.value = c.id;
-            option.innerText = `${c.name} (${c.company || "Sem Empresa"})`;
+            option.innerText = `[Lead] ${c.name} (${c.company || "Sem Empresa"})`;
+            select.appendChild(option);
+        });
+
+        // Add Customers/Clients
+        const sortedCustomers = [...(env.customers || [])].sort((a,b) => (a.name || a.clientName || "").localeCompare(b.name || b.clientName || ""));
+        sortedCustomers.forEach(c => {
+            const option = document.createElement("option");
+            option.value = c.id;
+            option.innerText = `[Cliente] ${c.name || c.clientName || ""} (${c.company || "Sem Empresa"})`;
             select.appendChild(option);
         });
     }
@@ -3696,6 +3736,8 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
         
         ensureParanaEcoturismo();
         renderAll();
+        const savedView = localStorage.getItem("nexus_crm_active_view") || "dashboard";
+        switchView(savedView);
         // Setup late bind buttons after login loads DOM
         setupOpenImportButton();
     } else {
@@ -3748,6 +3790,7 @@ const views = document.querySelectorAll(".view-section");
 navItems.forEach(item => {
     item.addEventListener("click", () => {
         const targetView = item.getAttribute("data-view");
+        localStorage.setItem("nexus_crm_active_view", targetView);
         
         navItems.forEach(nav => nav.classList.remove("active"));
         item.classList.add("active");
