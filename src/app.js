@@ -267,6 +267,8 @@ function getEnv() {
     if (!state.environments[env].marketingAssets) state.environments[env].marketingAssets = [...defaultMarketingAssets];
     if (!state.environments[env].niches) state.environments[env].niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Turismo", "Saúde / Estética", "Outro"];
     if (state.environments[env].balanceAdjustment === undefined) state.environments[env].balanceAdjustment = 0;
+    // ⚠️ CRITICAL: Always ensure templates array exists so it is never lost on schema migration
+    if (!state.environments[env].templates) state.environments[env].templates = [];
     return state.environments[env];
 }
 
@@ -474,6 +476,14 @@ async function saveStateToServer() {
 async function init() {
     let loadedFromServer = false;
     let serverOnline = false;
+
+    // Load localStorage first as a base — we'll merge on top if server responds
+    let localState = null;
+    const savedState = localStorage.getItem("nexus_crm_multitenant_state");
+    if (savedState) {
+        try { localState = JSON.parse(savedState); } catch (err) { console.error("Error parsing localStorage state:", err); }
+    }
+
     try {
         const response = await fetch(getApiUrl('/api/state'));
         if (response.ok) {
@@ -482,6 +492,35 @@ async function init() {
             if (data) {
                 state = data;
                 loadedFromServer = true;
+
+                // ⚠️ CRITICAL: Merge templates from localStorage into server state
+                // to prevent data loss when server state is behind localStorage.
+                if (localState && localState.environments) {
+                    Object.keys(localState.environments).forEach(envKey => {
+                        const localEnv = localState.environments[envKey];
+                        if (localEnv && Array.isArray(localEnv.templates) && localEnv.templates.length > 0) {
+                            if (!state.environments) state.environments = {};
+                            if (!state.environments[envKey]) state.environments[envKey] = {};
+                            const serverEnv = state.environments[envKey];
+                            if (!serverEnv.templates || serverEnv.templates.length === 0) {
+                                // Server has no templates for this env — restore from local
+                                serverEnv.templates = localEnv.templates;
+                                console.info(`[init] Restored ${localEnv.templates.length} template(s) from localStorage for env "${envKey}".`);
+                            } else {
+                                // Merge: add any locally-existing templates that are missing from server
+                                localEnv.templates.forEach(localTmpl => {
+                                    const alreadyExists = serverEnv.templates.some(t => t.id === localTmpl.id);
+                                    if (!alreadyExists) {
+                                        serverEnv.templates.push(localTmpl);
+                                        console.info(`[init] Merged missing template "${localTmpl.name}" from localStorage.`);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    // After merge, persist the merged state back to server
+                    saveStateToServer();
+                }
             }
         }
     } catch (e) {
@@ -489,13 +528,8 @@ async function init() {
     }
 
     if (!loadedFromServer) {
-        const savedState = localStorage.getItem("nexus_crm_multitenant_state");
-        if (savedState) {
-            try {
-                state = JSON.parse(savedState);
-            } catch (err) {
-                console.error("Error parsing localStorage state:", err);
-            }
+        if (localState) {
+            state = localState;
         }
     }
     
