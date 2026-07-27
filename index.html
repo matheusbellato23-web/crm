@@ -2315,10 +2315,16 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="productPrice">Preço Base (Mensal / Único) *</label>
-                            <input type="number" id="productPrice" class="form-control" min="0" step="0.01" placeholder="1200" required>
+                            <label for="productPrice">Preço de Venda (Cobrança) *</label>
+                            <input type="number" id="productPrice" class="form-control" min="0" step="0.01" placeholder="Ex: 50.00" required>
                         </div>
                         <div class="form-group">
+                            <label for="productCost">Custo Direto (Domínio, Hospedagem, etc)</label>
+                            <input type="number" id="productCost" class="form-control" min="0" step="0.01" placeholder="Ex: 40.00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column: span 2;">
                             <label for="productType">Tipo de Cobrança *</label>
                             <select id="productType" class="form-control" required>
                                 <option value="single">Taxa Única</option>
@@ -2326,6 +2332,10 @@
                                 <option value="yearly">Recorrente Anual</option>
                             </select>
                         </div>
+                    </div>
+                    <div id="productProfitInfo" style="margin-top: 4px; margin-bottom: 12px; padding: 10px 14px; background: var(--bg-card-hover); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color:var(--text-secondary);">Lucro Estimado por Venda: <strong id="productEstimatedProfit" style="color: var(--color-success); font-size: 13px;">R$ 0,00</strong></span>
+                        <span class="badge-status active" id="productEstimatedMargin" style="font-size: 11px;">0% de margem</span>
                     </div>
                     <div class="form-row" id="yearlyPriceRow" style="display: none;">
                         <div class="form-group">

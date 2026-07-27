@@ -10,13 +10,14 @@ let state = {
 
 // Default Catalogs
 const defaultProducts = [
-    { id: "p1", name: "Criação de Site Profissional", description: "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.", price: 3500.00, type: "single", suggestedAddons: ["p5", "p6"] },
-    { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, type: "single", suggestedAddons: ["p3", "p5", "p6"] },
-    { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, type: "monthly", suggestedAddons: [] },
-    { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, type: "single", suggestedAddons: [] },
-    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, type: "monthly", suggestedAddons: [] },
-    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, type: "monthly", suggestedAddons: [] },
-    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, type: "monthly", suggestedAddons: [] }
+    { id: "p1", name: "Criação de Site Profissional", description: "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.", price: 3500.00, cost: 250.00, type: "single", suggestedAddons: ["p5", "p6", "p8"] },
+    { id: "p2", name: "Desenvolvimento E-commerce", description: "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.", price: 7500.00, cost: 500.00, type: "single", suggestedAddons: ["p3", "p5", "p6", "p8"] },
+    { id: "p3", name: "Gestão de Google Ads", description: "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.", price: 1200.00, cost: 100.00, type: "monthly", suggestedAddons: [] },
+    { id: "p4", name: "Otimização de Velocidade & SEO", description: "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.", price: 1800.00, cost: 150.00, type: "single", suggestedAddons: [] },
+    { id: "p5", name: "Suporte & Manutenção Mensal", description: "Backups semanais, atualizações de segurança e suporte para alterações no site.", price: 350.00, cost: 50.00, type: "monthly", suggestedAddons: [] },
+    { id: "p6", name: "Hospedagem Cloud Pro", description: "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.", price: 90.00, cost: 35.00, type: "monthly", suggestedAddons: [] },
+    { id: "p7", name: "Hospedagem Cloud Basic", description: "Servidor compartilhado padrão para sites de baixo tráfego.", price: 49.00, cost: 15.00, type: "monthly", suggestedAddons: [] },
+    { id: "p8", name: "Registro & Renovação de Domínio", description: "Registro e renovação anual de domínio (.com.br / .com). Custo Registro.br: R$ 40,00 | Cobrado: R$ 50,00 (Lucro R$ 10,00/ano).", price: 50.00, cost: 40.00, type: "yearly", suggestedAddons: [] }
 ];
 
 const defaultContacts = [
@@ -2221,6 +2222,24 @@ function unlinkSubproduct(mainId, subId) {
     }
 }
 
+function updateProductProfitDisplay() {
+    const price = parseFloat(document.getElementById("productPrice")?.value) || 0;
+    const cost = parseFloat(document.getElementById("productCost")?.value) || 0;
+    const profit = price - cost;
+    const margin = price > 0 ? Math.round((profit / price) * 100) : 0;
+
+    const profitEl = document.getElementById("productEstimatedProfit");
+    const marginEl = document.getElementById("productEstimatedMargin");
+    if (profitEl) {
+        profitEl.innerText = formatCurrency(profit);
+        profitEl.style.color = profit >= 0 ? "var(--color-success)" : "var(--color-danger)";
+    }
+    if (marginEl) {
+        marginEl.innerText = `${margin}% de margem`;
+        marginEl.className = profit >= 0 ? "badge-status active" : "badge-status inactive";
+    }
+}
+
 function formatProductPriceHtml(p) {
     let html = `<strong>${formatCurrency(p.price)}</strong>`;
     if (p.type === 'monthly') {
@@ -2238,6 +2257,19 @@ function formatProductPriceHtml(p) {
     } else {
         html += ` <span style="font-size: 10px; color: var(--text-muted);">(Taxa Única)</span>`;
     }
+
+    const cost = p.cost || 0;
+    if (cost > 0) {
+        const profit = p.price - cost;
+        const margin = p.price > 0 ? Math.round((profit / p.price) * 100) : 0;
+        const profitColor = profit >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+        html += `<div style="font-size: 10.5px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <span style="color: var(--text-muted);">Custo: ${formatCurrency(cost)}</span>
+            <span style="color: ${profitColor}; font-weight: 600; background: var(--bg-card-hover); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border-color);" title="Lucro líquido de ${formatCurrency(profit)} (${margin}% de margem)">
+                Lucro: ${formatCurrency(profit)} (${margin}%)
+            </span>
+        </div>`;
+    }
     return html;
 }
 
@@ -2250,6 +2282,7 @@ function openEditProduct(id) {
     document.getElementById("productName").value = p.name;
     document.getElementById("productDescription").value = p.description || "";
     document.getElementById("productPrice").value = p.price;
+    document.getElementById("productCost").value = p.cost || "";
     document.getElementById("productType").value = p.type;
     
     const isCoreInput = document.getElementById("productIsCore");
@@ -2265,6 +2298,7 @@ function openEditProduct(id) {
     // Load suggested addons checkboxes
     populateProductAddons(p.id);
     updateProductEconomyDisplay();
+    updateProductProfitDisplay();
 
     // Make sure addons container is visible
     const addonsGroup = document.getElementById("productAddonsFormGroup");
@@ -3334,6 +3368,9 @@ function updateProductEconomyDisplay() {
     }
 }
 
+document.getElementById("productPrice")?.addEventListener("input", updateProductProfitDisplay);
+document.getElementById("productCost")?.addEventListener("input", updateProductProfitDisplay);
+
 document.getElementById("productForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const env = getEnv();
@@ -3341,6 +3378,7 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
     const name = document.getElementById("productName").value;
     const description = document.getElementById("productDescription").value;
     const price = parseFloat(document.getElementById("productPrice").value) || 0;
+    const cost = parseFloat(document.getElementById("productCost")?.value) || 0;
     const type = document.getElementById("productType").value;
     const isCore = document.getElementById("productIsCore")?.checked;
     const yearlyPrice = parseFloat(document.getElementById("productYearlyPrice")?.value) || 0;
@@ -3353,6 +3391,7 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             p.name = name;
             p.description = description;
             p.price = price;
+            p.cost = cost;
             p.type = type;
             p.isCore = isCore;
             p.yearlyPrice = yearlyPrice;
@@ -3364,6 +3403,7 @@ document.getElementById("productForm").addEventListener("submit", (e) => {
             name,
             description,
             price,
+            cost,
             type,
             isCore,
             yearlyPrice,
@@ -5008,18 +5048,16 @@ function renderFinance() {
     const totalPending  = filteredInvoices.filter(inv => ['pending','pending_delivery'].includes(inv.status)).reduce((s, i) => s + (i.value||0), 0);
     const totalOverdue  = filteredInvoices.filter(inv => inv.status === 'overdue').reduce((s, i) => s + (i.value||0), 0);
 
-    const monthlyServiceCost = (env.contractedServices||[]).filter(s => s.status === 'active').reduce((sum, s) => {
-        if (s.recurrence === 'monthly')   return sum + (s.value||0);
-        if (s.recurrence === 'quarterly') return sum + (s.value||0) / 3;
-        if (s.recurrence === 'annual')    return sum + (s.value||0) / 12;
-        return sum;
-    }, 0);
+    // Compute Direct Product/Service Costs (COGS: Domínio, Hospedagem, Licenças)
+    let totalDirectProductCosts = 0;
+    filteredInvoices.filter(inv => inv.status === 'paid').forEach(inv => {
+        const prod = env.products.find(p => p.name === inv.productName) || defaultProducts.find(p => p.name === inv.productName);
+        if (prod && prod.cost) {
+            totalDirectProductCosts += prod.cost;
+        }
+    });
 
-    let serviceMultiplier = 1;
-    if (finPeriod === 'quarter') serviceMultiplier = 3;
-    else if (finPeriod === 'year' || finPeriod === 'all') serviceMultiplier = 12;
-
-    const totalExpenses = (filteredExpenses||[]).reduce((s, e) => s + (e.value||0), 0) + (monthlyServiceCost * serviceMultiplier);
+    const totalExpenses = (filteredExpenses||[]).reduce((s, e) => s + (e.value||0), 0) + (monthlyServiceCost * serviceMultiplier) + totalDirectProductCosts;
     const netProfit     = totalPaid - totalExpenses;
     const margin        = totalPaid > 0 ? Math.round((netProfit / totalPaid) * 100) : 0;
 
