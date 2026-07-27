@@ -4542,39 +4542,15 @@ function renderContracts() {
                 </td>
             `;
 
-            const editContractFn = () => {
-                const newVal = prompt("Editar valor do contrato (R$):", con.value);
-                if (newVal === null) return;
-                const newStart = prompt("Editar início de vigência (AAAA-MM-DD):", con.startDate || "");
-                if (newStart === null) return;
-                const newEnd = prompt("Editar término de vigência (AAAA-MM-DD):", con.endDate || "");
-                if (newEnd === null) return;
-                const newStatus = prompt("Editar status (ativo, rascunho, encerrado):", con.status === "active" ? "ativo" : con.status === "expired" ? "encerrado" : "rascunho");
-                if (newStatus === null) return;
-
-                con.value = parseFloat(newVal) || con.value;
-                con.startDate = newStart || con.startDate;
-                con.endDate = newEnd || con.endDate;
-                
-                const statusVal = newStatus.trim().toLowerCase();
-                if (statusVal === "ativo") con.status = "active";
-                else if (statusVal === "encerrado") con.status = "expired";
-                else con.status = "draft";
-                
-                saveState();
-                renderContracts();
-                showToast("Contrato atualizado!", "success");
-            };
-
             tr.querySelector(".btn-view-contract").addEventListener("click", () => openViewContract(con.id));
-            tr.querySelector(".btn-edit-contract").onclick = editContractFn;
+            tr.querySelector(".btn-edit-contract").onclick = () => openContractEditModal(con.id);
             tr.querySelector(".btn-delete-contract").addEventListener("click", () => deleteContract(con.id));
 
             // Make cells clickable to edit (excluding the actions td)
             const cells = tr.querySelectorAll('td');
             for (let i = 0; i < cells.length - 1; i++) {
                 cells[i].style.cursor = 'pointer';
-                cells[i].onclick = editContractFn;
+                cells[i].onclick = () => openContractEditModal(con.id);
             }
 
             tbody.appendChild(tr);
@@ -4602,6 +4578,12 @@ function openViewContract(id) {
     document.getElementById("cPreviewEndDate").innerText = formatDate(con.endDate);
     document.getElementById("cPreviewSignatureClient").innerText = con.clientName;
 
+    // Wire Edit button in viewer
+    const editBtn = document.getElementById("btnEditContractFromViewer");
+    if (editBtn) {
+        editBtn.onclick = () => openContractEditModal(con.id);
+    }
+
     // Show/hide activate button based on status
     const actBtn = document.getElementById("btnActivateContract");
     if (con.status === "draft") {
@@ -4621,6 +4603,64 @@ function openViewContract(id) {
     // Toggle panels
     document.getElementById("contractsListWrapper").classList.add("hidden");
     document.getElementById("contractViewerWrapper").classList.remove("hidden");
+}
+
+function openContractEditModal(id) {
+    const env = getEnv();
+    const con = env.contracts.find(c => c.id === id);
+    if (!con) return;
+
+    document.getElementById("contractEditId").value = con.id;
+    document.getElementById("contractEditClientName").value = con.clientName || "";
+    document.getElementById("contractEditCompany").value = con.company || "";
+    document.getElementById("contractEditProductName").value = con.productName || "";
+    document.getElementById("contractEditValue").value = con.value || 0;
+    document.getElementById("contractEditRecurrence").value = con.recurrence || "monthly";
+    document.getElementById("contractEditStatus").value = con.status || "active";
+    document.getElementById("contractEditStartDate").value = con.startDate || "";
+    document.getElementById("contractEditEndDate").value = con.endDate || "";
+
+    document.getElementById("contractEditModal").classList.add("active");
+}
+
+// Contract edit modal event listeners
+const btnCloseContractEditModal = document.getElementById("btnCloseContractEditModal");
+if (btnCloseContractEditModal) btnCloseContractEditModal.onclick = () => document.getElementById("contractEditModal").classList.remove("active");
+
+const btnCancelContractEditModal = document.getElementById("btnCancelContractEditModal");
+if (btnCancelContractEditModal) btnCancelContractEditModal.onclick = () => document.getElementById("contractEditModal").classList.remove("active");
+
+const contractEditModal = document.getElementById("contractEditModal");
+if (contractEditModal) {
+    contractEditModal.onclick = (e) => { if (e.target === contractEditModal) contractEditModal.classList.remove("active"); };
+}
+
+const contractEditForm = document.getElementById("contractEditForm");
+if (contractEditForm) {
+    contractEditForm.onsubmit = (e) => {
+        e.preventDefault();
+        const env = getEnv();
+        const id = document.getElementById("contractEditId").value;
+        const con = env.contracts.find(c => c.id === id);
+        if (con) {
+            con.clientName = document.getElementById("contractEditClientName").value.trim();
+            con.company = document.getElementById("contractEditCompany").value.trim();
+            con.productName = document.getElementById("contractEditProductName").value.trim();
+            con.value = parseFloat(document.getElementById("contractEditValue").value) || 0;
+            con.recurrence = document.getElementById("contractEditRecurrence").value;
+            con.status = document.getElementById("contractEditStatus").value;
+            con.startDate = document.getElementById("contractEditStartDate").value;
+            con.endDate = document.getElementById("contractEditEndDate").value;
+
+            saveState();
+            document.getElementById("contractEditModal").classList.remove("active");
+            renderContracts();
+            if (!document.getElementById("contractViewerWrapper").classList.contains("hidden")) {
+                openViewContract(con.id);
+            }
+            showToast("Contrato atualizado com sucesso!", "success");
+        }
+    };
 }
 
 function deleteContract(id) {
@@ -7285,7 +7325,7 @@ function previewTemplate(tmpl) {
             </div>
             <div class="modal-body" style="padding-top:16px;">
                 ${tmpl.subject ? `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">ASSUNTO</span><p style="margin:4px 0 0;font-weight:600;color:var(--text-primary);">${tmpl.subject}</p></div>` : ''}
-                <div style="padding:16px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);white-space:pre-wrap;font-size:13.5px;line-height:1.7;color:var(--text-primary);min-height:120px;">${tmpl.body}</div>
+                <div style="padding:16px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);white-space:pre-wrap;font-size:13.5px;line-height:1.7;color:var(--text-primary);min-height:100px;max-height:360px;overflow-y:auto;">${tmpl.body}</div>
                 ${attsHtml}
                 ${tmpl.tags ? `<div style="margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;">${tmpl.tags.split(',').map(t => t.trim()).filter(Boolean).map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('')}</div>` : ''}
             </div>
