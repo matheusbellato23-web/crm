@@ -7125,6 +7125,32 @@ function getTemplates() {
     return env.templates;
 }
 
+let currentTemplateAttachments = [];
+
+function renderTemplateAttachmentsList() {
+    const container = document.getElementById('templateAttachmentsList');
+    if (!container) return;
+    container.innerHTML = '';
+    currentTemplateAttachments.forEach((att, idx) => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--bg-card-hover);border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:12px;';
+        item.innerHTML = `
+            <div style="display:flex;align-items:center;gap:6px;min-width:0;flex:1;">
+                <i data-lucide="paperclip" style="width:13px;height:13px;color:var(--color-primary);flex-shrink:0;"></i>
+                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary);">${att.name}</span>
+                <small style="color:var(--text-muted);flex-shrink:0;">(${Math.round(att.size / 1024)} KB)</small>
+            </div>
+            <button type="button" class="btn-icon-only btn-sm" style="color:var(--color-danger);border:none;background:transparent;cursor:pointer;" title="Remover anexo"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+        `;
+        item.querySelector('button').onclick = () => {
+            currentTemplateAttachments.splice(idx, 1);
+            renderTemplateAttachmentsList();
+        };
+        container.appendChild(item);
+    });
+    safeCreateIcons();
+}
+
 function renderTemplates() {
     const templates = getTemplates();
     const grid = document.getElementById('templatesGrid');
@@ -7148,6 +7174,8 @@ function renderTemplates() {
         const tags = (tmpl.tags || '').split(',').map(t => t.trim()).filter(Boolean);
         const tagsHtml = tags.map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('');
         const previewText = (tmpl.body || '').replace(/\n/g, ' ').substring(0, 120) + ((tmpl.body || '').length > 120 ? '…' : '');
+        const attCount = (tmpl.attachments || []).length;
+        const attBadge = attCount > 0 ? `<span style="font-size:11px;color:var(--color-primary);display:inline-flex;align-items:center;gap:3px;"><i data-lucide="paperclip" style="width:12px;height:12px;"></i> ${attCount} anexo${attCount > 1 ? 's' : ''}</span>` : '';
 
         const card = document.createElement('div');
         card.style.cssText = `background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-fast),transform var(--transition-fast);cursor:pointer;`;
@@ -7157,6 +7185,7 @@ function renderTemplates() {
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
                         <span style="font-size:11px;font-weight:600;background:${colors.bg};color:${colors.text};border:1px solid ${colors.border};padding:2px 9px;border-radius:99px;white-space:nowrap;">${CHANNEL_LABELS[tmpl.channel] || tmpl.channel}</span>
                         ${tmpl.subject ? `<span style="font-size:11px;color:var(--text-muted);">Assunto: <em>${tmpl.subject}</em></span>` : ''}
+                        ${attBadge}
                     </div>
                     <h3 style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${tmpl.name}</h3>
                 </div>
@@ -7199,7 +7228,6 @@ function copyTemplateText(tmpl) {
     navigator.clipboard.writeText(text).then(() => {
         showToast(`✅ Modelo "${tmpl.name}" copiado para a área de transferência!`, 'success');
     }).catch(() => {
-        // Fallback
         const ta = document.createElement('textarea');
         ta.value = text;
         document.body.appendChild(ta);
@@ -7210,10 +7238,38 @@ function copyTemplateText(tmpl) {
     });
 }
 
+function downloadAttachment(att) {
+    const a = document.createElement('a');
+    a.href = att.data;
+    a.download = att.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
 function previewTemplate(tmpl) {
     const colors = CHANNEL_COLORS[tmpl.channel] || CHANNEL_COLORS.outros;
     const existing = document.getElementById('templatePreviewModal');
     if (existing) existing.remove();
+
+    const attachments = tmpl.attachments || [];
+    const attsHtml = attachments.length > 0 ? `
+        <div style="margin-top:12px;padding:12px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-sm);">
+            <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:8px;">ANEXOS (${attachments.length})</span>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                ${attachments.map(att => `
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--bg-card-hover);border-radius:var(--radius-sm);font-size:12px;">
+                        <div style="display:flex;align-items:center;gap:6px;min-width:0;">
+                            <i data-lucide="paperclip" style="width:13px;height:13px;color:var(--color-primary);flex-shrink:0;"></i>
+                            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary);">${att.name}</span>
+                            <small style="color:var(--text-muted);">(${Math.round(att.size / 1024)} KB)</small>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-xs btn-dl-att" style="font-size:11px;padding:3px 8px;"><i data-lucide="download" style="width:11px;height:11px;"></i> Baixar</button>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    ` : '';
 
     const modal = document.createElement('div');
     modal.id = 'templatePreviewModal';
@@ -7230,6 +7286,7 @@ function previewTemplate(tmpl) {
             <div class="modal-body" style="padding-top:16px;">
                 ${tmpl.subject ? `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">ASSUNTO</span><p style="margin:4px 0 0;font-weight:600;color:var(--text-primary);">${tmpl.subject}</p></div>` : ''}
                 <div style="padding:16px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);white-space:pre-wrap;font-size:13.5px;line-height:1.7;color:var(--text-primary);min-height:120px;">${tmpl.body}</div>
+                ${attsHtml}
                 ${tmpl.tags ? `<div style="margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;">${tmpl.tags.split(',').map(t => t.trim()).filter(Boolean).map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('')}</div>` : ''}
             </div>
             <div class="modal-footer">
@@ -7240,6 +7297,10 @@ function previewTemplate(tmpl) {
     `;
     document.body.appendChild(modal);
     safeCreateIcons();
+
+    modal.querySelectorAll('.btn-dl-att').forEach((btn, i) => {
+        btn.onclick = () => downloadAttachment(attachments[i]);
+    });
 
     const close = () => modal.remove();
     modal.querySelector('#btnClosePreviewModal').onclick = close;
@@ -7252,16 +7313,19 @@ function openTemplateModal(id) {
     const templates = getTemplates();
     const tmpl = id ? templates.find(t => t.id === id) : null;
 
+    currentTemplateAttachments = tmpl && tmpl.attachments ? [...tmpl.attachments] : [];
+
     document.getElementById('templateFormId').value = tmpl ? tmpl.id : '';
     document.getElementById('templateFormName').value = tmpl ? tmpl.name : '';
     document.getElementById('templateFormChannel').value = tmpl ? tmpl.channel : 'email';
     document.getElementById('templateFormSubject').value = tmpl ? (tmpl.subject || '') : '';
     document.getElementById('templateFormBody').value = tmpl ? tmpl.body : '';
     document.getElementById('templateFormTags').value = tmpl ? (tmpl.tags || '') : '';
+    document.getElementById('templateFormAttachments').value = '';
     document.getElementById('templateModalTitle').innerText = tmpl ? 'Editar Modelo de Mensagem' : 'Novo Modelo de Mensagem';
 
-    // Show/hide subject field based on channel
     updateTemplateSubjectVisibility();
+    renderTemplateAttachmentsList();
 
     document.getElementById('templateModal').classList.add('active');
 }
@@ -7284,6 +7348,32 @@ function deleteTemplate(id) {
         renderTemplates();
         showToast('Modelo excluído!', 'info');
     }
+}
+
+// Wire template file input change
+const templateFormAttachments = document.getElementById('templateFormAttachments');
+if (templateFormAttachments) {
+    templateFormAttachments.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        let processed = 0;
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                currentTemplateAttachments.push({
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    data: evt.target.result
+                });
+                processed++;
+                if (processed === files.length) {
+                    renderTemplateAttachmentsList();
+                    templateFormAttachments.value = '';
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    });
 }
 
 // Wire template modal events
@@ -7337,17 +7427,18 @@ if (templateForm) {
         const subject = document.getElementById('templateFormSubject').value.trim();
         const body = document.getElementById('templateFormBody').value.trim();
         const tags = document.getElementById('templateFormTags').value.trim();
+        const attachments = [...currentTemplateAttachments];
 
         if (id) {
             const existing = env.templates.find(t => t.id === id);
             if (existing) {
-                Object.assign(existing, { name, channel, subject, body, tags, updatedAt: new Date().toISOString() });
+                Object.assign(existing, { name, channel, subject, body, tags, attachments, updatedAt: new Date().toISOString() });
                 showToast('Modelo atualizado com sucesso!', 'success');
             }
         } else {
             env.templates.push({
                 id: 'tmpl_' + Date.now(),
-                name, channel, subject, body, tags,
+                name, channel, subject, body, tags, attachments,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });
