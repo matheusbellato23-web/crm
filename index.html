@@ -286,8 +286,12 @@
                 </ul>
 
                 <!-- Configurações Section -->
-                <div class="nav-section-title">Configurações</div>
+                <div class="nav-section-title">Ferramentas</div>
                 <ul>
+                    <li class="nav-item" data-view="templates">
+                        <i data-lucide="file-text"></i>
+                        <span>Modelos de Mensagem</span>
+                    </li>
                     <li class="nav-item" data-view="users">
                         <i data-lucide="shield"></i>
                         <span>Gerenciar Usuários</span>
@@ -1744,6 +1748,43 @@
                 </div>
             </section>
 
+            <!-- Templates View -->
+            <section id="templatesView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Modelos de Mensagem</h1>
+                        <p class="view-subtitle">Crie e gerencie modelos prontos de e-mail, WhatsApp ou qualquer canal para agilizar o contato com leads e clientes.</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnNewTemplate" style="display:flex;align-items:center;gap:6px;">
+                        <i data-lucide="plus" style="width:14px;height:14px;"></i>
+                        <span>Novo Modelo</span>
+                    </button>
+                </div>
+
+                <!-- Filter tabs -->
+                <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+                    <ul class="tasks-filters" id="templateFilters" style="list-style:none;padding:0;display:flex;gap:8px;margin:0;flex-wrap:wrap;">
+                        <li class="active" data-tmpl-filter="all">Todos</li>
+                        <li data-tmpl-filter="email">📧 E-mail</li>
+                        <li data-tmpl-filter="whatsapp">💬 WhatsApp</li>
+                        <li data-tmpl-filter="sms">📱 SMS</li>
+                        <li data-tmpl-filter="outros">📝 Outros</li>
+                    </ul>
+                </div>
+
+                <!-- Templates Grid -->
+                <div id="templatesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;">
+                    <!-- Dynamic template cards -->
+                </div>
+
+                <!-- Empty state -->
+                <div id="templatesEmptyState" class="hidden" style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+                    <i data-lucide="file-text" style="width:48px;height:48px;margin-bottom:16px;opacity:0.4;"></i>
+                    <p style="font-size:16px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Nenhum modelo encontrado</p>
+                    <p style="font-size:13px;">Clique em <strong>Novo Modelo</strong> para criar seu primeiro modelo de mensagem.</p>
+                </div>
+            </section>
+
             <!-- Users View -->
             <section id="usersView" class="view-section">
                 <div class="view-header flex-header">
@@ -3008,6 +3049,54 @@
                 <button type="button" class="btn btn-secondary" id="btnCancelDashboardCustomizationModal" style="flex: 1;">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="btnSaveDashboardCustomization" style="flex: 1;">Confirmar Seleção</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT TEMPLATE -->
+    <div class="modal" id="templateModal">
+        <div class="modal-content" style="max-width: 660px; width: 100%;">
+            <div class="modal-header">
+                <h3 id="templateModalTitle">Novo Modelo de Mensagem</h3>
+                <button class="btn-close" id="btnCloseTemplateModal">&times;</button>
+            </div>
+            <form id="templateForm">
+                <input type="hidden" id="templateFormId">
+                <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="templateFormName">Nome do Modelo *</label>
+                            <input type="text" id="templateFormName" class="form-control" placeholder="Ex: Boas-vindas para Lead por E-mail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="templateFormChannel">Canal de Envio *</label>
+                            <select id="templateFormChannel" class="form-control">
+                                <option value="email">📧 E-mail</option>
+                                <option value="whatsapp">💬 WhatsApp</option>
+                                <option value="sms">📱 SMS</option>
+                                <option value="outros">📝 Outros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="templateSubjectGroup">
+                        <label for="templateFormSubject">Assunto do E-mail</label>
+                        <input type="text" id="templateFormSubject" class="form-control" placeholder="Ex: Obrigado pelo contato, [Nome]!">
+                    </div>
+                    <div class="form-group">
+                        <label for="templateFormBody">Corpo da Mensagem *
+                            <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:8px;">Use <code style="background:var(--bg-card-hover);padding:1px 4px;border-radius:3px;">[Nome]</code> <code style="background:var(--bg-card-hover);padding:1px 4px;border-radius:3px;">[Empresa]</code> <code style="background:var(--bg-card-hover);padding:1px 4px;border-radius:3px;">[Data]</code> como variáveis</span>
+                        </label>
+                        <textarea id="templateFormBody" class="form-control" rows="8" placeholder="Digite o corpo da mensagem aqui..." required style="font-family: var(--font-primary); resize: vertical; line-height:1.6;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="templateFormTags">Etiquetas / Tags</label>
+                        <input type="text" id="templateFormTags" class="form-control" placeholder="Ex: lead-frio, pós-reunião, proposta (separadas por vírgula)">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelTemplateModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Modelo</button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -608,6 +608,7 @@ function renderAll() {
     safeRun("populateCustomerProductsDropdown", populateCustomerProductsDropdown);
     safeRun("populateUserDropdowns", populateUserDropdowns);
     safeRun("renderUsers", renderUsers);
+    safeRun("renderTemplates", renderTemplates);
     safeRun("updateCalendarNotifications", updateCalendarNotifications);
     
     safeCreateIcons();
@@ -7104,3 +7105,259 @@ if (userForm) {
 window.renderUsers = renderUsers;
 window.populateUserDropdowns = populateUserDropdowns;
 
+// ===== MESSAGE TEMPLATES =====
+const CHANNEL_LABELS = {
+    email: '📧 E-mail',
+    whatsapp: '💬 WhatsApp',
+    sms: '📱 SMS',
+    outros: '📝 Outros'
+};
+const CHANNEL_COLORS = {
+    email: { bg: 'rgba(37,99,235,0.08)', border: 'rgba(37,99,235,0.25)', text: '#2563eb' },
+    whatsapp: { bg: 'rgba(5,150,105,0.08)', border: 'rgba(5,150,105,0.25)', text: '#059669' },
+    sms: { bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.25)', text: '#d97706' },
+    outros: { bg: 'rgba(107,114,128,0.08)', border: 'rgba(107,114,128,0.25)', text: '#6b7280' }
+};
+
+function getTemplates() {
+    const env = getEnv();
+    if (!env.templates) env.templates = [];
+    return env.templates;
+}
+
+function renderTemplates() {
+    const templates = getTemplates();
+    const grid = document.getElementById('templatesGrid');
+    const emptyState = document.getElementById('templatesEmptyState');
+    if (!grid) return;
+
+    const activeFilter = document.querySelector('#templateFilters li.active')?.getAttribute('data-tmpl-filter') || 'all';
+    const filtered = activeFilter === 'all' ? templates : templates.filter(t => t.channel === activeFilter);
+
+    grid.innerHTML = '';
+
+    if (filtered.length === 0) {
+        emptyState?.classList.remove('hidden');
+        return;
+    }
+
+    emptyState?.classList.add('hidden');
+
+    filtered.forEach(tmpl => {
+        const colors = CHANNEL_COLORS[tmpl.channel] || CHANNEL_COLORS.outros;
+        const tags = (tmpl.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+        const tagsHtml = tags.map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('');
+        const previewText = (tmpl.body || '').replace(/\n/g, ' ').substring(0, 120) + ((tmpl.body || '').length > 120 ? '…' : '');
+
+        const card = document.createElement('div');
+        card.style.cssText = `background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-fast),transform var(--transition-fast);cursor:pointer;`;
+        card.innerHTML = `
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+                        <span style="font-size:11px;font-weight:600;background:${colors.bg};color:${colors.text};border:1px solid ${colors.border};padding:2px 9px;border-radius:99px;white-space:nowrap;">${CHANNEL_LABELS[tmpl.channel] || tmpl.channel}</span>
+                        ${tmpl.subject ? `<span style="font-size:11px;color:var(--text-muted);">Assunto: <em>${tmpl.subject}</em></span>` : ''}
+                    </div>
+                    <h3 style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${tmpl.name}</h3>
+                </div>
+                <div style="display:flex;gap:6px;flex-shrink:0;">
+                    <button class="btn-icon-only btn-copy-template" data-id="${tmpl.id}" title="Copiar texto" style="color:var(--color-primary);"><i data-lucide="copy" style="width:13px;height:13px;"></i></button>
+                    <button class="btn-icon-only btn-edit-template" data-id="${tmpl.id}" title="Editar modelo" style="color:var(--text-secondary);"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>
+                    <button class="btn-icon-only btn-delete-template" data-id="${tmpl.id}" title="Excluir modelo" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
+                </div>
+            </div>
+            <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin:0;white-space:pre-wrap;">${previewText}</p>
+            ${tagsHtml ? `<div style="display:flex;gap:5px;flex-wrap:wrap;">${tagsHtml}</div>` : ''}
+            <div style="display:flex;gap:8px;border-top:1px solid var(--border-color);padding-top:10px;">
+                <button class="btn btn-primary btn-xs btn-use-template" data-id="${tmpl.id}" style="font-size:11.5px;padding:5px 12px;flex:1;">
+                    <i data-lucide="send" style="width:11px;height:11px;"></i> Usar Modelo
+                </button>
+                <button class="btn btn-secondary btn-xs btn-preview-template" data-id="${tmpl.id}" style="font-size:11.5px;padding:5px 12px;">
+                    <i data-lucide="eye" style="width:11px;height:11px;"></i> Pré-visualizar
+                </button>
+            </div>
+        `;
+
+        // Hover effect
+        card.addEventListener('mouseenter', () => { card.style.boxShadow = 'var(--shadow-md)'; card.style.transform = 'translateY(-2px)'; });
+        card.addEventListener('mouseleave', () => { card.style.boxShadow = 'var(--shadow-sm)'; card.style.transform = ''; });
+
+        card.querySelector('.btn-copy-template').onclick = (e) => { e.stopPropagation(); copyTemplateText(tmpl); };
+        card.querySelector('.btn-edit-template').onclick = (e) => { e.stopPropagation(); openTemplateModal(tmpl.id); };
+        card.querySelector('.btn-delete-template').onclick = (e) => { e.stopPropagation(); deleteTemplate(tmpl.id); };
+        card.querySelector('.btn-use-template').onclick = (e) => { e.stopPropagation(); copyTemplateText(tmpl); };
+        card.querySelector('.btn-preview-template').onclick = (e) => { e.stopPropagation(); previewTemplate(tmpl); };
+
+        grid.appendChild(card);
+    });
+
+    safeCreateIcons();
+}
+
+function copyTemplateText(tmpl) {
+    const text = tmpl.subject ? `Assunto: ${tmpl.subject}\n\n${tmpl.body}` : tmpl.body;
+    navigator.clipboard.writeText(text).then(() => {
+        showToast(`✅ Modelo "${tmpl.name}" copiado para a área de transferência!`, 'success');
+    }).catch(() => {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast(`✅ Modelo "${tmpl.name}" copiado!`, 'success');
+    });
+}
+
+function previewTemplate(tmpl) {
+    const colors = CHANNEL_COLORS[tmpl.channel] || CHANNEL_COLORS.outros;
+    const existing = document.getElementById('templatePreviewModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'templatePreviewModal';
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:620px;width:100%;">
+            <div class="modal-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:12px;font-weight:600;background:${colors.bg};color:${colors.text};border:1px solid ${colors.border};padding:3px 10px;border-radius:99px;">${CHANNEL_LABELS[tmpl.channel]}</span>
+                    <h3 style="margin:0;">${tmpl.name}</h3>
+                </div>
+                <button class="btn-close" id="btnClosePreviewModal">&times;</button>
+            </div>
+            <div class="modal-body" style="padding-top:16px;">
+                ${tmpl.subject ? `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">ASSUNTO</span><p style="margin:4px 0 0;font-weight:600;color:var(--text-primary);">${tmpl.subject}</p></div>` : ''}
+                <div style="padding:16px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);white-space:pre-wrap;font-size:13.5px;line-height:1.7;color:var(--text-primary);min-height:120px;">${tmpl.body}</div>
+                ${tmpl.tags ? `<div style="margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;">${tmpl.tags.split(',').map(t => t.trim()).filter(Boolean).map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('')}</div>` : ''}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnClosePreviewModal2">Fechar</button>
+                <button type="button" class="btn btn-primary" id="btnCopyFromPreview"><i data-lucide="copy" style="width:13px;height:13px;"></i> Copiar Texto</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    safeCreateIcons();
+
+    const close = () => modal.remove();
+    modal.querySelector('#btnClosePreviewModal').onclick = close;
+    modal.querySelector('#btnClosePreviewModal2').onclick = close;
+    modal.querySelector('#btnCopyFromPreview').onclick = () => { copyTemplateText(tmpl); close(); };
+    modal.onclick = (e) => { if (e.target === modal) close(); };
+}
+
+function openTemplateModal(id) {
+    const templates = getTemplates();
+    const tmpl = id ? templates.find(t => t.id === id) : null;
+
+    document.getElementById('templateFormId').value = tmpl ? tmpl.id : '';
+    document.getElementById('templateFormName').value = tmpl ? tmpl.name : '';
+    document.getElementById('templateFormChannel').value = tmpl ? tmpl.channel : 'email';
+    document.getElementById('templateFormSubject').value = tmpl ? (tmpl.subject || '') : '';
+    document.getElementById('templateFormBody').value = tmpl ? tmpl.body : '';
+    document.getElementById('templateFormTags').value = tmpl ? (tmpl.tags || '') : '';
+    document.getElementById('templateModalTitle').innerText = tmpl ? 'Editar Modelo de Mensagem' : 'Novo Modelo de Mensagem';
+
+    // Show/hide subject field based on channel
+    updateTemplateSubjectVisibility();
+
+    document.getElementById('templateModal').classList.add('active');
+}
+
+function updateTemplateSubjectVisibility() {
+    const channel = document.getElementById('templateFormChannel')?.value;
+    const subjectGroup = document.getElementById('templateSubjectGroup');
+    if (subjectGroup) {
+        subjectGroup.style.display = channel === 'email' ? '' : 'none';
+    }
+}
+
+function deleteTemplate(id) {
+    const env = getEnv();
+    const tmpl = env.templates?.find(t => t.id === id);
+    if (!tmpl) return;
+    if (confirm(`Excluir o modelo "${tmpl.name}"? Esta ação não pode ser desfeita.`)) {
+        env.templates = env.templates.filter(t => t.id !== id);
+        saveState();
+        renderTemplates();
+        showToast('Modelo excluído!', 'info');
+    }
+}
+
+// Wire template modal events
+const btnNewTemplate = document.getElementById('btnNewTemplate');
+if (btnNewTemplate) {
+    btnNewTemplate.onclick = () => openTemplateModal(null);
+}
+
+const btnCloseTemplateModal = document.getElementById('btnCloseTemplateModal');
+if (btnCloseTemplateModal) {
+    btnCloseTemplateModal.onclick = () => document.getElementById('templateModal').classList.remove('active');
+}
+
+const btnCancelTemplateModal = document.getElementById('btnCancelTemplateModal');
+if (btnCancelTemplateModal) {
+    btnCancelTemplateModal.onclick = () => document.getElementById('templateModal').classList.remove('active');
+}
+
+// Close template modal on backdrop click
+const templateModal = document.getElementById('templateModal');
+if (templateModal) {
+    templateModal.onclick = (e) => { if (e.target === templateModal) templateModal.classList.remove('active'); };
+}
+
+// Subject visibility toggle
+const templateFormChannel = document.getElementById('templateFormChannel');
+if (templateFormChannel) {
+    templateFormChannel.addEventListener('change', updateTemplateSubjectVisibility);
+}
+
+// Template filter tabs
+document.querySelectorAll('#templateFilters li').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('#templateFilters li').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderTemplates();
+    });
+});
+
+// Template form submit
+const templateForm = document.getElementById('templateForm');
+if (templateForm) {
+    templateForm.onsubmit = (e) => {
+        e.preventDefault();
+        const env = getEnv();
+        if (!env.templates) env.templates = [];
+
+        const id = document.getElementById('templateFormId').value;
+        const name = document.getElementById('templateFormName').value.trim();
+        const channel = document.getElementById('templateFormChannel').value;
+        const subject = document.getElementById('templateFormSubject').value.trim();
+        const body = document.getElementById('templateFormBody').value.trim();
+        const tags = document.getElementById('templateFormTags').value.trim();
+
+        if (id) {
+            const existing = env.templates.find(t => t.id === id);
+            if (existing) {
+                Object.assign(existing, { name, channel, subject, body, tags, updatedAt: new Date().toISOString() });
+                showToast('Modelo atualizado com sucesso!', 'success');
+            }
+        } else {
+            env.templates.push({
+                id: 'tmpl_' + Date.now(),
+                name, channel, subject, body, tags,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
+            showToast('Modelo criado com sucesso!', 'success');
+        }
+
+        saveState();
+        document.getElementById('templateModal').classList.remove('active');
+        renderTemplates();
+    };
+}
+
+window.renderTemplates = renderTemplates;
