@@ -7645,6 +7645,31 @@ async function openSmtpConfigModal() {
     document.getElementById('btnCloseSmtpModal').onclick = closeModal;
     document.getElementById('btnCancelSmtpModal').onclick = closeModal;
 
+    const testBtn = document.getElementById('btnTestSmtpConfig');
+    if (testBtn) {
+        testBtn.onclick = async () => {
+            testBtn.disabled = true;
+            testBtn.innerHTML = `<i data-lucide="loader-2" class="spin" style="width:14px;height:14px;"></i> Testando...`;
+            safeCreateIcons();
+
+            try {
+                const resp = await fetch(getApiUrl('/api/test-smtp'), { method: 'POST' });
+                const resData = await resp.json();
+                if (resp.ok && resData.success) {
+                    showToast(`✅ ${resData.message}`, 'success');
+                } else {
+                    showToast(`❌ ${resData.error || 'Falha ao autenticar com a Hostinger.'}`, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Erro ao testar conexão SMTP.', 'error');
+            } finally {
+                testBtn.disabled = false;
+                testBtn.innerHTML = `<i data-lucide="shield-check" style="width:14px;height:14px;"></i> Testar Conexão`;
+                safeCreateIcons();
+            }
+        };
+    }
+
     const form = document.getElementById('smtpConfigForm');
     form.onsubmit = async (e) => {
         e.preventDefault();

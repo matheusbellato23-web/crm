@@ -97,6 +97,35 @@ app.post('/api/smtp-config', (req, res) => {
     }
 });
 
+// API: Test SMTP Connection
+app.post('/api/test-smtp', async (req, res) => {
+    try {
+        if (!fs.existsSync(CONFIG_PATH)) {
+            return res.status(400).json({ error: "Configuração SMTP não encontrada." });
+        }
+        const smtpConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
+        if (!smtpConfig.user || !smtpConfig.pass) {
+            return res.status(400).json({ error: "E-mail ou senha do SMTP não configurados." });
+        }
+        const transporter = nodemailer.createTransport({
+            host: smtpConfig.host || 'smtp.hostinger.com',
+            port: Number(smtpConfig.port) || 465,
+            secure: smtpConfig.secure !== undefined ? Boolean(smtpConfig.secure) : true,
+            auth: {
+                user: smtpConfig.user,
+                pass: smtpConfig.pass
+            },
+            tls: { rejectUnauthorized: false }
+        });
+
+        await transporter.verify();
+        res.json({ success: true, message: "Conexão com a Hostinger autenticada e validada com sucesso!" });
+    } catch (err) {
+        console.error("SMTP verify error:", err);
+        res.status(500).json({ error: err.message || "Falha ao conectar com o servidor SMTP da Hostinger." });
+    }
+});
+
 // API: Send Email Direct via Hostinger SMTP
 app.post('/api/send-email', async (req, res) => {
     try {

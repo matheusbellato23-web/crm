@@ -3256,9 +3256,14 @@
                 </div>
                 <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
                     <button type="button" class="btn btn-secondary" id="btnCancelSmtpModal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnSaveSmtpConfig">
-                        <i data-lucide="save" style="width:14px;height:14px;"></i> Salvar Configurações
-                    </button>
+                    <div style="display:flex;gap:8px;">
+                        <button type="button" class="btn btn-secondary" id="btnTestSmtpConfig">
+                            <i data-lucide="shield-check" style="width:14px;height:14px;"></i> Testar Conexão
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btnSaveSmtpConfig">
+                            <i data-lucide="save" style="width:14px;height:14px;"></i> Salvar Configurações
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
