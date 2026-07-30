@@ -17,6 +17,14 @@ const CONFIG_PATH = path.join(DATA_DIR, 'smtp_config.json');
 
 app.use(express.json({ limit: '50mb' }));
 
+// Middleware to normalize /crm/api routes to /api
+app.use((req, res, next) => {
+    if (req.url.startsWith('/crm/api')) {
+        req.url = req.url.replace('/crm/api', '/api');
+    }
+    next();
+});
+
 // Serve static files from the dist directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
