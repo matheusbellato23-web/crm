@@ -1758,10 +1758,16 @@
                         <h1 class="view-title">Modelos de Mensagem</h1>
                         <p class="view-subtitle">Crie e gerencie modelos prontos de e-mail, WhatsApp ou qualquer canal para agilizar o contato com leads e clientes.</p>
                     </div>
-                    <button class="btn btn-primary" id="btnNewTemplate" style="display:flex;align-items:center;gap:6px;">
-                        <i data-lucide="plus" style="width:14px;height:14px;"></i>
-                        <span>Novo Modelo</span>
-                    </button>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <button class="btn btn-secondary" id="btnOpenSmtpConfig" style="display:flex;align-items:center;gap:6px;">
+                            <i data-lucide="mail-check" style="width:14px;height:14px;color:var(--color-primary);"></i>
+                            <span>E-mail Hostinger (SMTP)</span>
+                        </button>
+                        <button class="btn btn-primary" id="btnNewTemplate" style="display:flex;align-items:center;gap:6px;">
+                            <i data-lucide="plus" style="width:14px;height:14px;"></i>
+                            <span>Novo Modelo</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Filter tabs -->
@@ -3187,11 +3193,74 @@
                     <button type="button" class="btn btn-secondary" id="btnSendTemplateWhatsapp" style="color:#10b981;border-color:rgba(16,185,129,0.3);">
                         <i data-lucide="message-square" style="width:14px;height:14px;"></i> WhatsApp
                     </button>
-                    <button type="button" class="btn btn-primary" id="btnSendTemplateEmail">
-                        <i data-lucide="send" style="width:14px;height:14px;"></i> Abrir no E-mail (mailto)
+                    <button type="button" class="btn btn-secondary" id="btnSendTemplateEmail">
+                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> mailto
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnSendTemplateDirect" style="background:linear-gradient(135deg,#4F46E5,#6366f1);border:none;">
+                        <i data-lucide="send" style="width:14px;height:14px;"></i> ⚡ Disparar Direto (Hostinger)
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SMTP EMAIL CONFIG (HOSTINGER) -->
+    <div class="modal" id="smtpConfigModal">
+        <div class="modal-content" style="max-width: 580px; width: 100%;">
+            <div class="modal-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <i data-lucide="mail-check" style="width:22px;height:22px;color:var(--color-primary);"></i>
+                    <h3 style="margin:0;">Configuração de E-mail SMTP (Hostinger)</h3>
+                </div>
+                <button class="btn-close" id="btnCloseSmtpModal">&times;</button>
+            </div>
+            <form id="smtpConfigForm">
+                <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+                    <div style="padding:12px 16px;background:var(--color-primary-glow);border:1px solid rgba(79,70,229,0.2);border-radius:var(--radius-md);font-size:12.5px;color:var(--text-primary);line-height:1.5;">
+                        <strong style="color:var(--color-primary);">🚀 Disparo Direto de E-mails via Hostinger:</strong><br>
+                        Conecte sua conta de e-mail profissional da Hostinger para enviar mensagens aos leads diretamente pelo sistema, sem precisar abrir o Outlook ou Gmail.
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="smtpFormHost">Servidor SMTP Hostinger *</label>
+                            <input type="text" id="smtpFormHost" class="form-control" value="smtp.hostinger.com" required placeholder="smtp.hostinger.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="smtpFormPort">Porta *</label>
+                            <select id="smtpFormPort" class="form-control">
+                                <option value="465">465 (SSL - Recomendado)</option>
+                                <option value="587">587 (TLS / STARTTLS)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="smtpFormUser">Seu E-mail Hostinger *</label>
+                            <input type="email" id="smtpFormUser" class="form-control" placeholder="contato@seudominio.com.br" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="smtpFormFromName">Nome do Remetente (Exibição)</label>
+                            <input type="text" id="smtpFormFromName" class="form-control" placeholder="Ex: Matheus | WEBCO">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smtpFormPass">Senha do E-mail Hostinger *</label>
+                        <input type="password" id="smtpFormPass" class="form-control" placeholder="Digite a senha da caixa de e-mail Hostinger">
+                        <small id="smtpPassHelpText" style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block;">Sua senha é armazenada de forma segura no servidor do sistema.</small>
+                    </div>
+
+                    <div id="smtpStatusBadge" style="display:none;padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;"></div>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+                    <button type="button" class="btn btn-secondary" id="btnCancelSmtpModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveSmtpConfig">
+                        <i data-lucide="save" style="width:14px;height:14px;"></i> Salvar Configurações
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

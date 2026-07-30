@@ -7342,6 +7342,11 @@ function renderTemplates() {
         grid.appendChild(card);
     });
 
+    const btnOpenSmtp = document.getElementById('btnOpenSmtpConfig');
+    if (btnOpenSmtp) {
+        btnOpenSmtp.onclick = () => openSmtpConfigModal();
+    }
+
     safeCreateIcons();
 }
 
@@ -7523,6 +7528,159 @@ function openSendTemplateModal(templateId = null, contactId = null) {
             document.body.removeChild(ta);
             showToast('✅ Conteúdo copiado!', 'success');
         });
+    };
+
+    // Wire Direct Email Send via Hostinger SMTP
+    const btnDirect = document.getElementById('btnSendTemplateDirect');
+    if (btnDirect) {
+        btnDirect.onclick = async () => {
+            const email = document.getElementById('sendTemplateRecipientEmail').value.trim();
+            const subject = document.getElementById('sendTemplateSubject').value.trim();
+            const body = document.getElementById('sendTemplateBody').value.trim();
+            const selectedContactId = contactSelect.value;
+            const selectedTemplateId = templateSelect.value;
+            const shouldLog = document.getElementById('sendTemplateLogActivity').checked;
+
+            if (!email) {
+                showToast('Por favor, informe o e-mail do destinatário.', 'warning');
+                return;
+            }
+
+            const template = templates.find(t => t.id === selectedTemplateId);
+            const attachments = template && template.attachments ? template.attachments : [];
+
+            btnDirect.disabled = true;
+            btnDirect.innerHTML = `<i data-lucide="loader-2" class="spin" style="width:14px;height:14px;"></i> Disparando...`;
+            safeCreateIcons();
+
+            try {
+                const response = await fetch(getApiUrl('/api/send-email'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: email,
+                        subject: subject || 'Contato - WEBCO',
+                        text: body,
+                        attachments: attachments
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showToast('🚀 E-mail enviado com sucesso via Hostinger!', 'success');
+                    
+                    if (shouldLog && selectedContactId) {
+                        const contact = (env.contacts || []).find(c => c.id === selectedContactId);
+                        if (contact) {
+                            if (!contact.timeline) contact.timeline = [];
+                            contact.timeline.push({
+                                id: 'act_' + Date.now(),
+                                type: 'email',
+                                description: `⚡ E-mail enviado via Hostinger: "${subject || 'Contato'}"`,
+                                timestamp: new Date().toISOString()
+                            });
+                            saveState();
+                            if (typeof renderTimeline === 'function' && document.getElementById('activityContactId')?.value === contact.id) {
+                                renderTimeline(contact);
+                            }
+                        }
+                    }
+                    closeSendModal();
+                } else {
+                    showToast(`⚠️ ${data.error || 'Erro ao enviar e-mail via Hostinger.'}`, 'warning');
+                    if (data.error && data.error.includes('configurad')) {
+                        setTimeout(() => openSmtpConfigModal(), 1200);
+                    }
+                }
+            } catch (err) {
+                console.error("Error sending direct email:", err);
+                showToast('❌ Falha na conexão com o servidor para envio de e-mail.', 'error');
+            } finally {
+                btnDirect.disabled = false;
+                btnDirect.innerHTML = `<i data-lucide="send" style="width:14px;height:14px;"></i> ⚡ Disparar Direto (Hostinger)`;
+                safeCreateIcons();
+            }
+        };
+    }
+
+    modal.classList.add('active');
+    safeCreateIcons();
+}
+
+async function openSmtpConfigModal() {
+    const modal = document.getElementById('smtpConfigModal');
+    if (!modal) return;
+
+    const hostInput = document.getElementById('smtpFormHost');
+    const portSelect = document.getElementById('smtpFormPort');
+    const userInput = document.getElementById('smtpFormUser');
+    const fromNameInput = document.getElementById('smtpFormFromName');
+    const passInput = document.getElementById('smtpFormPass');
+    const passHelp = document.getElementById('smtpPassHelpText');
+
+    passInput.value = '';
+    
+    try {
+        const response = await fetch(getApiUrl('/api/smtp-config'));
+        if (response.ok) {
+            const data = await response.json();
+            if (data) {
+                hostInput.value = data.host || 'smtp.hostinger.com';
+                portSelect.value = String(data.port || 465);
+                userInput.value = data.user || '';
+                fromNameInput.value = data.fromName || '';
+                if (data.hasPassword && passHelp) {
+                    passHelp.innerText = "🔒 Senha já cadastrada no servidor. Deixe em branco se não quiser alterar.";
+                } else if (passHelp) {
+                    passHelp.innerText = "Sua senha é armazenada de forma segura no servidor do sistema.";
+                }
+            }
+        }
+    } catch (e) {
+        console.warn("Erro ao buscar configurações SMTP:", e);
+    }
+
+    const closeModal = () => modal.classList.remove('active');
+    document.getElementById('btnCloseSmtpModal').onclick = closeModal;
+    document.getElementById('btnCancelSmtpModal').onclick = closeModal;
+
+    const form = document.getElementById('smtpConfigForm');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const host = hostInput.value.trim();
+        const port = Number(portSelect.value);
+        const user = userInput.value.trim();
+        const fromName = fromNameInput.value.trim();
+        const pass = passInput.value;
+
+        const saveBtn = document.getElementById('btnSaveSmtpConfig');
+        saveBtn.disabled = true;
+        saveBtn.innerText = 'Salvando...';
+
+        try {
+            const resp = await fetch(getApiUrl('/api/smtp-config'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ host, port, secure: port === 465, user, pass, fromName })
+            });
+
+            const resData = await resp.json();
+            if (resp.ok && resData.success) {
+                showToast('✅ Configurações SMTP da Hostinger salvas com sucesso!', 'success');
+                closeModal();
+            } else {
+                showToast(`❌ ${resData.error || 'Erro ao salvar SMTP.'}`, 'error');
+            }
+        } catch (err) {
+            console.error("Erro ao salvar SMTP:", err);
+            showToast('❌ Erro de comunicação com o servidor.', 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = `<i data-lucide="save" style="width:14px;height:14px;"></i> Salvar Configurações`;
+            safeCreateIcons();
+        }
     };
 
     modal.classList.add('active');
