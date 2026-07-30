@@ -1145,6 +1145,7 @@ function renderContacts() {
                 </td>
                 <td>
                     <div class="kanban-card-actions">
+                        <button class="btn-icon-only btn-send-template" title="Enviar E-mail com Modelo" style="color:var(--color-primary);"><i data-lucide="mail-plus" style="width:14px;height:14px;"></i></button>
                         <button class="btn-icon-only btn-view" title="Ver Detalhes"><i data-lucide="eye" style="width:14px;height:14px;"></i></button>
                         <button class="btn-icon-only btn-edit" title="Editar"><i data-lucide="edit-2" style="width:14px;height:14px;"></i></button>
                         <button class="btn-icon-only btn-delete" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
@@ -1172,6 +1173,7 @@ function renderContacts() {
                 }
             };
 
+            tr.querySelector(".btn-send-template").addEventListener("click", (e) => { e.stopPropagation(); openSendTemplateModal(null, c.id); });
             tr.querySelector(".btn-view").addEventListener("click", () => openContactDetails(c.id));
             tr.querySelector(".btn-edit").addEventListener("click", () => openEditContact(c.id));
             tr.querySelector(".btn-delete").addEventListener("click", () => deleteContact(c.id));
@@ -2988,6 +2990,14 @@ function openContactDetails(id) {
 
     renderTimeline(c);
     
+    const btnSendTemplate = document.getElementById("btnSendTemplateToContact");
+    if (btnSendTemplate) {
+        btnSendTemplate.onclick = () => {
+            document.getElementById("contactDetailsModal").classList.remove("active");
+            openSendTemplateModal(null, c.id);
+        };
+    }
+
     document.getElementById("contactDetailsModal").classList.add("active");
     safeCreateIcons();
 }
@@ -7326,12 +7336,196 @@ function renderTemplates() {
         card.querySelector('.btn-copy-template').onclick = (e) => { e.stopPropagation(); copyTemplateText(tmpl); };
         card.querySelector('.btn-edit-template').onclick = (e) => { e.stopPropagation(); openTemplateModal(tmpl.id); };
         card.querySelector('.btn-delete-template').onclick = (e) => { e.stopPropagation(); deleteTemplate(tmpl.id); };
-        card.querySelector('.btn-use-template').onclick = (e) => { e.stopPropagation(); copyTemplateText(tmpl); };
+        card.querySelector('.btn-use-template').onclick = (e) => { e.stopPropagation(); openSendTemplateModal(tmpl.id, null); };
         card.querySelector('.btn-preview-template').onclick = (e) => { e.stopPropagation(); previewTemplate(tmpl); };
 
         grid.appendChild(card);
     });
 
+    safeCreateIcons();
+}
+
+function replaceTemplateVariables(text, contact) {
+    if (!text) return '';
+    if (!contact) return text;
+
+    const name = contact.name || '';
+    const company = contact.company || '';
+    const email = contact.email || '';
+    const phone = contact.phone || '';
+    const niche = contact.niche || '';
+    const value = typeof formatCurrency === 'function' ? formatCurrency(contact.value || 0) : `R$ ${contact.value || 0}`;
+
+    return text
+        .replace(/\{\{\s*nome\s*\}\}|\[\s*nome\s*\]/gi, name)
+        .replace(/\{\{\s*empresa\s*\}\}|\[\s*empresa\s*\]/gi, company)
+        .replace(/\{\{\s*email\s*\}\}|\[\s*email\s*\]|\[\s*e-mail\s*\]/gi, email)
+        .replace(/\{\{\s*telefone\s*\}\}|\[\s*telefone\s*\]|\[\s*whatsapp\s*\]/gi, phone)
+        .replace(/\{\{\s*nicho\s*\}\}|\[\s*nicho\s*\]/gi, niche)
+        .replace(/\{\{\s*valor\s*\}\}|\[\s*valor\s*\]/gi, value);
+}
+
+function openSendTemplateModal(templateId = null, contactId = null) {
+    const env = getEnv();
+    const modal = document.getElementById('sendTemplateModal');
+    if (!modal) return;
+
+    const contactSelect = document.getElementById('sendTemplateContactSelect');
+    const templateSelect = document.getElementById('sendTemplateSelect');
+
+    // Populate Contacts dropdown
+    contactSelect.innerHTML = '<option value="">-- Selecione um Lead / Contato --</option>';
+    (env.contacts || []).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.name}${c.company ? ' (' + c.company + ')' : ''}${c.email ? ' - ' + c.email : ''}`;
+        if (contactId && c.id === contactId) opt.selected = true;
+        contactSelect.appendChild(opt);
+    });
+
+    // Populate Templates dropdown
+    const templates = getTemplates();
+    templateSelect.innerHTML = '<option value="">-- Selecione um Modelo --</option>';
+    templates.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = `[${CHANNEL_LABELS[t.channel] || t.channel}] ${t.name}`;
+        if (templateId && t.id === templateId) opt.selected = true;
+        templateSelect.appendChild(opt);
+    });
+
+    function updateFields() {
+        const selectedContactId = contactSelect.value;
+        const selectedTemplateId = templateSelect.value;
+
+        const contact = (env.contacts || []).find(c => c.id === selectedContactId);
+        const template = templates.find(t => t.id === selectedTemplateId);
+
+        if (contact) {
+            document.getElementById('sendTemplateRecipientEmail').value = contact.email || '';
+            document.getElementById('sendTemplateRecipientPhone').value = contact.phone || '';
+        } else {
+            document.getElementById('sendTemplateRecipientEmail').value = '';
+            document.getElementById('sendTemplateRecipientPhone').value = '';
+        }
+
+        if (template) {
+            const rawSubject = template.subject || '';
+            const rawBody = template.body || '';
+
+            document.getElementById('sendTemplateSubject').value = contact ? replaceTemplateVariables(rawSubject, contact) : rawSubject;
+            document.getElementById('sendTemplateBody').value = contact ? replaceTemplateVariables(rawBody, contact) : rawBody;
+        } else {
+            document.getElementById('sendTemplateSubject').value = '';
+            document.getElementById('sendTemplateBody').value = '';
+        }
+    }
+
+    contactSelect.onchange = updateFields;
+    templateSelect.onchange = updateFields;
+
+    updateFields();
+
+    // Wire buttons
+    const closeSendModal = () => modal.classList.remove('active');
+    document.getElementById('btnCloseSendTemplateModal').onclick = closeSendModal;
+    document.getElementById('btnCancelSendTemplateModal').onclick = closeSendModal;
+
+    document.getElementById('btnSendTemplateEmail').onclick = () => {
+        const email = document.getElementById('sendTemplateRecipientEmail').value.trim();
+        const subject = document.getElementById('sendTemplateSubject').value.trim();
+        const body = document.getElementById('sendTemplateBody').value.trim();
+        const selectedContactId = contactSelect.value;
+        const shouldLog = document.getElementById('sendTemplateLogActivity').checked;
+
+        if (!email) {
+            showToast('Por favor, informe o e-mail do destinatário.', 'warning');
+            return;
+        }
+
+        const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoUrl;
+
+        if (shouldLog && selectedContactId) {
+            const contact = (env.contacts || []).find(c => c.id === selectedContactId);
+            if (contact) {
+                if (!contact.timeline) contact.timeline = [];
+                contact.timeline.push({
+                    id: 'act_' + Date.now(),
+                    type: 'email',
+                    description: `E-mail iniciado com modelo: "${subject || 'Contato'}"`,
+                    timestamp: new Date().toISOString()
+                });
+                saveState();
+                if (typeof renderTimeline === 'function' && document.getElementById('activityContactId')?.value === contact.id) {
+                    renderTimeline(contact);
+                }
+            }
+        }
+
+        showToast('✉️ Leitor de e-mail iniciado!', 'success');
+        closeSendModal();
+    };
+
+    document.getElementById('btnSendTemplateWhatsapp').onclick = () => {
+        const phone = document.getElementById('sendTemplateRecipientPhone').value.trim();
+        const body = document.getElementById('sendTemplateBody').value.trim();
+        const selectedContactId = contactSelect.value;
+        const shouldLog = document.getElementById('sendTemplateLogActivity').checked;
+
+        if (!phone) {
+            showToast('Por favor, informe o telefone/WhatsApp do destinatário.', 'warning');
+            return;
+        }
+
+        let cleanPhone = phone.replace(/\D/g, '');
+        if (cleanPhone.length >= 10 && !cleanPhone.startsWith('55')) {
+            cleanPhone = '55' + cleanPhone;
+        }
+
+        const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(body)}`;
+        window.open(waUrl, '_blank');
+
+        if (shouldLog && selectedContactId) {
+            const contact = (env.contacts || []).find(c => c.id === selectedContactId);
+            if (contact) {
+                if (!contact.timeline) contact.timeline = [];
+                contact.timeline.push({
+                    id: 'act_' + Date.now(),
+                    type: 'call',
+                    description: `WhatsApp iniciado com modelo de mensagem`,
+                    timestamp: new Date().toISOString()
+                });
+                saveState();
+                if (typeof renderTimeline === 'function' && document.getElementById('activityContactId')?.value === contact.id) {
+                    renderTimeline(contact);
+                }
+            }
+        }
+
+        showToast('💬 WhatsApp iniciado!', 'success');
+        closeSendModal();
+    };
+
+    document.getElementById('btnCopySendTemplateText').onclick = () => {
+        const subject = document.getElementById('sendTemplateSubject').value.trim();
+        const body = document.getElementById('sendTemplateBody').value.trim();
+        const textToCopy = subject ? `Assunto: ${subject}\n\n${body}` : body;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showToast('✅ Conteúdo do e-mail copiado para a área de transferência!', 'success');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = textToCopy;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast('✅ Conteúdo copiado!', 'success');
+        });
+    };
+
+    modal.classList.add('active');
     safeCreateIcons();
 }
 
@@ -7401,9 +7595,12 @@ function previewTemplate(tmpl) {
                 ${attsHtml}
                 ${tmpl.tags ? `<div style="margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;">${tmpl.tags.split(',').map(t => t.trim()).filter(Boolean).map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('')}</div>` : ''}
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
                 <button type="button" class="btn btn-secondary" id="btnClosePreviewModal2">Fechar</button>
-                <button type="button" class="btn btn-primary" id="btnCopyFromPreview"><i data-lucide="copy" style="width:13px;height:13px;"></i> Copiar Texto</button>
+                <div style="display:flex;gap:8px;">
+                    <button type="button" class="btn btn-secondary" id="btnCopyFromPreview"><i data-lucide="copy" style="width:13px;height:13px;"></i> Copiar Texto</button>
+                    <button type="button" class="btn btn-primary" id="btnSendFromPreview"><i data-lucide="send" style="width:13px;height:13px;"></i> Enviar a um Lead</button>
+                </div>
             </div>
         </div>
     `;
@@ -7418,6 +7615,7 @@ function previewTemplate(tmpl) {
     modal.querySelector('#btnClosePreviewModal').onclick = close;
     modal.querySelector('#btnClosePreviewModal2').onclick = close;
     modal.querySelector('#btnCopyFromPreview').onclick = () => { copyTemplateText(tmpl); close(); };
+    modal.querySelector('#btnSendFromPreview').onclick = () => { close(); openSendTemplateModal(tmpl.id, null); };
     modal.onclick = (e) => { if (e.target === modal) close(); };
 }
 

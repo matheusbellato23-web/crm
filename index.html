@@ -2260,6 +2260,9 @@
                             </div>
                         </div>
                     </div>
+                    <button type="button" class="btn btn-primary btn-sm" id="btnSendTemplateToContact" style="margin-top:14px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">
+                        <i data-lucide="mail-plus" style="width:14px;height:14px;"></i> Enviar E-mail com Modelo
+                    </button>
                 </div>
                 <div class="details-right-panel">
                     <div class="activity-log-form">
@@ -3115,6 +3118,80 @@
                     <button type="submit" class="btn btn-primary">Salvar Modelo</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL: SEND TEMPLATE TO LEAD -->
+    <div class="modal" id="sendTemplateModal">
+        <div class="modal-content" style="max-width: 680px; width: 100%;">
+            <div class="modal-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <i data-lucide="mail-plus" style="width:20px;height:20px;color:var(--color-primary);"></i>
+                    <h3 style="margin:0;">Enviar Modelo ao Lead / Contato</h3>
+                </div>
+                <button class="btn-close" id="btnCloseSendTemplateModal">&times;</button>
+            </div>
+            <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sendTemplateContactSelect">Selecione o Lead / Contato</label>
+                        <select id="sendTemplateContactSelect" class="form-control">
+                            <option value="">-- Selecione um Lead --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sendTemplateSelect">Modelo de Mensagem</label>
+                        <select id="sendTemplateSelect" class="form-control">
+                            <option value="">-- Selecione um Modelo --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sendTemplateRecipientEmail">E-mail do Destinatário</label>
+                        <input type="email" id="sendTemplateRecipientEmail" class="form-control" placeholder="exemplo@lead.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="sendTemplateRecipientPhone">Telefone / WhatsApp</label>
+                        <input type="text" id="sendTemplateRecipientPhone" class="form-control" placeholder="(00) 00000-0000">
+                    </div>
+                </div>
+
+                <div class="form-group" id="sendTemplateSubjectContainer">
+                    <label for="sendTemplateSubject">Assunto do E-mail</label>
+                    <input type="text" id="sendTemplateSubject" class="form-control" placeholder="Assunto do e-mail">
+                </div>
+
+                <div class="form-group">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                        <label for="sendTemplateBody" style="margin-bottom:0;">Corpo da Mensagem (Personalizado)</label>
+                        <span style="font-size:11px;color:var(--text-muted);">As variáveis {{nome}}, {{empresa}}, {{email}} são personalizadas automaticamente.</span>
+                    </div>
+                    <textarea id="sendTemplateBody" class="form-control" rows="8" style="font-family: var(--font-primary); resize: vertical; line-height:1.6;"></textarea>
+                </div>
+
+                <div style="padding:10px 14px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);display:flex;align-items:center;gap:8px;">
+                    <input type="checkbox" id="sendTemplateLogActivity" checked style="width:16px;height:16px;cursor:pointer;">
+                    <label for="sendTemplateLogActivity" style="font-size:12.5px;cursor:pointer;margin:0;color:var(--text-primary);">
+                        Registrar envio automaticamente no histórico/linha do tempo do Lead
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary" id="btnCancelSendTemplateModal">Cancelar</button>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button type="button" class="btn btn-secondary" id="btnCopySendTemplateText">
+                        <i data-lucide="copy" style="width:14px;height:14px;"></i> Copiar Texto
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnSendTemplateWhatsapp" style="color:#10b981;border-color:rgba(16,185,129,0.3);">
+                        <i data-lucide="message-square" style="width:14px;height:14px;"></i> WhatsApp
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnSendTemplateEmail">
+                        <i data-lucide="send" style="width:14px;height:14px;"></i> Abrir no E-mail (mailto)
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
