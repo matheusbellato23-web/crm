@@ -20,6 +20,29 @@ const defaultProducts = [
     { id: "p8", name: "Registro & Renovação de Domínio", description: "Registro e renovação anual de domínio (.com.br / .com). Custo Registro.br: R$ 40,00 | Cobrado: R$ 50,00 (Lucro R$ 10,00/ano).", price: 50.00, cost: 40.00, type: "yearly", suggestedAddons: [] }
 ];
 
+const defaultDocuments = [
+    {
+        id: "doc_default_1",
+        title: "Proposta Comercial Padrão - WEBCO 2026",
+        category: "proposta",
+        description: "Modelo oficial de proposta comercial para desenvolvimento de sites profissionais, landing pages e soluções digitais.",
+        fileName: "Proposta_Comercial_WEBCO_2026.pdf",
+        fileType: "application/pdf",
+        tags: "proposta, comercial, pdf, sites",
+        createdAt: "2026-07-30T10:00:00.000Z"
+    },
+    {
+        id: "doc_default_2",
+        title: "Portfólio de Cases & Projetos WEBCO",
+        category: "portfolio",
+        description: "Apresentação visual com principais cases de sucesso, métricas de resultados e telas de sites desenvolvidos.",
+        fileName: "Portfolio_Cases_WEBCO.pdf",
+        fileType: "application/pdf",
+        tags: "portfolio, cases, apresentacao, webco",
+        createdAt: "2026-07-30T10:30:00.000Z"
+    }
+];
+
 const defaultContacts = [
     { id: "c1", name: "João Silva", company: "Inova Tech", email: "joao@inovatech.com.br", phone: "(11) 98765-4321", value: 3500.00, status: "negotiating", niche: "SaaS / Startup", notes: "Interessado em Criação de Site e SEO.", createdAt: "2026-07-05T14:30:00.000Z", timeline: [{ id: "act1", type: "note", description: "Contato cadastrado no sistema.", timestamp: "2026-07-05T14:30:00.000Z" }] },
     { id: "c2", name: "Maria Oliveira", company: "Giga Corp", email: "maria.oliveira@gigacorp.com", phone: "(21) 99888-7766", value: 8700.00, status: "won", niche: "E-commerce", notes: "Compra fechada de Site + Google Ads.", createdAt: "2026-07-01T09:15:00.000Z", timeline: [{ id: "act2", type: "note", description: "Lead convertido em cliente.", timestamp: "2026-07-09T18:12:00.000Z" }] },
@@ -267,8 +290,9 @@ function getEnv() {
     if (!state.environments[env].marketingAssets) state.environments[env].marketingAssets = [...defaultMarketingAssets];
     if (!state.environments[env].niches) state.environments[env].niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Turismo", "Saúde / Estética", "Outro"];
     if (state.environments[env].balanceAdjustment === undefined) state.environments[env].balanceAdjustment = 0;
-    // ⚠️ CRITICAL: Always ensure templates array exists so it is never lost on schema migration
+    // ⚠️ CRITICAL: Always ensure templates and documents arrays exist so they are never lost on schema migration
     if (!state.environments[env].templates) state.environments[env].templates = [];
+    if (!state.environments[env].documents) state.environments[env].documents = [...defaultDocuments];
     return state.environments[env];
 }
 
@@ -644,6 +668,7 @@ function renderAll() {
     safeRun("populateUserDropdowns", populateUserDropdowns);
     safeRun("renderUsers", renderUsers);
     safeRun("renderTemplates", renderTemplates);
+    safeRun("renderDocuments", renderDocuments);
     safeRun("updateCalendarNotifications", updateCalendarNotifications);
     
     safeCreateIcons();
@@ -7945,3 +7970,334 @@ if (templateForm) {
 }
 
 window.renderTemplates = renderTemplates;
+
+// ==========================================
+// DOCUMENT REPOSITORY MODULE
+// ==========================================
+const DOC_CATEGORY_LABELS = {
+    proposta: '📄 Proposta Comercial',
+    portfolio: '🎨 Portfólio',
+    contrato: '📑 Contrato / Briefing',
+    outros: '📂 Outros Documentos'
+};
+
+const DOC_CATEGORY_COLORS = {
+    proposta: { bg: 'rgba(79,70,229,0.1)', text: '#4F46E5', border: 'rgba(79,70,229,0.3)' },
+    portfolio: { bg: 'rgba(6,182,212,0.1)', text: '#0891b2', border: 'rgba(6,182,212,0.3)' },
+    contrato: { bg: 'rgba(217,119,6,0.1)', text: '#d97706', border: 'rgba(217,119,6,0.3)' },
+    outros: { bg: 'rgba(107,114,128,0.1)', text: '#4b5563', border: 'rgba(107,114,128,0.3)' }
+};
+
+let docActiveCategory = 'all';
+let docSearchQuery = '';
+let currentDocFile = null;
+
+function getDocuments() {
+    const env = getEnv();
+    if (!env.documents) env.documents = [...defaultDocuments];
+    return env.documents;
+}
+
+function renderDocuments() {
+    const documents = getDocuments();
+    const grid = document.getElementById('documentsGrid');
+    const emptyState = document.getElementById('documentsEmptyState');
+    if (!grid) return;
+
+    let filtered = docActiveCategory === 'all' ? [...documents] : documents.filter(d => d.category === docActiveCategory);
+
+    if (docSearchQuery) {
+        const q = docSearchQuery.toLowerCase();
+        filtered = filtered.filter(d => 
+            (d.title || '').toLowerCase().includes(q) ||
+            (d.description || '').toLowerCase().includes(q) ||
+            (d.fileName || '').toLowerCase().includes(q) ||
+            (d.tags || '').toLowerCase().includes(q)
+        );
+    }
+
+    grid.innerHTML = '';
+
+    if (filtered.length === 0) {
+        emptyState?.classList.remove('hidden');
+        return;
+    }
+
+    emptyState?.classList.add('hidden');
+
+    filtered.forEach(doc => {
+        const colors = DOC_CATEGORY_COLORS[doc.category] || DOC_CATEGORY_COLORS.outros;
+        const tags = (doc.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+        const tagsHtml = tags.map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('');
+        
+        const isPdf = (doc.fileType || '').includes('pdf') || (doc.fileName || '').toLowerCase().endsWith('.pdf');
+        const iconName = isPdf ? 'file-text' : (doc.fileType || '').includes('image') ? 'image' : 'file';
+
+        const card = document.createElement('div');
+        card.style.cssText = `background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-fast),transform var(--transition-fast);cursor:pointer;position:relative;`;
+        card.innerHTML = `
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+                        <span style="font-size:11px;font-weight:600;background:${colors.bg};color:${colors.text};border:1px solid ${colors.border};padding:2px 9px;border-radius:99px;white-space:nowrap;">${DOC_CATEGORY_LABELS[doc.category] || doc.category}</span>
+                        ${doc.fileName ? `<span style="font-size:11px;color:var(--text-muted);display:inline-flex;align-items:center;gap:3px;"><i data-lucide="${iconName}" style="width:12px;height:12px;color:var(--color-primary);"></i> ${doc.fileName}</span>` : ''}
+                    </div>
+                    <h3 style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.title}</h3>
+                </div>
+                <div style="display:flex;gap:6px;flex-shrink:0;">
+                    <button class="btn-icon-only btn-edit-doc" data-id="${doc.id}" title="Editar documento" style="color:var(--text-secondary);"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>
+                    <button class="btn-icon-only btn-delete-doc" data-id="${doc.id}" title="Excluir documento" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
+                </div>
+            </div>
+            ${doc.description ? `<p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin:0;white-space:pre-wrap;">${doc.description}</p>` : ''}
+            ${tagsHtml ? `<div style="display:flex;gap:5px;flex-wrap:wrap;">${tagsHtml}</div>` : ''}
+            <div style="display:flex;gap:8px;border-top:1px solid var(--border-color);padding-top:10px;margin-top:auto;">
+                <button class="btn btn-primary btn-xs btn-preview-doc" data-id="${doc.id}" style="font-size:11.5px;padding:5px 12px;flex:1;">
+                    <i data-lucide="eye" style="width:11px;height:11px;"></i> Visualizar
+                </button>
+                <button class="btn btn-secondary btn-xs btn-download-doc" data-id="${doc.id}" style="font-size:11.5px;padding:5px 12px;">
+                    <i data-lucide="download" style="width:11px;height:11px;"></i> Baixar
+                </button>
+            </div>
+        `;
+
+        card.addEventListener('mouseenter', () => { card.style.boxShadow = 'var(--shadow-md)'; card.style.transform = 'translateY(-2px)'; });
+        card.addEventListener('mouseleave', () => { card.style.boxShadow = 'var(--shadow-sm)'; card.style.transform = ''; });
+
+        card.querySelector('.btn-edit-doc').onclick = (e) => { e.stopPropagation(); openDocumentModal(doc.id); };
+        card.querySelector('.btn-delete-doc').onclick = (e) => { e.stopPropagation(); deleteDocument(doc.id); };
+        card.querySelector('.btn-preview-doc').onclick = (e) => { e.stopPropagation(); previewDocument(doc); };
+        card.querySelector('.btn-download-doc').onclick = (e) => { e.stopPropagation(); downloadDocumentFile(doc); };
+
+        grid.appendChild(card);
+    });
+
+    safeCreateIcons();
+}
+
+function openDocumentModal(id = null) {
+    const documents = getDocuments();
+    const doc = id ? documents.find(d => d.id === id) : null;
+    currentDocFile = null;
+
+    document.getElementById('documentFormId').value = doc ? doc.id : '';
+    document.getElementById('documentFormTitle').value = doc ? doc.title : '';
+    document.getElementById('documentFormCategory').value = doc ? doc.category : 'proposta';
+    document.getElementById('documentFormDescription').value = doc ? (doc.description || '') : '';
+    document.getElementById('documentFormTags').value = doc ? (doc.tags || '') : '';
+    document.getElementById('documentFormFileInput').value = '';
+    document.getElementById('documentModalTitle').innerText = doc ? 'Editar Documento' : 'Novo Documento';
+
+    const fileHelp = document.getElementById('documentFormFileHelp');
+    if (fileHelp) {
+        fileHelp.innerText = doc && doc.fileName 
+            ? `📄 Arquivo atual: "${doc.fileName}". Selecione um novo arquivo se desejar substituir.` 
+            : 'Tamanho máximo recomendado: 15 MB por arquivo.';
+    }
+
+    const close = () => document.getElementById('documentModal').classList.remove('active');
+    document.getElementById('btnCloseDocumentModal').onclick = close;
+    document.getElementById('btnCancelDocumentModal').onclick = close;
+
+    document.getElementById('documentModal').classList.add('active');
+}
+
+function deleteDocument(id) {
+    const env = getEnv();
+    const doc = (env.documents || []).find(d => d.id === id);
+    if (!doc) return;
+    if (confirm(`Excluir o documento "${doc.title}" do repositório?`)) {
+        env.documents = env.documents.filter(d => d.id !== id);
+        saveState();
+        renderDocuments();
+        showToast('Documento removido!', 'info');
+    }
+}
+
+function previewDocument(doc) {
+    const modal = document.getElementById('documentPreviewModal');
+    if (!modal) return;
+
+    document.getElementById('docPreviewTitle').innerText = doc.title || 'Visualizar Documento';
+
+    const frame = document.getElementById('docPreviewFrame');
+    if (doc.fileData) {
+        frame.src = doc.fileData;
+    } else {
+        // Fallback HTML preview for default template documents
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: system-ui, sans-serif; padding: 40px; color: #1e293b; background: #ffffff; line-height: 1.6; }
+                    .header { border-bottom: 2px solid #4F46E5; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+                    .title { font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; }
+                    .subtitle { font-size: 14px; color: #64748b; margin-top: 4px; }
+                    .badge { background: rgba(79,70,229,0.1); color: #4F46E5; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 99px; }
+                    .content { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; font-size: 14px; color: #334155; }
+                    .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <h1 class="title">${doc.title}</h1>
+                        <div class="subtitle">Documento Oficial WEBCO Agency</div>
+                    </div>
+                    <span class="badge">${DOC_CATEGORY_LABELS[doc.category] || doc.category}</span>
+                </div>
+                <div class="content">
+                    <p><strong>Descrição:</strong> ${doc.description || 'Nenhuma descrição informada.'}</p>
+                    <p><strong>Arquivo:</strong> ${doc.fileName || 'documento.pdf'}</p>
+                    <p style="margin-top:20px;padding:16px;background:#ffffff;border-left:4px solid #4F46E5;border-radius:4px;">
+                        ℹ️ Este é um documento modelo padrão da agência. Você pode fazer upload dos seus arquivos PDF reais (Propostas comerciais, PDFs, Apresentações) clicando em <strong>Adicionar Documento</strong>.
+                    </p>
+                </div>
+                <div class="footer">WEBCO Agency &copy; 2026 - Todos os direitos reservados</div>
+            </body>
+            </html>
+        `;
+        frame.srcdoc = htmlContent;
+    }
+
+    const close = () => modal.classList.remove('active');
+    document.getElementById('btnCloseDocPreviewModal').onclick = close;
+    document.getElementById('btnCloseDocPreviewModal2').onclick = close;
+
+    document.getElementById('btnCopyDocInfo').onclick = () => {
+        const text = `${doc.title}\n${doc.description ? doc.description + '\n' : ''}${doc.fileName ? 'Arquivo: ' + doc.fileName : ''}`;
+        navigator.clipboard.writeText(text).then(() => showToast('✅ Informações copiadas!', 'success'));
+    };
+
+    document.getElementById('btnDownloadDocFromPreview').onclick = () => {
+        downloadDocumentFile(doc);
+    };
+
+    modal.classList.add('active');
+    safeCreateIcons();
+}
+
+function downloadDocumentFile(doc) {
+    if (doc.fileData) {
+        const a = document.createElement('a');
+        a.href = doc.fileData;
+        a.download = doc.fileName || `${doc.title}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast(`⬇️ Download de "${doc.fileName || doc.title}" iniciado!`, 'success');
+    } else {
+        const blob = new Blob([`Documento: ${doc.title}\n\n${doc.description || ''}\n\nWEBCO Agency`], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = doc.fileName ? doc.fileName.replace('.pdf', '.txt') : `${doc.title}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`⬇️ Download de "${doc.title}" concluído!`, 'success');
+    }
+}
+
+// Wire Upload Button
+const btnUploadDoc = document.getElementById('btnUploadDocument');
+if (btnUploadDoc) {
+    btnUploadDoc.onclick = () => openDocumentModal();
+}
+
+// Wire Category Filters
+const docCategoryFilters = document.querySelectorAll('#documentCategoryFilters li');
+docCategoryFilters.forEach(li => {
+    li.onclick = () => {
+        docCategoryFilters.forEach(t => t.classList.remove('active'));
+        li.classList.add('active');
+        docActiveCategory = li.getAttribute('data-doc-category') || 'all';
+        renderDocuments();
+    };
+});
+
+// Wire Search Input
+const docSearchInput = document.getElementById('documentSearchInput');
+if (docSearchInput) {
+    docSearchInput.oninput = (e) => {
+        docSearchQuery = e.target.value;
+        renderDocuments();
+    };
+}
+
+// Wire Document File Input reader
+const docFileInput = document.getElementById('documentFormFileInput');
+if (docFileInput) {
+    docFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                currentDocFile = {
+                    fileName: file.name,
+                    fileSize: file.size,
+                    fileType: file.type,
+                    fileData: evt.target.result
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// Document Form submit
+const documentForm = document.getElementById('documentForm');
+if (documentForm) {
+    documentForm.onsubmit = (e) => {
+        e.preventDefault();
+        const env = getEnv();
+        if (!env.documents) env.documents = [];
+
+        const id = document.getElementById('documentFormId').value;
+        const title = document.getElementById('documentFormTitle').value.trim();
+        const category = document.getElementById('documentFormCategory').value;
+        const description = document.getElementById('documentFormDescription').value.trim();
+        const tags = document.getElementById('documentFormTags').value.trim();
+
+        if (id) {
+            const existing = env.documents.find(d => d.id === id);
+            if (existing) {
+                existing.title = title;
+                existing.category = category;
+                existing.description = description;
+                existing.tags = tags;
+                if (currentDocFile) {
+                    existing.fileName = currentDocFile.fileName;
+                    existing.fileSize = currentDocFile.fileSize;
+                    existing.fileType = currentDocFile.fileType;
+                    existing.fileData = currentDocFile.fileData;
+                }
+                existing.updatedAt = new Date().toISOString();
+                showToast('Documento atualizado com sucesso!', 'success');
+            }
+        } else {
+            const newDoc = {
+                id: 'doc_' + Date.now(),
+                title,
+                category,
+                description,
+                tags,
+                fileName: currentDocFile ? currentDocFile.fileName : 'Documento.pdf',
+                fileSize: currentDocFile ? currentDocFile.fileSize : 0,
+                fileType: currentDocFile ? currentDocFile.fileType : 'application/pdf',
+                fileData: currentDocFile ? currentDocFile.fileData : null,
+                createdAt: new Date().toISOString()
+            };
+            env.documents.push(newDoc);
+            showToast('Documento adicionado ao repositório!', 'success');
+        }
+
+        saveState();
+        document.getElementById('documentModal').classList.remove('active');
+        renderDocuments();
+    };
+}
+
+window.renderDocuments = renderDocuments;

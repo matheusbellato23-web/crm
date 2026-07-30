@@ -288,6 +288,10 @@
                 <!-- Configurações Section -->
                 <div class="nav-section-title">Ferramentas</div>
                 <ul>
+                    <li class="nav-item" data-view="documents">
+                        <i data-lucide="folder-kanban"></i>
+                        <span>Repositório de Documentos</span>
+                    </li>
                     <li class="nav-item" data-view="templates">
                         <i data-lucide="file-text"></i>
                         <span>Modelos de Mensagem</span>
@@ -1827,6 +1831,47 @@
                 </div>
             </section>
 
+            <!-- Documents Repository View -->
+            <section id="documentsView" class="view-section">
+                <div class="view-header flex-header">
+                    <div>
+                        <h1 class="view-title">Repositório de Documentos</h1>
+                        <p class="view-subtitle">Centralize e compartilhe propostas comerciais, portfólios, modelos de contrato e arquivos PDF da WEBCO.</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnUploadDocument" style="display:flex;align-items:center;gap:6px;">
+                        <i data-lucide="upload-cloud" style="width:15px;height:15px;"></i>
+                        <span>Adicionar Documento</span>
+                    </button>
+                </div>
+
+                <!-- Category Filters & Search -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:14px;flex-wrap:wrap;">
+                    <ul class="tasks-filters" id="documentCategoryFilters" style="list-style:none;padding:0;display:flex;gap:8px;margin:0;flex-wrap:wrap;">
+                        <li class="active" data-doc-category="all">Todos os Arquivos</li>
+                        <li data-doc-category="proposta">📄 Propostas Comerciais</li>
+                        <li data-doc-category="portfolio">🎨 Portfólios</li>
+                        <li data-doc-category="contrato">📑 Contratos & Briefings</li>
+                        <li data-doc-category="outros">📂 Outros PDFs</li>
+                    </ul>
+                    <div style="position:relative;width:260px;">
+                        <input type="text" id="documentSearchInput" class="form-control" placeholder="Buscar documento..." style="padding-left:32px;height:36px;font-size:12.5px;">
+                        <i data-lucide="search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);"></i>
+                    </div>
+                </div>
+
+                <!-- Documents Grid -->
+                <div id="documentsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;">
+                    <!-- Dynamic Document Cards -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="documentsEmptyState" class="hidden" style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+                    <i data-lucide="folder-open" style="width:52px;height:52px;margin-bottom:16px;opacity:0.35;"></i>
+                    <h3 style="font-size:15px;font-weight:600;margin-bottom:6px;color:var(--text-primary);">Nenhum documento encontrado</h3>
+                    <p style="font-size:13px;max-width:400px;margin:0 auto 16px;">Adicione propostas comerciais, portfólios ou apresentações PDF para ter acesso rápido durante a prospecção.</p>
+                </div>
+            </section>
+
             <!-- Marketing View -->
             <section id="marketingView" class="view-section">
                 <div class="view-header flex-header">
@@ -3266,6 +3311,84 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT DOCUMENT -->
+    <div class="modal" id="documentModal">
+        <div class="modal-content" style="max-width: 620px; width: 100%;">
+            <div class="modal-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <i data-lucide="file-plus" style="width:20px;height:20px;color:var(--color-primary);"></i>
+                    <h3 style="margin:0;" id="documentModalTitle">Novo Documento</h3>
+                </div>
+                <button class="btn-close" id="btnCloseDocumentModal">&times;</button>
+            </div>
+            <form id="documentForm">
+                <input type="hidden" id="documentFormId">
+                <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="documentFormTitle">Título do Documento *</label>
+                            <input type="text" id="documentFormTitle" class="form-control" placeholder="Ex: Proposta Comercial Sites 2026 - WEBCO" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="documentFormCategory">Categoria *</label>
+                            <select id="documentFormCategory" class="form-control" required>
+                                <option value="proposta">📄 Proposta Comercial</option>
+                                <option value="portfolio">🎨 Portfólio / Casos de Sucesso</option>
+                                <option value="contrato">📑 Contrato / Briefing</option>
+                                <option value="outros">📂 Outros Documentos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="documentFormFileInput">Selecione o Arquivo (PDF, DOCX, PNG, JPG, etc.) *</label>
+                        <input type="file" id="documentFormFileInput" class="form-control" style="padding:8px 12px;">
+                        <small id="documentFormFileHelp" style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block;">Tamanho máximo recomendado: 15 MB por arquivo.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="documentFormDescription">Descrição / Observações</label>
+                        <textarea id="documentFormDescription" class="form-control" rows="3" placeholder="Resumo do conteúdo ou orientação de uso com clientes..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="documentFormTags">Tags / Palavras-chave</label>
+                        <input type="text" id="documentFormTags" class="form-control" placeholder="Ex: pdf, proposta, site, 2026 (separadas por vírgula)">
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+                    <button type="button" class="btn btn-secondary" id="btnCancelDocumentModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i data-lucide="check" style="width:14px;height:14px;"></i> Salvar no Repositório
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PREVIEW DOCUMENT -->
+    <div class="modal" id="documentPreviewModal">
+        <div class="modal-content" style="max-width: 860px; width: 100%; height: 88vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                    <i data-lucide="file-text" style="width:20px;height:20px;color:var(--color-primary);flex-shrink:0;"></i>
+                    <h3 style="margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="docPreviewTitle">Visualizar Documento</h3>
+                </div>
+                <button class="btn-close" id="btnCloseDocPreviewModal">&times;</button>
+            </div>
+            <div class="modal-body" style="flex:1;min-height:0;padding:0;display:flex;flex-direction:column;background:#1e1e1e;">
+                <iframe id="docPreviewFrame" style="width:100%;height:100%;border:none;" src="about:blank"></iframe>
+            </div>
+            <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+                <button type="button" class="btn btn-secondary" id="btnCloseDocPreviewModal2">Fechar</button>
+                <div style="display:flex;gap:8px;">
+                    <button type="button" class="btn btn-secondary" id="btnCopyDocInfo"><i data-lucide="copy" style="width:13px;height:13px;"></i> Copiar Título / Info</button>
+                    <button type="button" class="btn btn-primary" id="btnDownloadDocFromPreview"><i data-lucide="download" style="width:13px;height:13px;"></i> Baixar Arquivo</button>
+                </div>
+            </div>
         </div>
     </div>
 
