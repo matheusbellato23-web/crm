@@ -204,7 +204,7 @@ app.post('/api/send-email', async (req, res) => {
 });
 
 // API Webhook: Receive leads directly from Agente Comercial AI
-app.post('/api/webhook/agente-comercial', (req, res) => {
+app.post(['/api/webhook/agente-comercial', '/crm/api/webhook/agente-comercial'], (req, res) => {
     try {
         let leads = Array.isArray(req.body) ? req.body : [req.body];
         if (!leads || leads.length === 0) {
