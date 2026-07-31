@@ -22,6 +22,16 @@ const defaultProducts = [
 
 const defaultDocuments = [
     {
+        id: "doc_briefing_cliente_site_2026",
+        title: "Formulário de Briefing para Criação de Site (Preenchimento do Cliente)",
+        category: "contrato",
+        description: "Formulário oficial de coleta de dados para envio ao cliente. Contém todos os campos para o cliente preencher sobre a empresa dele: Nome, Slogan, Logo, Paleta de Cores, WhatsApp, E-mail, Redes Sociais, Serviços e Fotos.",
+        fileName: "Briefing_Criacao_de_Site_Cliente.pdf",
+        fileType: "application/pdf",
+        tags: "briefing, formulario cliente, criacao de site, dados cliente, contrato, logo, whatsapp, cores",
+        createdAt: "2026-07-31T10:45:00.000Z"
+    },
+    {
         id: "doc_webco_checklist_site_2026",
         title: "Checklist & Briefing Completo para Criação de Sites - WEBCO Agency",
         category: "outros",
