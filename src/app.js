@@ -4632,15 +4632,18 @@ function renderContacts() {
         filtered = filtered.filter(c => c.niche === filterNiche);
     }
 
-    // Apply Search Input
+    // Apply Search Input (Normalized accent-insensitive)
     if (searchVal) {
+        const norm = (s) => (s || '').toString().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+        const query = norm(searchVal);
+
         filtered = filtered.filter(c => 
-            (c.name && c.name.toLowerCase().includes(searchVal)) ||
-            (c.company && c.company.toLowerCase().includes(searchVal)) ||
-            (c.niche && c.niche.toLowerCase().includes(searchVal)) ||
-            (c.email && c.email.toLowerCase().includes(searchVal)) ||
-            (c.phone && c.phone.toLowerCase().includes(searchVal)) ||
-            (c.notes && c.notes.toLowerCase().includes(searchVal))
+            norm(c.name).includes(query) ||
+            norm(c.company).includes(query) ||
+            norm(c.niche).includes(query) ||
+            norm(c.email).includes(query) ||
+            norm(c.phone).includes(query) ||
+            norm(c.notes).includes(query)
         );
     }
 
@@ -4771,33 +4774,34 @@ function renderContacts() {
             : "Sem interações";
 
         const tr = document.createElement("tr");
-        tr.style.height = "52px";
+        tr.style.cssText = "height: 48px; border-bottom: 1px solid var(--border-color);";
         tr.innerHTML = `
-            <td style="text-align:center;"><input type="checkbox" class="contact-checkbox" data-id="${c.id}"></td>
+            <td style="text-align:center; width:36px;"><input type="checkbox" class="contact-checkbox" data-id="${c.id}"></td>
             <td>
-                <div class="col-contact-info" style="display:flex; align-items:center; gap:10px;">
-                    <div class="contact-avatar" style="${isAgente ? 'background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;font-weight:700;' : ''}">${getInitials(c.name)}</div>
-                    <div class="contact-name-company">
-                        <span class="contact-name-val" style="font-weight:600; font-size:13px; color:var(--text-primary); display:flex; align-items:center; flex-wrap:wrap;">${c.name} ${isAgenteBadge}</span>
-                        <span class="contact-company-sub" style="font-size:11px; color:var(--text-muted);">${c.company || "-"}</span>
+                <div class="col-contact-info" style="display:flex; align-items:center; gap:8px;">
+                    <div class="contact-avatar" style="width:32px; height:32px; font-size:11px; flex-shrink:0; ${isAgente ? 'background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;font-weight:700;' : ''}">${getInitials(c.name)}</div>
+                    <div style="min-width:0; flex:1;">
+                        <span style="font-weight:600; font-size:12.5px; color:var(--text-primary); display:inline-flex; align-items:center; gap:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;" title="${c.name}">${c.name} ${isAgenteBadge}</span>
                     </div>
                 </div>
             </td>
-            <td><strong style="font-size:12.5px; color:var(--text-primary);">${c.company || "-"}</strong></td>
-            <td><span class="niche-tag" style="font-size:11px; padding:3px 10px; border-radius:4px; font-weight:600; background:rgba(79,70,229,0.08); color:var(--color-primary);">${c.niche || "Outro"}</span></td>
             <td>
-                <div style="display:flex; flex-direction:column; gap:2px;">
+                <span style="font-size:12.5px; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;" title="${c.company || '-'}">${c.company || "-"}</span>
+            </td>
+            <td><span class="niche-tag" style="font-size:10.5px; padding:2px 8px; border-radius:4px; font-weight:600; background:rgba(79,70,229,0.08); color:var(--color-primary); white-space:nowrap;">${c.niche || "Outro"}</span></td>
+            <td>
+                <div style="display:flex; flex-direction:column; gap:1px;">
                     ${phoneDisplay}
-                    ${c.email ? `<span style="font-size:11px; color:var(--text-secondary);">${c.email}</span>` : ''}
+                    ${c.email ? `<span style="font-size:10.5px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;" title="${c.email}">${c.email}</span>` : ''}
                 </div>
             </td>
-            <td><strong style="font-size:13px; color:#059669;">${formatCurrency(c.value)}</strong></td>
+            <td><strong style="font-size:12.5px; color:#059669; white-space:nowrap;">${formatCurrency(c.value)}</strong></td>
             <td>
                 <select class="select-inline-status status-${c.status}" data-id="${c.id}" style="
-                    font-size: 11.5px;
+                    font-size: 11px;
                     font-weight: 600;
-                    padding: 5px 10px;
-                    border-radius: 6px;
+                    padding: 3px 8px;
+                    border-radius: 5px;
                     border: 1px solid var(--border-color);
                     background: var(--bg-card);
                     color: var(--text-primary);
@@ -4813,17 +4817,17 @@ function renderContacts() {
                 </select>
             </td>
             <td>
-                <div class="contact-comm-info" style="display:flex; flex-direction:column;">
-                    <span style="font-size:11.5px; font-weight:500;">${lastInteractionText}</span>
-                    <span style="font-size:10px; color:var(--text-muted);">${lastTimelineItem ? formatDate(lastTimelineItem.timestamp) : ""}</span>
+                <div class="contact-comm-info" style="display:flex; flex-direction:column; max-width:160px;">
+                    <span style="font-size:11px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${lastTimelineItem ? lastTimelineItem.description : 'Sem interações'}">${lastInteractionText}</span>
+                    <span style="font-size:9.5px; color:var(--text-muted);">${lastTimelineItem ? formatDate(lastTimelineItem.timestamp) : ""}</span>
                 </div>
             </td>
             <td style="text-align:right;">
-                <div class="kanban-card-actions" style="display:inline-flex; gap:4px;">
-                    <button class="btn-icon-only btn-send-template" title="Enviar E-mail com Modelo" style="color:var(--color-primary);"><i data-lucide="mail-plus" style="width:14px;height:14px;"></i></button>
-                    <button class="btn-icon-only btn-view" title="Ver Detalhes"><i data-lucide="eye" style="width:14px;height:14px;"></i></button>
-                    <button class="btn-icon-only btn-edit" title="Editar"><i data-lucide="edit-2" style="width:14px;height:14px;"></i></button>
-                    <button class="btn-icon-only btn-delete" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                <div class="kanban-card-actions" style="display:inline-flex; gap:2px;">
+                    <button class="btn-icon-only btn-send-template" title="Enviar E-mail com Modelo" style="color:var(--color-primary); width:26px; height:26px;"><i data-lucide="mail-plus" style="width:13px;height:13px;"></i></button>
+                    <button class="btn-icon-only btn-view" title="Ver Detalhes" style="width:26px; height:26px;"><i data-lucide="eye" style="width:13px;height:13px;"></i></button>
+                    <button class="btn-icon-only btn-edit" title="Editar" style="width:26px; height:26px;"><i data-lucide="edit-2" style="width:13px;height:13px;"></i></button>
+                    <button class="btn-icon-only btn-delete" title="Excluir" style="width:26px; height:26px;"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
                 </div>
             </td>
         `;
@@ -12411,4 +12415,43 @@ if (btnPullAgentLeadsDirect) {
             btnPullAgentLeadsDirect.disabled = false;
         }
     };
+}
+
+
+// Wire Search & Filter Input Listeners for Contacts Table Engine
+const bindContactsEngineEvents = () => {
+    const searchInput = document.getElementById('contactsSearchInput');
+    const globalSearchInput = document.getElementById('globalSearch');
+    const nicheSelect = document.getElementById('contactsNicheFilter');
+    const statusSelect = document.getElementById('filterStatus');
+    const perPageSelect = document.getElementById('contactsPerPageSelect');
+
+    const handleSearch = () => {
+        contactsTableState.currentPage = 1;
+        renderContacts();
+    };
+
+    if (searchInput) {
+        searchInput.oninput = handleSearch;
+        searchInput.onkeyup = handleSearch;
+    }
+    if (globalSearchInput) {
+        globalSearchInput.oninput = handleSearch;
+        globalSearchInput.onkeyup = handleSearch;
+    }
+    if (nicheSelect) {
+        nicheSelect.onchange = handleSearch;
+    }
+    if (statusSelect) {
+        statusSelect.onchange = handleSearch;
+    }
+    if (perPageSelect) {
+        perPageSelect.onchange = handleSearch;
+    }
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindContactsEngineEvents);
+} else {
+    bindContactsEngineEvents();
 }

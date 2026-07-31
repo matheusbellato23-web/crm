@@ -746,18 +746,18 @@
 
                 <div class="table-card" style="box-shadow: var(--shadow-sm); border-radius: var(--radius-md); overflow: hidden;">
                     <div class="table-container" style="overflow-x: auto;">
-                        <table class="data-table" id="contactsTable">
+                        <table class="data-table" id="contactsTable" style="width: 100%; min-width: 900px; border-collapse: collapse;">
                             <thead>
                                 <tr>
                                     <th style="width: 36px; text-align: center;"><input type="checkbox" id="selectAllContacts" title="Selecionar Todos"></th>
-                                    <th style="cursor: pointer;" onclick="sortContactsTable('name')">Contato <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
-                                    <th style="cursor: pointer;" onclick="sortContactsTable('company')">Empresa <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
-                                    <th style="cursor: pointer;" onclick="sortContactsTable('niche')">Nicho <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
-                                    <th>Contato / WhatsApp</th>
-                                    <th style="cursor: pointer;" onclick="sortContactsTable('value')">Valor Estimado <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
-                                    <th style="cursor: pointer;" onclick="sortContactsTable('status')">Estágio <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
-                                    <th>Última Interação</th>
-                                    <th style="text-align: right;">Ações</th>
+                                    <th style="width: 22%; cursor: pointer;" onclick="sortContactsTable('name')">Contato <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th style="width: 18%; cursor: pointer;" onclick="sortContactsTable('company')">Empresa <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th style="width: 110px; cursor: pointer;" onclick="sortContactsTable('niche')">Nicho <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th style="width: 160px;">Contato / WhatsApp</th>
+                                    <th style="width: 110px; cursor: pointer;" onclick="sortContactsTable('value')">Valor Estimado <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th style="width: 140px; cursor: pointer;" onclick="sortContactsTable('status')">Estágio <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th style="width: 160px;">Última Interação</th>
+                                    <th style="width: 110px; text-align: right;">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="contactsTableBody">
