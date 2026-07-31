@@ -450,6 +450,7 @@ app.post('/api/send-email', async (req, res) => {
         const mailOptions = {
             from: fromAddress,
             to,
+            bcc: smtpConfig.user, // Auto-copy to Hostinger mailbox so dispatches appear in Webmail
             subject: subject || '(Sem Assunto)',
             text,
             html: html || (text ? text.replace(/\n/g, '<br>') : '')
