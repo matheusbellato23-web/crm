@@ -590,10 +590,14 @@
                             <input type="file" id="backupFileInput" accept=".json" style="display: none;">
                         </div>
 
-                        <!-- Agente Comercial Sync Action -->
-                        <button class="btn btn-secondary" id="btnOpenAgenteSync" style="display: flex; align-items: center; gap: 6px; border-color: rgba(79,70,229,0.4); background: rgba(79,70,229,0.06); color: var(--color-primary);" title="Sincronizar Leads do Agente Comercial AI">
+                        <!-- Agente Comercial Sync Actions -->
+                        <button class="btn btn-primary" id="btnPullAgentLeadsDirect" style="display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #4F46E5, #06B6D4);" title="Puxar todos os 100+ leads contatados e novos do Agente Comercial">
+                            <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+                            <span>Puxar Leads do Agente</span>
+                        </button>
+                        <button class="btn btn-secondary" id="btnOpenAgenteSync" style="display: flex; align-items: center; gap: 6px; border-color: rgba(79,70,229,0.4); background: rgba(79,70,229,0.06); color: var(--color-primary);" title="Configurações de Integração do Agente">
                             <i data-lucide="bot" style="width: 14px; height: 14px;"></i>
-                            <span>Agente Comercial</span>
+                            <span>Webhooks</span>
                         </button>
 
                         <!-- Import/History Actions -->
@@ -612,11 +616,63 @@
                     </div>
                 </div>
 
+                <!-- Bulk Actions Toolbar (Hidden by default) -->
+                <div id="contactsBulkBar" class="hidden" style="background: var(--bg-card); border: 1.5px solid var(--color-primary); border-radius: var(--radius-md); padding: 10px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; box-shadow: var(--shadow-sm);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--color-primary); display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="check-square" style="width: 16px; height: 16px;"></i>
+                            <span id="bulkSelectedCount">0 contatos selecionados</span>
+                        </span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <!-- Bulk Change Stage -->
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <select id="bulkStageSelect" class="form-control" style="height: 34px; font-size: 12px; width: 140px;">
+                                <option value="">Alterar Estágio...</option>
+                                <option value="lead">Novo Lead</option>
+                                <option value="contacted">Contatado</option>
+                                <option value="proposal">Proposta Enviada</option>
+                                <option value="negotiating">Em Negociação</option>
+                                <option value="won">Ganho (Won)</option>
+                                <option value="lost">Perdido (Lost)</option>
+                            </select>
+                            <button class="btn btn-secondary btn-sm" id="btnApplyBulkStage" style="height: 34px; font-size: 12px;">Aplicar</button>
+                        </div>
+
+                        <!-- Bulk Change Niche -->
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <select id="bulkNicheSelect" class="form-control" style="height: 34px; font-size: 12px; width: 140px;">
+                                <option value="">Alterar Nicho...</option>
+                                <option value="Gráfica">Gráfica</option>
+                                <option value="Serviços B2B">Serviços B2B</option>
+                                <option value="Negócio Local">Negócio Local</option>
+                                <option value="E-commerce">E-commerce</option>
+                                <option value="Turismo">Turismo</option>
+                                <option value="Saúde / Estética">Saúde / Estética</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                            <button class="btn btn-secondary btn-sm" id="btnApplyBulkNiche" style="height: 34px; font-size: 12px;">Aplicar</button>
+                        </div>
+
+                        <!-- Bulk Change Value -->
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <input type="number" id="bulkValueInput" class="form-control" placeholder="R$ 400" style="height: 34px; font-size: 12px; width: 90px;">
+                            <button class="btn btn-secondary btn-sm" id="btnApplyBulkValue" style="height: 34px; font-size: 12px;">Valor</button>
+                        </div>
+
+                        <!-- Bulk Delete -->
+                        <button class="btn btn-danger btn-sm" id="btnApplyBulkDelete" style="height: 34px; font-size: 12px; background: var(--color-danger); color: white; border: none; display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i> Excluir Selecionados
+                        </button>
+                    </div>
+                </div>
+
                 <div class="table-card">
                     <div class="table-container">
                         <table class="data-table" id="contactsTable">
                             <thead>
                                 <tr>
+                                    <th style="width: 36px; text-align: center;"><input type="checkbox" id="selectAllContacts" title="Selecionar Todos"></th>
                                     <th>Contato</th>
                                     <th>Empresa</th>
                                     <th>Nicho</th>

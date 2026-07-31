@@ -1128,6 +1128,7 @@ function renderContacts() {
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
+                <td style="text-align:center;"><input type="checkbox" class="contact-checkbox" data-id="${c.id}"></td>
                 <td>
                     <div class="col-contact-info">
                         <div class="contact-avatar" style="${isAgente ? 'background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;' : ''}">${getInitials(c.name)}</div>
@@ -8586,3 +8587,175 @@ if (documentForm) {
 }
 
 window.renderDocuments = renderDocuments;
+
+// ==========================================
+// BULK ACTIONS & AGENT SYNC DIRECT HANDLERS
+// ==========================================
+
+// Function to update Bulk Toolbar Visibility
+function updateContactsBulkBar() {
+    const checkboxes = document.querySelectorAll('.contact-checkbox:checked');
+    const bulkBar = document.getElementById('contactsBulkBar');
+    const selectedCount = document.getElementById('bulkSelectedCount');
+    
+    if (checkboxes.length > 0) {
+        bulkBar?.classList.remove('hidden');
+        if (selectedCount) selectedCount.innerText = `${checkboxes.length} ${checkboxes.length === 1 ? 'contato selecionado' : 'contatos selecionados'}`;
+    } else {
+        bulkBar?.classList.add('hidden');
+        const selectAll = document.getElementById('selectAllContacts');
+        if (selectAll) selectAll.checked = false;
+    }
+}
+
+// Wire Select All Contacts Checkbox
+document.addEventListener('change', (e) => {
+    if (e.target && e.target.id === 'selectAllContacts') {
+        const isChecked = e.target.checked;
+        const rowCheckboxes = document.querySelectorAll('.contact-checkbox');
+        rowCheckboxes.forEach(cb => cb.checked = isChecked);
+        updateContactsBulkBar();
+    } else if (e.target && e.target.classList.contains('contact-checkbox')) {
+        updateContactsBulkBar();
+    }
+});
+
+// Helper to get array of selected contact IDs
+function getSelectedContactIds() {
+    const checkboxes = document.querySelectorAll('.contact-checkbox:checked');
+    return Array.from(checkboxes).map(cb => cb.getAttribute('data-id')).filter(Boolean);
+}
+
+// 1. Bulk Apply Stage
+const btnApplyBulkStage = document.getElementById('btnApplyBulkStage');
+if (btnApplyBulkStage) {
+    btnApplyBulkStage.onclick = () => {
+        const ids = getSelectedContactIds();
+        const newStage = document.getElementById('bulkStageSelect').value;
+        if (ids.length === 0) return showToast('Nenhum contato selecionado.', 'warning');
+        if (!newStage) return showToast('Selecione um estágio para aplicar.', 'warning');
+
+        const env = getEnv();
+        ids.forEach(id => {
+            const contact = env.contacts.find(c => c.id === id);
+            if (contact) {
+                contact.status = newStage;
+                if (!contact.timeline) contact.timeline = [];
+                contact.timeline.push({
+                    id: 'act_bulk_' + Date.now(),
+                    type: 'note',
+                    description: `Estágio alterado em massa para "${newStage}".`,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        });
+
+        saveState();
+        renderContacts();
+        if (typeof renderKanban === 'function') renderKanban();
+        showToast(`✅ Estágio atualizado em ${ids.length} contatos!`, 'success');
+        updateContactsBulkBar();
+    };
+}
+
+// 2. Bulk Apply Niche
+const btnApplyBulkNiche = document.getElementById('btnApplyBulkNiche');
+if (btnApplyBulkNiche) {
+    btnApplyBulkNiche.onclick = () => {
+        const ids = getSelectedContactIds();
+        const newNiche = document.getElementById('bulkNicheSelect').value;
+        if (ids.length === 0) return showToast('Nenhum contato selecionado.', 'warning');
+        if (!newNiche) return showToast('Selecione um nicho para aplicar.', 'warning');
+
+        const env = getEnv();
+        ids.forEach(id => {
+            const contact = env.contacts.find(c => c.id === id);
+            if (contact) {
+                contact.niche = newNiche;
+            }
+        });
+
+        saveState();
+        renderContacts();
+        showToast(`🏷️ Nicho "${newNiche}" aplicado em ${ids.length} contatos!`, 'success');
+        updateContactsBulkBar();
+    };
+}
+
+// 3. Bulk Apply Value
+const btnApplyBulkValue = document.getElementById('btnApplyBulkValue');
+if (btnApplyBulkValue) {
+    btnApplyBulkValue.onclick = () => {
+        const ids = getSelectedContactIds();
+        const valInput = document.getElementById('bulkValueInput');
+        const newValue = valInput ? parseFloat(valInput.value) : 0;
+        if (ids.length === 0) return showToast('Nenhum contato selecionado.', 'warning');
+        if (isNaN(newValue)) return showToast('Informe um valor numérico válido.', 'warning');
+
+        const env = getEnv();
+        ids.forEach(id => {
+            const contact = env.contacts.find(c => c.id === id);
+            if (contact) {
+                contact.value = newValue;
+            }
+        });
+
+        saveState();
+        renderContacts();
+        showToast(`💰 Valor R$ ${newValue.toFixed(2)} aplicado em ${ids.length} contatos!`, 'success');
+        updateContactsBulkBar();
+    };
+}
+
+// 4. Bulk Delete Contacts
+const btnApplyBulkDelete = document.getElementById('btnApplyBulkDelete');
+if (btnApplyBulkDelete) {
+    btnApplyBulkDelete.onclick = () => {
+        const ids = getSelectedContactIds();
+        if (ids.length === 0) return showToast('Nenhum contato selecionado.', 'warning');
+
+        if (confirm(`Tem certeza que deseja excluir ${ids.length} contatos selecionados?`)) {
+            const env = getEnv();
+            env.contacts = env.contacts.filter(c => !ids.includes(c.id));
+
+            saveState();
+            renderContacts();
+            if (typeof renderKanban === 'function') renderKanban();
+            showToast(`🗑️ ${ids.length} contatos excluídos!`, 'info');
+            updateContactsBulkBar();
+        }
+    };
+}
+
+// 5. Button: Direct Pull Agent Leads Button
+const btnPullAgentLeadsDirect = document.getElementById('btnPullAgentLeadsDirect');
+if (btnPullAgentLeadsDirect) {
+    btnPullAgentLeadsDirect.onclick = async () => {
+        btnPullAgentLeadsDirect.disabled = true;
+        showToast('🔄 Puxando leads do Agente Comercial...', 'info');
+
+        try {
+            const endpoint = typeof getApiUrl === 'function' ? getApiUrl('/api/sync-atendente-comercial') : '/api/sync-atendente-comercial';
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast(`🎉 ${data.message}`, 'success');
+                if (typeof loadState === 'function') await loadState();
+                renderContacts();
+                if (typeof renderKanban === 'function') renderKanban();
+                if (typeof renderDashboard === 'function') renderDashboard();
+            } else {
+                showToast(data.error || 'Erro ao sincronizar leads do Agente.', 'danger');
+            }
+        } catch (err) {
+            console.error('Pull Agent Leads Error:', err);
+            showToast('Erro de comunicação ao sincronizar leads.', 'danger');
+        } finally {
+            btnPullAgentLeadsDirect.disabled = false;
+        }
+    };
+}

@@ -51,6 +51,146 @@ app.post('/api/state', (req, res) => {
     }
 });
 
+// API: Pull all 100+ leads directly from Atendente Comercial local database
+app.post(['/api/sync-atendente-comercial', '/crm/api/sync-atendente-comercial'], (req, res) => {
+    try {
+        const atendentePaths = [
+            'C:/Users/Kamino/Documents/atendente comercial/data/db.json',
+            'C:/Users/Kamino/Documents/atendente comercial/data/db_seed.json',
+            path.join(DATA_DIR, 'atendente_db.json')
+        ];
+
+        let rawLeads = [];
+        atendentePaths.forEach(p => {
+            if (fs.existsSync(p)) {
+                try {
+                    const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+                    if (parsed.leads && Array.isArray(parsed.leads)) {
+                        rawLeads.push(...parsed.leads);
+                    }
+                } catch (e) {}
+            }
+        });
+
+        if (req.body && Array.isArray(req.body) && req.body.length > 0) {
+            rawLeads.push(...req.body);
+        }
+
+        if (rawLeads.length === 0) {
+            return res.status(400).json({ error: "Nenhum lead encontrado no banco de dados do Agente Comercial." });
+        }
+
+        let db = { environments: { webco: { contacts: [] } } };
+        if (fs.existsSync(DB_PATH)) {
+            try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')) || db; } catch (e) {}
+        }
+
+        if (!db.environments) db.environments = {};
+        if (!db.environments.webco) db.environments.webco = {};
+        if (!db.environments.webco.contacts) db.environments.webco.contacts = [];
+
+        const contacts = db.environments.webco.contacts;
+        let importedCount = 0;
+        let updatedCount = 0;
+
+        rawLeads.forEach(lead => {
+            const rawPhone = (lead.phone || lead.telefone || lead.whatsapp || '').trim();
+            const phoneDigits = rawPhone.replace(/\D/g, '');
+            const rawEmail = (lead.email || lead.e_mail || '').trim().toLowerCase();
+
+            // Extract Name & Company cleanly
+            let name = (lead.name || lead.company || lead.fullName || '').trim();
+            if (!name || name === 'Seu Nome' || name === 'Lead Agente') {
+                name = (lead.fullName || lead.company || 'Empresa Agente').split('|')[0].trim();
+            }
+            if (name.includes('|')) name = name.split('|')[0].trim();
+
+            let company = (lead.company || name).trim();
+            if (company === 'Seu Nome' || company === 'Lead Agente') company = name;
+            if (company.includes('|')) company = company.split('|')[0].trim();
+
+            // Extract Nicho
+            let nicho = (lead.nicho || lead.ramo || lead.categoria || '').trim();
+            if (!nicho || nicho === 'Todos' || nicho.toLowerCase().includes('graf') || nicho.toLowerCase().includes('gráf')) {
+                nicho = 'Gráfica';
+            }
+
+            // Status Map
+            const statusMap = {
+                'conversando': 'negotiating',
+                'interessado': 'proposal',
+                'qualificado': 'proposal',
+                'proposta': 'proposal',
+                'perdido': 'lost',
+                'falhou': 'lost',
+                'novo': 'lead',
+                'aguardando': 'contacted'
+            };
+            const targetStatus = statusMap[(lead.status || '').toLowerCase()] || 'contacted';
+
+            // Find existing contact
+            let existing = null;
+            if (rawEmail) existing = contacts.find(c => (c.email || '').toLowerCase() === rawEmail);
+            if (!existing && phoneDigits.length >= 8) existing = contacts.find(c => (c.phone || '').replace(/\D/g, '') === phoneDigits);
+            if (!existing && company && company !== 'Empresa Agente') existing = contacts.find(c => (c.company || '').toLowerCase() === company.toLowerCase());
+
+            if (existing) {
+                if (company && (!existing.company || existing.company === 'Lead Agente')) existing.company = company;
+                if (name && (!existing.name || existing.name === 'Lead Agente')) existing.name = name;
+                if (rawEmail && !existing.email) existing.email = rawEmail;
+                if (rawPhone && !existing.phone) existing.phone = rawPhone;
+                existing.niche = nicho;
+                existing.source = 'Agente Comercial';
+                if (!existing.timeline) existing.timeline = [];
+                existing.timeline.push({
+                    id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
+                    type: 'note',
+                    description: `🤖 Sincronização Agente Comercial: Lead encontrado no banco do Agente (${lead.status || 'Ativo'})`,
+                    timestamp: new Date().toISOString()
+                });
+                updatedCount++;
+            } else {
+                const newContact = {
+                    id: 'c_agente_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+                    name: name,
+                    company: company,
+                    email: rawEmail,
+                    phone: rawPhone ? (rawPhone.startsWith('55') ? rawPhone.replace(/^55/, '') : rawPhone) : '',
+                    niche: nicho,
+                    status: targetStatus,
+                    value: 400.00,
+                    notes: lead.gatilho || lead.lossReason || (lead.logs && lead.logs[0]) || 'Importado do Agente Comercial AI',
+                    source: 'Agente Comercial',
+                    createdAt: lead.createdAt || new Date().toISOString(),
+                    timeline: [
+                        {
+                            id: 'act_init_' + Date.now(),
+                            type: 'note',
+                            description: `🤖 Lead importado do Agente Comercial AI (${lead.status || 'Contatado'}).`,
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                };
+                contacts.push(newContact);
+                importedCount++;
+            }
+        });
+
+        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
+
+        res.json({
+            success: true,
+            message: `Busca no Agente Comercial concluída! ${importedCount} novos leads importados, ${updatedCount} atualizados. Total no CRM: ${contacts.length}`,
+            importedCount,
+            updatedCount,
+            totalContacts: contacts.length
+        });
+    } catch (err) {
+        console.error("Error in sync-atendente-comercial:", err);
+        res.status(500).json({ error: err.message || "Erro ao puxar leads do Agente Comercial." });
+    }
+});
+
 // API Webhook: Receive leads directly from Agente Comercial AI
 app.post(['/api/webhook/agente-comercial', '/api/agente-webhook', '/api/webhook-agente'], (req, res) => {
     try {
