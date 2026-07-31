@@ -578,6 +578,11 @@ async function init() {
     if (loggedIn === "true" && loggedEnv) {
         state.currentEnv = loggedEnv;
         ensureParanaEcoturismo();
+        // ⚠️ CRITICAL: Purge any legacy dummy 'Lead Agente' entries from browser cache
+        const currentData = getEnv();
+        if (currentData && currentData.contacts) {
+            currentData.contacts = currentData.contacts.filter(c => c.name !== 'Lead Agente' && c.company !== 'Lead Agente');
+        }
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("appContainer").classList.remove("hidden");
         document.getElementById("appContainer").classList.add("logged-in");
@@ -8745,6 +8750,11 @@ if (btnPullAgentLeadsDirect) {
             if (data.success) {
                 showToast(`🎉 ${data.message}`, 'success');
                 if (typeof loadState === 'function') await loadState();
+                const envData = getEnv();
+                if (envData && envData.contacts) {
+                    envData.contacts = envData.contacts.filter(c => c.name !== 'Lead Agente' && c.company !== 'Lead Agente');
+                }
+                localStorage.removeItem("nexus_crm_state");
                 renderContacts();
                 if (typeof renderKanban === 'function') renderKanban();
                 if (typeof renderDashboard === 'function') renderDashboard();
