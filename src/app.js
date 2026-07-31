@@ -1089,7 +1089,9 @@ function renderContacts() {
 
     let filtered = [...env.contacts];
 
-    if (filterStatus !== "all") {
+    if (filterStatus === "agente") {
+        filtered = filtered.filter(c => c.source === 'Agente Comercial' || (c.id && c.id.includes('agente')) || (c.notes && c.notes.toLowerCase().includes('agente')));
+    } else if (filterStatus !== "all") {
         filtered = filtered.filter(c => c.status === filterStatus);
     }
 
@@ -1114,6 +1116,8 @@ function renderContacts() {
         document.getElementById("contactsTable").classList.remove("hidden");
 
         filtered.forEach(c => {
+            const isAgente = c.source === 'Agente Comercial' || (c.id && c.id.includes('agente')) || (c.notes && c.notes.toLowerCase().includes('agente'));
+            const isAgenteBadge = isAgente ? `<span style="font-size:10px;background:rgba(79,70,229,0.1);color:#4F46E5;border:1px solid rgba(79,70,229,0.3);padding:1px 6px;border-radius:99px;font-weight:600;margin-left:4px;">🤖 Agente AI</span>` : '';
             const lastTimelineItem = c.timeline && c.timeline.length > 0 
                 ? c.timeline[c.timeline.length - 1] 
                 : null;
@@ -1126,9 +1130,9 @@ function renderContacts() {
             tr.innerHTML = `
                 <td>
                     <div class="col-contact-info">
-                        <div class="contact-avatar">${getInitials(c.name)}</div>
+                        <div class="contact-avatar" style="${isAgente ? 'background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;' : ''}">${getInitials(c.name)}</div>
                         <div class="contact-name-company">
-                            <span class="contact-name-val">${c.name}</span>
+                            <span class="contact-name-val">${c.name} ${isAgenteBadge}</span>
                             <span class="contact-company-sub">${c.company || "-"} <span style="font-size:10px;color:var(--text-muted)">(${c.niche || "Outro"})</span></span>
                         </div>
                     </div>
@@ -7969,7 +7973,113 @@ if (templateForm) {
     };
 }
 
-window.renderTemplates = renderTemplates;
+window.renderDocuments = renderDocuments;
+
+// ==========================================
+// AGENTE COMERCIAL INTEGRATION HANDLERS
+// ==========================================
+const btnOpenAgenteSync = document.getElementById('btnOpenAgenteSync');
+if (btnOpenAgenteSync) {
+    btnOpenAgenteSync.onclick = () => {
+        document.getElementById('agenteSyncModal').classList.add('active');
+    };
+}
+
+const btnCloseAgenteSyncModal = document.getElementById('btnCloseAgenteSyncModal');
+const btnCancelAgenteSyncModal = document.getElementById('btnCancelAgenteSyncModal');
+const closeAgenteModal = () => document.getElementById('agenteSyncModal').classList.remove('active');
+if (btnCloseAgenteSyncModal) btnCloseAgenteSyncModal.onclick = closeAgenteModal;
+if (btnCancelAgenteSyncModal) btnCancelAgenteSyncModal.onclick = closeAgenteModal;
+
+const btnCopyAgenteWebhook = document.getElementById('btnCopyAgenteWebhook');
+if (btnCopyAgenteWebhook) {
+    btnCopyAgenteWebhook.onclick = () => {
+        const urlInput = document.getElementById('agenteWebhookUrl');
+        if (urlInput) {
+            navigator.clipboard.writeText(urlInput.value).then(() => {
+                showToast('✅ URL do Webhook copiada com sucesso!', 'success');
+            });
+        }
+    };
+}
+
+const btnSampleAgenteLeads = document.getElementById('btnSampleAgenteLeads');
+if (btnSampleAgenteLeads) {
+    btnSampleAgenteLeads.onclick = () => {
+        const payloadInput = document.getElementById('agentePayloadInput');
+        if (payloadInput) {
+            payloadInput.value = JSON.stringify([
+                {
+                    "nome": "Rodrigo Mendes",
+                    "empresa": "Mendes Logística & Transportes",
+                    "email": "rodrigo.mendes@mendeslog.com.br",
+                    "telefone": "(41) 98711-2233",
+                    "nicho": "Serviços B2B",
+                    "status": "contacted",
+                    "valor": 3800.00,
+                    "notas": "Contatado pelo Agente Comercial via WhatsApp. Demonstrou interesse em Criação de Site + Google Ads."
+                },
+                {
+                    "nome": "Fernanda Lima",
+                    "empresa": "Estética Premium Curitiba",
+                    "email": "contato@esteticapremium.com.br",
+                    "telefone": "(41) 99655-4433",
+                    "nicho": "Saúde / Estética",
+                    "status": "proposal",
+                    "valor": 2900.00,
+                    "notas": "Contatada pelo Agente Comercial. Solicitou envio de proposta comercial e portfólio por e-mail."
+                }
+            ], null, 2);
+            showToast('✨ Exemplo de leads carregado!', 'info');
+        }
+    };
+}
+
+const btnExecuteAgenteSync = document.getElementById('btnExecuteAgenteSync');
+if (btnExecuteAgenteSync) {
+    btnExecuteAgenteSync.onclick = async () => {
+        const payloadInput = document.getElementById('agentePayloadInput');
+        const text = payloadInput ? payloadInput.value.trim() : '';
+
+        if (!text) {
+            showToast('Por favor, informe os dados dos leads em formato JSON ou utilize a URL do Webhook.', 'warning');
+            return;
+        }
+
+        let parsedData = null;
+        try {
+            parsedData = JSON.parse(text);
+        } catch (e) {
+            showToast('O formato informado não é um JSON válido. Verifique a sintaxe.', 'danger');
+            return;
+        }
+
+        try {
+            const endpoint = typeof getApiUrl === 'function' ? getApiUrl('/api/webhook/agente-comercial') : '/api/webhook/agente-comercial';
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(parsedData)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message || 'Leads do Agente Comercial sincronizados com sucesso!', 'success');
+                closeAgenteModal();
+                if (typeof loadState === 'function') {
+                    await loadState();
+                }
+                renderContacts();
+                if (typeof renderKanban === 'function') renderKanban();
+            } else {
+                showToast(data.error || 'Erro ao sincronizar leads.', 'danger');
+            }
+        } catch (err) {
+            console.error('Agente Sync Error:', err);
+            showToast('Falha na comunicação com o servidor.', 'danger');
+        }
+    };
+}
 
 // ==========================================
 // DOCUMENT REPOSITORY MODULE

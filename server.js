@@ -203,6 +203,104 @@ app.post('/api/send-email', async (req, res) => {
     }
 });
 
+// API Webhook: Receive leads directly from Agente Comercial AI
+app.post('/api/webhook/agente-comercial', (req, res) => {
+    try {
+        let leads = Array.isArray(req.body) ? req.body : [req.body];
+        if (!leads || leads.length === 0) {
+            return res.status(400).json({ error: "Nenhum lead fornecido no payload." });
+        }
+
+        let db = { environments: { webco: { contacts: [] } } };
+        if (fs.existsSync(DB_PATH)) {
+            try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')) || db; } catch (e) {}
+        }
+
+        if (!db.environments) db.environments = {};
+        if (!db.environments.webco) db.environments.webco = {};
+        if (!db.environments.webco.contacts) db.environments.webco.contacts = [];
+
+        const contacts = db.environments.webco.contacts;
+        let importedCount = 0;
+        let updatedCount = 0;
+
+        leads.forEach(lead => {
+            const email = (lead.email || lead.e_mail || '').trim().toLowerCase();
+            const phone = (lead.phone || lead.telefone || lead.whatsapp || '').trim();
+            const company = (lead.company || lead.empresa || '').trim();
+            const name = (lead.name || lead.nome || lead.contato || company || 'Lead Agente').trim();
+
+            let existing = null;
+            if (email) existing = contacts.find(c => (c.email || '').toLowerCase() === email);
+            if (!existing && phone) existing = contacts.find(c => (c.phone || '').replace(/\D/g, '') === phone.replace(/\D/g, '') && phone.length > 5);
+
+            const statusMap = {
+                'contacted': 'contacted',
+                'contatado': 'contacted',
+                'lead': 'lead',
+                'respondeu': 'proposal',
+                'proposal': 'proposal',
+                'proposta': 'proposal',
+                'negotiating': 'negotiating',
+                'won': 'won',
+                'ganho': 'won'
+            };
+
+            const targetStatus = statusMap[(lead.status || '').toLowerCase()] || 'contacted';
+
+            if (existing) {
+                if (email && !existing.email) existing.email = email;
+                if (phone && !existing.phone) existing.phone = phone;
+                existing.source = 'Agente Comercial';
+                if (!existing.timeline) existing.timeline = [];
+                existing.timeline.push({
+                    id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
+                    type: 'note',
+                    description: `🤖 Atualização Agente Comercial: Lead abordado/qualificado (${lead.notes || lead.observacoes || 'Contato realizado'})`,
+                    timestamp: new Date().toISOString()
+                });
+                updatedCount++;
+            } else {
+                const newContact = {
+                    id: 'c_agente_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+                    name: name,
+                    company: company || name,
+                    email: email,
+                    phone: phone,
+                    niche: lead.niche || lead.ramo || lead.nicho || 'Serviços B2B',
+                    status: targetStatus,
+                    value: Number(lead.value || lead.valor) || 2500.00,
+                    notes: lead.notes || lead.observacoes || 'Contatado e qualificado pelo Agente Comercial AI',
+                    source: 'Agente Comercial',
+                    createdAt: new Date().toISOString(),
+                    timeline: [
+                        {
+                            id: 'act_init_' + Date.now(),
+                            type: 'note',
+                            description: '🤖 Lead cadastrado e contatado pelo Agente Comercial AI.',
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                };
+                contacts.push(newContact);
+                importedCount++;
+            }
+        });
+
+        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
+
+        res.json({
+            success: true,
+            message: `Sincronização com o Agente Comercial concluída! ${importedCount} novos leads criados, ${updatedCount} atualizados.`,
+            importedCount,
+            updatedCount
+        });
+    } catch (err) {
+        console.error("Error in webhook agente-comercial:", err);
+        res.status(500).json({ error: err.message || "Erro ao sincronizar com Agente Comercial." });
+    }
+});
+
 // Fallback to index.html for SPA routing
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
