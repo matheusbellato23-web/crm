@@ -1836,15 +1836,80 @@
                 <div class="view-header flex-header">
                     <div>
                         <h1 class="view-title">Repositório de Documentos</h1>
-                        <p class="view-subtitle">Centralize e compartilhe propostas comerciais, portfólios, modelos de contrato e arquivos PDF da WEBCO.</p>
+                        <p class="view-subtitle">Centralize propostas comerciais, portfólios, contratos e arquivos PDF com envio direto por e-mail e WhatsApp.</p>
                     </div>
-                    <button class="btn btn-primary" id="btnUploadDocument" style="display:flex;align-items:center;gap:6px;">
-                        <i data-lucide="upload-cloud" style="width:15px;height:15px;"></i>
-                        <span>Adicionar Documento</span>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <button class="btn btn-primary" id="btnUploadDocument" style="display:flex;align-items:center;gap:6px;">
+                            <i data-lucide="upload-cloud" style="width:15px;height:15px;"></i>
+                            <span>Adicionar Documento</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Summary Cards -->
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;">
+                    <div class="kpi-card" style="padding:16px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">Total de Arquivos</span>
+                            <div style="width:32px;height:32px;border-radius:8px;background:var(--color-primary-glow);display:flex;align-items:center;justify-content:center;color:var(--color-primary);">
+                                <i data-lucide="folder-archive" style="width:16px;height:16px;"></i>
+                            </div>
+                        </div>
+                        <div style="font-size:24px;font-weight:700;color:var(--text-primary);margin-top:8px;line-height:1;" id="docKpiTotalCount">0</div>
+                        <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block;" id="docKpiTotalSize">0 KB armazenados</span>
+                    </div>
+
+                    <div class="kpi-card" style="padding:16px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">Propostas Comerciais</span>
+                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(79,70,229,0.1);display:flex;align-items:center;justify-content:center;color:#4F46E5;">
+                                <i data-lucide="file-spreadsheet" style="width:16px;height:16px;"></i>
+                            </div>
+                        </div>
+                        <div style="font-size:24px;font-weight:700;color:var(--text-primary);margin-top:8px;line-height:1;" id="docKpiPropostasCount">0</div>
+                        <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block;">Apresentações & Orçamentos</span>
+                    </div>
+
+                    <div class="kpi-card" style="padding:16px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">Portfólios & Cases</span>
+                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(6,182,212,0.1);display:flex;align-items:center;justify-content:center;color:#0891b2;">
+                                <i data-lucide="palette" style="width:16px;height:16px;"></i>
+                            </div>
+                        </div>
+                        <div style="font-size:24px;font-weight:700;color:var(--text-primary);margin-top:8px;line-height:1;" id="docKpiPortfoliosCount">0</div>
+                        <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block;">Cases de Sucesso</span>
+                    </div>
+
+                    <div class="kpi-card" style="padding:16px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">Contratos & Briefings</span>
+                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,119,6,0.1);display:flex;align-items:center;justify-content:center;color:#d97706;">
+                                <i data-lucide="file-check-2" style="width:16px;height:16px;"></i>
+                            </div>
+                        </div>
+                        <div style="font-size:24px;font-weight:700;color:var(--text-primary);margin-top:8px;line-height:1;" id="docKpiContratosCount">0</div>
+                        <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block;">Documentos Jurídicos</span>
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Quick Zone Banner -->
+                <div id="documentDropZone" style="border:2px dashed var(--border-color);border-radius:var(--radius-md);padding:14px 20px;margin-bottom:20px;background:var(--bg-card);display:flex;align-items:center;justify-content:space-between;gap:16px;transition:all var(--transition-fast);">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div style="width:40px;height:40px;border-radius:50%;background:var(--color-primary-glow);display:flex;align-items:center;justify-content:center;color:var(--color-primary);flex-shrink:0;">
+                            <i data-lucide="upload" style="width:20px;height:20px;"></i>
+                        </div>
+                        <div>
+                            <span style="font-size:13px;font-weight:600;color:var(--text-primary);display:block;">Arraste e solte seus arquivos PDF ou imagens aqui</span>
+                            <span style="font-size:11.5px;color:var(--text-muted);">Envio rápido para o repositório da agência. Suporta PDF, DOCX, PNG, JPG.</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('btnUploadDocument').click()">
+                        <i data-lucide="plus" style="width:13px;height:13px;"></i> Selecionar Arquivo
                     </button>
                 </div>
 
-                <!-- Category Filters & Search -->
+                <!-- Controls: Filter Tabs, View Switcher & Search -->
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:14px;flex-wrap:wrap;">
                     <ul class="tasks-filters" id="documentCategoryFilters" style="list-style:none;padding:0;display:flex;gap:8px;margin:0;flex-wrap:wrap;">
                         <li class="active" data-doc-category="all">Todos os Arquivos</li>
@@ -1853,15 +1918,46 @@
                         <li data-doc-category="contrato">📑 Contratos & Briefings</li>
                         <li data-doc-category="outros">📂 Outros PDFs</li>
                     </ul>
-                    <div style="position:relative;width:260px;">
-                        <input type="text" id="documentSearchInput" class="form-control" placeholder="Buscar documento..." style="padding-left:32px;height:36px;font-size:12.5px;">
-                        <i data-lucide="search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);"></i>
+
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <!-- Search Box -->
+                        <div style="position:relative;width:240px;">
+                            <input type="text" id="documentSearchInput" class="form-control" placeholder="Buscar por título, tag ou arquivo..." style="padding-left:32px;height:36px;font-size:12.5px;">
+                            <i data-lucide="search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);"></i>
+                        </div>
+
+                        <!-- Layout Toggle Pills (Grid vs List) -->
+                        <div class="period-filter-group" id="documentLayoutToggle" style="margin:0;">
+                            <button class="period-btn active" data-doc-layout="grid" title="Visualização em Grade"><i data-lucide="grid" style="width:13px;height:13px;"></i> Grade</button>
+                            <button class="period-btn" data-doc-layout="table" title="Visualização em Lista/Tabela"><i data-lucide="list" style="width:13px;height:13px;"></i> Tabela</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Documents Grid -->
+                <!-- Documents Grid View -->
                 <div id="documentsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;">
                     <!-- Dynamic Document Cards -->
+                </div>
+
+                <!-- Documents Table View (Hidden by default) -->
+                <div id="documentsTableWrapper" class="table-card hidden" style="margin-top:0;">
+                    <div class="table-container">
+                        <table class="data-table" id="documentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Documento / Título</th>
+                                    <th>Categoria</th>
+                                    <th>Arquivo / Formato</th>
+                                    <th>Tamanho</th>
+                                    <th>Data de Adição</th>
+                                    <th style="text-align:right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="documentsTableBody">
+                                <!-- Dynamic Document Rows -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Empty State -->

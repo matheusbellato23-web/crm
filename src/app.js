@@ -7989,8 +7989,16 @@ const DOC_CATEGORY_COLORS = {
 };
 
 let docActiveCategory = 'all';
+let docActiveLayout = 'grid'; // 'grid' or 'table'
 let docSearchQuery = '';
 let currentDocFile = null;
+
+function formatFileSize(bytes) {
+    if (!bytes || bytes === 0) return '500 KB';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
 
 function getDocuments() {
     const env = getEnv();
@@ -7998,9 +8006,52 @@ function getDocuments() {
     return env.documents;
 }
 
+function updateDocumentKpis() {
+    const documents = getDocuments();
+    const totalCount = documents.length;
+    const totalBytes = documents.reduce((sum, d) => sum + (d.fileSize || 500000), 0);
+    const propostasCount = documents.filter(d => d.category === 'proposta').length;
+    const portfoliosCount = documents.filter(d => d.category === 'portfolio').length;
+    const contratosCount = documents.filter(d => d.category === 'contrato').length;
+
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+    setEl('docKpiTotalCount', totalCount);
+    setEl('docKpiTotalSize', `${formatFileSize(totalBytes)} em uso`);
+    setEl('docKpiPropostasCount', propostasCount);
+    setEl('docKpiPortfoliosCount', portfoliosCount);
+    setEl('docKpiContratosCount', contratosCount);
+}
+
+function sendDocumentToLead(doc) {
+    if (typeof openSendTemplateModal === 'function') {
+        openSendTemplateModal(null, null);
+        
+        const subjInput = document.getElementById('sendTemplateSubject');
+        const bodyInput = document.getElementById('sendTemplateBody');
+        if (subjInput) subjInput.value = `Documento WEBCO: ${doc.title}`;
+        if (bodyInput) {
+            bodyInput.value = `Olá! Segue o documento "${doc.title}".\n\n${doc.description ? doc.description + '\n\n' : ''}Qualquer dúvida estamos à disposição!\n\nMatheus | WEBCO Agency`;
+        }
+
+        if (doc.fileData) {
+            currentTemplateAttachments = [{
+                name: doc.fileName || `${doc.title}.pdf`,
+                size: doc.fileSize || 0,
+                type: doc.fileType || 'application/pdf',
+                data: doc.fileData
+            }];
+        }
+        showToast(`✉️ Documento "${doc.title}" selecionado para envio!`, 'info');
+    }
+}
+
 function renderDocuments() {
+    updateDocumentKpis();
+
     const documents = getDocuments();
     const grid = document.getElementById('documentsGrid');
+    const tableWrapper = document.getElementById('documentsTableWrapper');
+    const tableBody = document.getElementById('documentsTableBody');
     const emptyState = document.getElementById('documentsEmptyState');
     if (!grid) return;
 
@@ -8016,61 +8067,130 @@ function renderDocuments() {
         );
     }
 
-    grid.innerHTML = '';
-
     if (filtered.length === 0) {
         emptyState?.classList.remove('hidden');
+        grid.innerHTML = '';
+        if (tableBody) tableBody.innerHTML = '';
+        if (tableWrapper) tableWrapper.classList.add('hidden');
         return;
     }
 
     emptyState?.classList.add('hidden');
 
-    filtered.forEach(doc => {
-        const colors = DOC_CATEGORY_COLORS[doc.category] || DOC_CATEGORY_COLORS.outros;
-        const tags = (doc.tags || '').split(',').map(t => t.trim()).filter(Boolean);
-        const tagsHtml = tags.map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('');
-        
-        const isPdf = (doc.fileType || '').includes('pdf') || (doc.fileName || '').toLowerCase().endsWith('.pdf');
-        const iconName = isPdf ? 'file-text' : (doc.fileType || '').includes('image') ? 'image' : 'file';
+    if (docActiveLayout === 'grid') {
+        grid.classList.remove('hidden');
+        tableWrapper?.classList.add('hidden');
+        grid.innerHTML = '';
 
-        const card = document.createElement('div');
-        card.style.cssText = `background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-fast),transform var(--transition-fast);cursor:pointer;position:relative;`;
-        card.innerHTML = `
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-                <div style="flex:1;min-width:0;">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
-                        <span style="font-size:11px;font-weight:600;background:${colors.bg};color:${colors.text};border:1px solid ${colors.border};padding:2px 9px;border-radius:99px;white-space:nowrap;">${DOC_CATEGORY_LABELS[doc.category] || doc.category}</span>
-                        ${doc.fileName ? `<span style="font-size:11px;color:var(--text-muted);display:inline-flex;align-items:center;gap:3px;"><i data-lucide="${iconName}" style="width:12px;height:12px;color:var(--color-primary);"></i> ${doc.fileName}</span>` : ''}
+        filtered.forEach(doc => {
+            const colors = DOC_CATEGORY_COLORS[doc.category] || DOC_CATEGORY_COLORS.outros;
+            const tags = (doc.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+            const tagsHtml = tags.map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('');
+            
+            const isPdf = (doc.fileType || '').includes('pdf') || (doc.fileName || '').toLowerCase().endsWith('.pdf');
+            const fileExt = (doc.fileName || '').split('.').pop().toUpperCase() || (isPdf ? 'PDF' : 'DOC');
+            const iconName = isPdf ? 'file-text' : (doc.fileType || '').includes('image') ? 'image' : 'file';
+
+            const card = document.createElement('div');
+            card.style.cssText = `background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm);transition:all var(--transition-fast);cursor:pointer;position:relative;`;
+            card.innerHTML = `
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                    <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+                        <div style="width:38px;height:38px;border-radius:var(--radius-sm);background:${colors.bg};border:1px solid ${colors.border};color:${colors.text};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;">
+                            ${fileExt}
+                        </div>
+                        <div style="min-width:0;flex:1;">
+                            <span style="font-size:10.5px;font-weight:600;color:${colors.text};text-transform:uppercase;letter-spacing:.04em;display:block;">${DOC_CATEGORY_LABELS[doc.category] || doc.category}</span>
+                            <h3 style="font-size:14px;font-weight:700;color:var(--text-primary);margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${doc.title}">${doc.title}</h3>
+                        </div>
                     </div>
-                    <h3 style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.title}</h3>
+                    <div style="display:flex;gap:4px;flex-shrink:0;">
+                        <button class="btn-icon-only btn-edit-doc" data-id="${doc.id}" title="Editar documento" style="color:var(--text-secondary);"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>
+                        <button class="btn-icon-only btn-delete-doc" data-id="${doc.id}" title="Excluir documento" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
+                    </div>
                 </div>
-                <div style="display:flex;gap:6px;flex-shrink:0;">
-                    <button class="btn-icon-only btn-edit-doc" data-id="${doc.id}" title="Editar documento" style="color:var(--text-secondary);"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>
-                    <button class="btn-icon-only btn-delete-doc" data-id="${doc.id}" title="Excluir documento" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
+                
+                ${doc.description ? `<p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin:0;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${doc.description}</p>` : ''}
+                
+                <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text-muted);border-top:1px dashed var(--border-color);padding-top:8px;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="${iconName}" style="width:12px;height:12px;color:var(--color-primary);"></i> ${doc.fileName || 'documento.pdf'}</span>
+                    <span>${formatFileSize(doc.fileSize)}</span>
                 </div>
-            </div>
-            ${doc.description ? `<p style="font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin:0;white-space:pre-wrap;">${doc.description}</p>` : ''}
-            ${tagsHtml ? `<div style="display:flex;gap:5px;flex-wrap:wrap;">${tagsHtml}</div>` : ''}
-            <div style="display:flex;gap:8px;border-top:1px solid var(--border-color);padding-top:10px;margin-top:auto;">
-                <button class="btn btn-primary btn-xs btn-preview-doc" data-id="${doc.id}" style="font-size:11.5px;padding:5px 12px;flex:1;">
-                    <i data-lucide="eye" style="width:11px;height:11px;"></i> Visualizar
-                </button>
-                <button class="btn btn-secondary btn-xs btn-download-doc" data-id="${doc.id}" style="font-size:11.5px;padding:5px 12px;">
-                    <i data-lucide="download" style="width:11px;height:11px;"></i> Baixar
-                </button>
-            </div>
-        `;
 
-        card.addEventListener('mouseenter', () => { card.style.boxShadow = 'var(--shadow-md)'; card.style.transform = 'translateY(-2px)'; });
-        card.addEventListener('mouseleave', () => { card.style.boxShadow = 'var(--shadow-sm)'; card.style.transform = ''; });
+                ${tagsHtml ? `<div style="display:flex;gap:5px;flex-wrap:wrap;">${tagsHtml}</div>` : ''}
+                
+                <div style="display:flex;gap:6px;border-top:1px solid var(--border-color);padding-top:10px;margin-top:auto;">
+                    <button class="btn btn-primary btn-xs btn-preview-doc" data-id="${doc.id}" style="font-size:11.5px;padding:5px 10px;flex:1;">
+                        <i data-lucide="eye" style="width:11px;height:11px;"></i> Visualizar
+                    </button>
+                    <button class="btn btn-secondary btn-xs btn-send-doc-lead" data-id="${doc.id}" style="font-size:11.5px;padding:5px 10px;" title="Enviar por E-mail ao Lead">
+                        <i data-lucide="mail-plus" style="width:11px;height:11px;color:var(--color-primary);"></i> Enviar
+                    </button>
+                    <button class="btn btn-secondary btn-xs btn-download-doc" data-id="${doc.id}" style="font-size:11.5px;padding:5px 10px;" title="Baixar Arquivo">
+                        <i data-lucide="download" style="width:11px;height:11px;"></i> Baixar
+                    </button>
+                </div>
+            `;
 
-        card.querySelector('.btn-edit-doc').onclick = (e) => { e.stopPropagation(); openDocumentModal(doc.id); };
-        card.querySelector('.btn-delete-doc').onclick = (e) => { e.stopPropagation(); deleteDocument(doc.id); };
-        card.querySelector('.btn-preview-doc').onclick = (e) => { e.stopPropagation(); previewDocument(doc); };
-        card.querySelector('.btn-download-doc').onclick = (e) => { e.stopPropagation(); downloadDocumentFile(doc); };
+            card.addEventListener('mouseenter', () => { card.style.boxShadow = 'var(--shadow-md)'; card.style.transform = 'translateY(-2px)'; });
+            card.addEventListener('mouseleave', () => { card.style.boxShadow = 'var(--shadow-sm)'; card.style.transform = ''; });
 
-        grid.appendChild(card);
-    });
+            card.querySelector('.btn-edit-doc').onclick = (e) => { e.stopPropagation(); openDocumentModal(doc.id); };
+            card.querySelector('.btn-delete-doc').onclick = (e) => { e.stopPropagation(); deleteDocument(doc.id); };
+            card.querySelector('.btn-preview-doc').onclick = (e) => { e.stopPropagation(); previewDocument(doc); };
+            card.querySelector('.btn-send-doc-lead').onclick = (e) => { e.stopPropagation(); sendDocumentToLead(doc); };
+            card.querySelector('.btn-download-doc').onclick = (e) => { e.stopPropagation(); downloadDocumentFile(doc); };
+
+            grid.appendChild(card);
+        });
+    } else {
+        grid.classList.add('hidden');
+        tableWrapper?.classList.remove('hidden');
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            filtered.forEach(doc => {
+                const colors = DOC_CATEGORY_COLORS[doc.category] || DOC_CATEGORY_COLORS.outros;
+                const isPdf = (doc.fileType || '').includes('pdf') || (doc.fileName || '').toLowerCase().endsWith('.pdf');
+                const fileExt = (doc.fileName || '').split('.').pop().toUpperCase() || (isPdf ? 'PDF' : 'DOC');
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div style="width:30px;height:30px;border-radius:4px;background:${colors.bg};color:${colors.text};border:1px solid ${colors.border};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;">
+                                ${fileExt}
+                            </div>
+                            <div>
+                                <strong style="font-size:13px;color:var(--text-primary);">${doc.title}</strong>
+                                ${doc.description ? `<small style="font-size:11px;color:var(--text-muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;">${doc.description}</small>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td><span style="font-size:11px;font-weight:600;background:${colors.bg};color:${colors.text};border:1px solid ${colors.border};padding:2px 8px;border-radius:99px;">${DOC_CATEGORY_LABELS[doc.category] || doc.category}</span></td>
+                    <td><span style="font-size:12px;color:var(--text-secondary);">${doc.fileName || '-'}</span></td>
+                    <td><span style="font-size:12px;color:var(--text-muted);">${formatFileSize(doc.fileSize)}</span></td>
+                    <td><span style="font-size:12px;color:var(--text-muted);">${doc.createdAt ? formatDate(doc.createdAt) : '-'}</span></td>
+                    <td style="text-align:right;">
+                        <div style="display:flex;gap:6px;justify-content:flex-end;">
+                            <button class="btn-icon-only btn-preview-doc" title="Visualizar Documento" style="color:var(--color-primary);"><i data-lucide="eye" style="width:14px;height:14px;"></i></button>
+                            <button class="btn-icon-only btn-send-doc-lead" title="Enviar E-mail ao Lead" style="color:#10b981;"><i data-lucide="mail-plus" style="width:14px;height:14px;"></i></button>
+                            <button class="btn-icon-only btn-download-doc" title="Baixar Arquivo" style="color:var(--text-secondary);"><i data-lucide="download" style="width:14px;height:14px;"></i></button>
+                            <button class="btn-icon-only btn-edit-doc" title="Editar" style="color:var(--text-secondary);"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                            <button class="btn-icon-only btn-delete-doc" title="Excluir" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                        </div>
+                    </td>
+                `;
+
+                tr.querySelector('.btn-preview-doc').onclick = () => previewDocument(doc);
+                tr.querySelector('.btn-send-doc-lead').onclick = () => sendDocumentToLead(doc);
+                tr.querySelector('.btn-download-doc').onclick = () => downloadDocumentFile(doc);
+                tr.querySelector('.btn-edit-doc').onclick = () => openDocumentModal(doc.id);
+                tr.querySelector('.btn-delete-doc').onclick = () => deleteDocument(doc.id);
+
+                tableBody.appendChild(tr);
+            });
+        }
+    }
 
     safeCreateIcons();
 }
@@ -8124,7 +8244,6 @@ function previewDocument(doc) {
     if (doc.fileData) {
         frame.src = doc.fileData;
     } else {
-        // Fallback HTML preview for default template documents
         const htmlContent = `
             <!DOCTYPE html>
             <html>
@@ -8200,6 +8319,62 @@ function downloadDocumentFile(doc) {
         showToast(`⬇️ Download de "${doc.title}" concluído!`, 'success');
     }
 }
+
+// Setup Drag & Drop Zone
+const dropZone = document.getElementById('documentDropZone');
+if (dropZone) {
+    ['dragenter', 'dragover'].forEach(evtName => {
+        dropZone.addEventListener(evtName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.style.borderColor = 'var(--color-primary)';
+            dropZone.style.background = 'var(--color-primary-glow)';
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(evtName => {
+        dropZone.addEventListener(evtName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.style.borderColor = 'var(--border-color)';
+            dropZone.style.background = 'var(--bg-card)';
+        });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = Array.from(e.dataTransfer.files);
+        if (files.length > 0) {
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                currentDocFile = {
+                    fileName: file.name,
+                    fileSize: file.size,
+                    fileType: file.type,
+                    fileData: evt.target.result
+                };
+                openDocumentModal();
+                const titleInput = document.getElementById('documentFormTitle');
+                if (titleInput && !titleInput.value) {
+                    titleInput.value = file.name.replace(/\.[^/.]+$/, "");
+                }
+                showToast(`📄 Arquivo "${file.name}" carregado! Preencha as informações para salvar.`, 'info');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// Layout Switcher listeners
+const layoutToggleBtns = document.querySelectorAll('#documentLayoutToggle .period-btn');
+layoutToggleBtns.forEach(btn => {
+    btn.onclick = () => {
+        layoutToggleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        docActiveLayout = btn.getAttribute('data-doc-layout') || 'grid';
+        renderDocuments();
+    };
+});
 
 // Wire Upload Button
 const btnUploadDoc = document.getElementById('btnUploadDocument');
