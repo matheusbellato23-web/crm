@@ -17,10 +17,10 @@ const CONFIG_PATH = path.join(DATA_DIR, 'smtp_config.json');
 
 app.use(express.json({ limit: '50mb' }));
 
-// Middleware to normalize /crm/api routes to /api
+// Middleware to normalize /crm routes to root routes
 app.use((req, res, next) => {
-    if (req.url.startsWith('/crm/api')) {
-        req.url = req.url.replace('/crm/api', '/api');
+    if (req.url.startsWith('/crm')) {
+        req.url = req.url.replace(/^\/crm/, '') || '/';
     }
     next();
 });
