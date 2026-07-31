@@ -455,19 +455,32 @@ app.post('/api/send-email', async (req, res) => {
             html: html || (text ? text.replace(/\n/g, '<br>') : '')
         };
 
+        if (!mailOptions.attachments) mailOptions.attachments = [];
+        
         if (attachments && Array.isArray(attachments) && attachments.length > 0) {
-            mailOptions.attachments = attachments.map(att => {
+            attachments.forEach(att => {
                 if (att.data && att.data.includes(';base64,')) {
                     const base64Data = att.data.split(';base64,').pop();
-                    return {
+                    mailOptions.attachments.push({
                         filename: att.name,
                         content: Buffer.from(base64Data, 'base64')
-                    };
+                    });
+                } else if (att.data) {
+                    mailOptions.attachments.push({
+                        filename: att.name,
+                        path: att.data
+                    });
                 }
-                return {
-                    filename: att.name,
-                    path: att.data
-                };
+            });
+        }
+
+        // Attach WEBCO Agency inline logo if CID logo-webco is referenced
+        const logoPath = path.join(__dirname, 'dist', 'logo-webco.png');
+        if (fs.existsSync(logoPath) && mailOptions.html && mailOptions.html.includes('logo-webco')) {
+            mailOptions.attachments.push({
+                filename: 'logo-webco.png',
+                path: logoPath,
+                cid: 'logo-webco'
             });
         }
 
