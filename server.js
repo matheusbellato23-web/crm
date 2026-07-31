@@ -25,9 +25,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, 'dist')));
-
 // API: Get CRM state
 app.get('/api/state', (req, res) => {
     if (fs.existsSync(DB_PATH)) {
@@ -300,6 +297,9 @@ app.post('/api/send-email', async (req, res) => {
         res.status(500).json({ error: err.message || "Erro ao disparar e-mail via servidor Hostinger." });
     }
 });
+
+// Serve static files from the dist directory
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Fallback to index.html for SPA routing
 app.get('*', (req, res) => {
