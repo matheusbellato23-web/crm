@@ -4634,7 +4634,7 @@ function renderContacts() {
 
     // Apply Search Input (Normalized accent-insensitive)
     if (searchVal) {
-        const norm = (s) => (s || '').toString().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+        const norm = (s) => (s || '').toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const query = norm(searchVal);
 
         filtered = filtered.filter(c => 
@@ -4661,21 +4661,36 @@ function renderContacts() {
     });
 
     const tbody = document.getElementById("contactsTableBody");
+    const cardsGrid = document.getElementById("contactsCardsGrid");
+    const tableCard = document.getElementById("contactsTableCard");
     const emptyState = document.getElementById("contactsEmptyState");
-    const tableEl = document.getElementById("contactsTable");
     const paginationContainer = document.getElementById("contactsPaginationContainer");
+
     if (tbody) tbody.innerHTML = "";
+    if (cardsGrid) cardsGrid.innerHTML = "";
 
     if (filtered.length === 0) {
         if (emptyState) emptyState.classList.remove("hidden");
-        if (tableEl) tableEl.classList.add("hidden");
+        if (tableCard) tableCard.classList.add("hidden");
+        if (cardsGrid) cardsGrid.classList.add("hidden");
         if (paginationContainer) paginationContainer.style.display = "none";
         return;
     }
 
     if (emptyState) emptyState.classList.add("hidden");
-    if (tableEl) tableEl.classList.remove("hidden");
     if (paginationContainer) paginationContainer.style.display = "flex";
+
+    // Determine layout mode (auto detects screen width <= 768px for cards)
+    const isMobileScreen = window.innerWidth <= 768;
+    const isCardsView = contactsTableState.viewMode === 'cards' || (contactsTableState.viewMode === 'auto' && isMobileScreen);
+
+    if (isCardsView) {
+        if (cardsGrid) cardsGrid.classList.remove("hidden");
+        if (tableCard) tableCard.classList.add("hidden");
+    } else {
+        if (cardsGrid) cardsGrid.classList.add("hidden");
+        if (tableCard) tableCard.classList.remove("hidden");
+    }
 
     // Pagination calculations
     const totalItems = filtered.length;
@@ -4753,10 +4768,49 @@ function renderContacts() {
         pagButtons.appendChild(btnNext);
     }
 
-    // Render Table Rows
+    // Helper event binder for rows and cards
+    const bindRowActions = (element, c) => {
+        const statusSelect = element.querySelector(".select-inline-status");
+        if (statusSelect) {
+            statusSelect.onchange = (e) => {
+                const newStatus = e.target.value;
+                const prevStatus = c.status;
+                c.status = newStatus;
+                
+                if (!c.timeline) c.timeline = [];
+                c.timeline.push({
+                    id: "act_" + Date.now(),
+                    type: "note",
+                    description: `Estágio atualizado na listagem para: ${translateStatus(newStatus)}`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                if (newStatus === "won" && prevStatus !== "won") {
+                    openConversionModal(c.id);
+                } else {
+                    saveState();
+                    renderAll();
+                }
+            };
+        }
+
+        const btnSend = element.querySelector(".btn-send-template");
+        if (btnSend) btnSend.addEventListener("click", (e) => { e.stopPropagation(); openSendTemplateModal(null, c.id); });
+        
+        const btnView = element.querySelector(".btn-view");
+        if (btnView) btnView.addEventListener("click", () => openContactDetails(c.id));
+        
+        const btnEdit = element.querySelector(".btn-edit");
+        if (btnEdit) btnEdit.addEventListener("click", () => openEditContact(c.id));
+        
+        const btnDelete = element.querySelector(".btn-delete");
+        if (btnDelete) btnDelete.addEventListener("click", () => deleteContact(c.id));
+    };
+
+    // Render Items
     paginatedItems.forEach(c => {
         const isAgente = c.source === 'Agente Comercial' || (c.id && c.id.includes('agente')) || (c.notes && c.notes.toLowerCase().includes('agente'));
-        const isAgenteBadge = isAgente ? `<span style="font-size:10px;background:rgba(79,70,229,0.1);color:#4F46E5;border:1px solid rgba(79,70,229,0.3);padding:2px 8px;border-radius:99px;font-weight:600;margin-left:6px;display:inline-flex;align-items:center;gap:3px;">🤖 Agente AI</span>` : '';
+        const isAgenteBadge = isAgente ? `<span style="font-size:10px;background:rgba(79,70,229,0.1);color:#4F46E5;border:1px solid rgba(79,70,229,0.3);padding:2px 6px;border-radius:99px;font-weight:600;display:inline-flex;align-items:center;gap:2px;">🤖 AI</span>` : '';
         
         const rawPhoneDigits = (c.phone || '').replace(/\D/g, '');
         const waLink = rawPhoneDigits ? `https://wa.me/55${rawPhoneDigits.length >= 10 && rawPhoneDigits.startsWith('55') ? rawPhoneDigits.substring(2) : rawPhoneDigits}` : null;
@@ -4773,92 +4827,120 @@ function renderContacts() {
             ? `${lastTimelineItem.type === 'call' ? '📞' : lastTimelineItem.type === 'email' ? '✉️' : lastTimelineItem.type === 'meeting' ? '🤝' : '📝'} ${lastTimelineItem.description.substring(0, 24)}...`
             : "Sem interações";
 
-        const tr = document.createElement("tr");
-        tr.style.cssText = "height: 48px; border-bottom: 1px solid var(--border-color);";
-        tr.innerHTML = `
-            <td style="text-align:center; width:36px;"><input type="checkbox" class="contact-checkbox" data-id="${c.id}"></td>
-            <td>
-                <div class="col-contact-info" style="display:flex; align-items:center; gap:8px;">
-                    <div class="contact-avatar" style="width:32px; height:32px; font-size:11px; flex-shrink:0; ${isAgente ? 'background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;font-weight:700;' : ''}">${getInitials(c.name)}</div>
-                    <div style="min-width:0; flex:1;">
-                        <span style="font-weight:600; font-size:12.5px; color:var(--text-primary); display:inline-flex; align-items:center; gap:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;" title="${c.name}">${c.name} ${isAgenteBadge}</span>
+        if (isCardsView) {
+            // Render Mobile Card Item
+            const card = document.createElement("div");
+            card.className = "contact-card-item";
+            card.style.cssText = "background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow-sm);";
+            card.innerHTML = `
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                        <input type="checkbox" class="contact-checkbox" data-id="${c.id}" style="cursor: pointer;">
+                        <div class="contact-avatar" style="width: 36px; height: 36px; font-size: 11px; flex-shrink: 0; ${isAgente ? 'background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;font-weight:700;' : ''}">${getInitials(c.name)}</div>
+                        <div style="min-width: 0; flex: 1;">
+                            <span style="font-weight: 700; font-size: 13px; color: var(--text-primary); display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.name} ${isAgenteBadge}</span>
+                            <span style="font-size: 11.5px; color: var(--text-muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.company || 'Empresa não informada'}</span>
+                        </div>
+                    </div>
+                    <span class="niche-tag" style="font-size: 10.5px; padding: 2px 7px; border-radius: 4px; font-weight: 600; background: rgba(79,70,229,0.08); color: var(--color-primary); flex-shrink: 0;">${c.niche || 'Outro'}</span>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--bg-app); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        ${waLink ? `<a href="${waLink}" target="_blank" title="Abrir WhatsApp" style="display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; background: #25D366; color: #fff; padding: 3px 8px; border-radius: 4px; text-decoration: none;">💬 WA</a>` : ''}
+                        <span style="font-family: monospace; font-size: 12px; font-weight: 600; color: var(--text-primary);">${c.phone || 'Sem telefone'}</span>
+                    </div>
+                    <strong style="font-size: 13px; color: #059669;">${formatCurrency(c.value)}</strong>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11.5px;">
+                    <select class="select-inline-status status-${c.status}" data-id="${c.id}" style="
+                        font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 5px;
+                        border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); outline: none; flex: 1;
+                    ">
+                        <option value="lead" ${c.status === 'lead' ? 'selected' : ''}>Novo Lead</option>
+                        <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contatado</option>
+                        <option value="proposal" ${c.status === 'proposal' ? 'selected' : ''}>Proposta Enviada</option>
+                        <option value="negotiating" ${c.status === 'negotiating' ? 'selected' : ''}>Em Negociação</option>
+                        <option value="won" ${c.status === 'won' ? 'selected' : ''}>Ganho (Won)</option>
+                        <option value="lost" ${c.status === 'lost' ? 'selected' : ''}>Perdido (Lost)</option>
+                    </select>
+
+                    <div class="kanban-card-actions" style="display: inline-flex; gap: 3px; flex-shrink: 0;">
+                        <button class="btn-icon-only btn-send-template" title="Enviar E-mail" style="color:var(--color-primary); width:28px; height:28px;"><i data-lucide="mail-plus" style="width:14px;height:14px;"></i></button>
+                        <button class="btn-icon-only btn-view" title="Ver Detalhes" style="width:28px; height:28px;"><i data-lucide="eye" style="width:14px;height:14px;"></i></button>
+                        <button class="btn-icon-only btn-edit" title="Editar" style="width:28px; height:28px;"><i data-lucide="edit-2" style="width:14px;height:14px;"></i></button>
+                        <button class="btn-icon-only btn-delete" title="Excluir" style="width:28px; height:28px;"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                     </div>
                 </div>
-            </td>
-            <td>
-                <span style="font-size:12.5px; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;" title="${c.company || '-'}">${c.company || "-"}</span>
-            </td>
-            <td><span class="niche-tag" style="font-size:10.5px; padding:2px 8px; border-radius:4px; font-weight:600; background:rgba(79,70,229,0.08); color:var(--color-primary); white-space:nowrap;">${c.niche || "Outro"}</span></td>
-            <td>
-                <div style="display:flex; flex-direction:column; gap:1px;">
-                    ${phoneDisplay}
-                    ${c.email ? `<span style="font-size:10.5px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;" title="${c.email}">${c.email}</span>` : ''}
-                </div>
-            </td>
-            <td><strong style="font-size:12.5px; color:#059669; white-space:nowrap;">${formatCurrency(c.value)}</strong></td>
-            <td>
-                <select class="select-inline-status status-${c.status}" data-id="${c.id}" style="
-                    font-size: 11px;
-                    font-weight: 600;
-                    padding: 3px 8px;
-                    border-radius: 5px;
-                    border: 1px solid var(--border-color);
-                    background: var(--bg-card);
-                    color: var(--text-primary);
-                    cursor: pointer;
-                    outline: none;
-                ">
-                    <option value="lead" ${c.status === 'lead' ? 'selected' : ''}>Novo Lead</option>
-                    <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contatado</option>
-                    <option value="proposal" ${c.status === 'proposal' ? 'selected' : ''}>Proposta Enviada</option>
-                    <option value="negotiating" ${c.status === 'negotiating' ? 'selected' : ''}>Em Negociação</option>
-                    <option value="won" ${c.status === 'won' ? 'selected' : ''}>Ganho (Won)</option>
-                    <option value="lost" ${c.status === 'lost' ? 'selected' : ''}>Perdido (Lost)</option>
-                </select>
-            </td>
-            <td>
-                <div class="contact-comm-info" style="display:flex; flex-direction:column; max-width:160px;">
-                    <span style="font-size:11px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${lastTimelineItem ? lastTimelineItem.description : 'Sem interações'}">${lastInteractionText}</span>
-                    <span style="font-size:9.5px; color:var(--text-muted);">${lastTimelineItem ? formatDate(lastTimelineItem.timestamp) : ""}</span>
-                </div>
-            </td>
-            <td style="text-align:right;">
-                <div class="kanban-card-actions" style="display:inline-flex; gap:2px;">
-                    <button class="btn-icon-only btn-send-template" title="Enviar E-mail com Modelo" style="color:var(--color-primary); width:26px; height:26px;"><i data-lucide="mail-plus" style="width:13px;height:13px;"></i></button>
-                    <button class="btn-icon-only btn-view" title="Ver Detalhes" style="width:26px; height:26px;"><i data-lucide="eye" style="width:13px;height:13px;"></i></button>
-                    <button class="btn-icon-only btn-edit" title="Editar" style="width:26px; height:26px;"><i data-lucide="edit-2" style="width:13px;height:13px;"></i></button>
-                    <button class="btn-icon-only btn-delete" title="Excluir" style="width:26px; height:26px;"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
-                </div>
-            </td>
-        `;
+            `;
 
-        tr.querySelector(".select-inline-status").onchange = (e) => {
-            const newStatus = e.target.value;
-            const prevStatus = c.status;
-            c.status = newStatus;
-            
-            if (!c.timeline) c.timeline = [];
-            c.timeline.push({
-                id: "act_" + Date.now(),
-                type: "note",
-                description: `Estágio atualizado na listagem para: ${translateStatus(newStatus)}`,
-                timestamp: new Date().toISOString()
-            });
-            
-            if (newStatus === "won" && prevStatus !== "won") {
-                openConversionModal(c.id);
-            } else {
-                saveState();
-                renderAll();
-            }
-        };
+            bindRowActions(card, c);
+            if (cardsGrid) cardsGrid.appendChild(card);
+        } else {
+            // Render Table Row
+            const tr = document.createElement("tr");
+            tr.style.cssText = "height: 48px; border-bottom: 1px solid var(--border-color);";
+            tr.innerHTML = `
+                <td style="text-align:center; width:36px;"><input type="checkbox" class="contact-checkbox" data-id="${c.id}"></td>
+                <td>
+                    <div class="col-contact-info" style="display:flex; align-items:center; gap:8px;">
+                        <div class="contact-avatar" style="width:32px; height:32px; font-size:11px; flex-shrink:0; ${isAgente ? 'background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;font-weight:700;' : ''}">${getInitials(c.name)}</div>
+                        <div style="min-width:0; flex:1;">
+                            <span style="font-weight:600; font-size:12.5px; color:var(--text-primary); display:inline-flex; align-items:center; gap:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;" title="${c.name}">${c.name} ${isAgenteBadge}</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span style="font-size:12.5px; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;" title="${c.company || '-'}">${c.company || "-"}</span>
+                </td>
+                <td><span class="niche-tag" style="font-size:10.5px; padding:2px 8px; border-radius:4px; font-weight:600; background:rgba(79,70,229,0.08); color:var(--color-primary); white-space:nowrap;">${c.niche || "Outro"}</span></td>
+                <td>
+                    <div style="display:flex; flex-direction:column; gap:1px;">
+                        ${phoneDisplay}
+                        ${c.email ? `<span style="font-size:10.5px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;" title="${c.email}">${c.email}</span>` : ''}
+                    </div>
+                </td>
+                <td><strong style="font-size:12.5px; color:#059669; white-space:nowrap;">${formatCurrency(c.value)}</strong></td>
+                <td>
+                    <select class="select-inline-status status-${c.status}" data-id="${c.id}" style="
+                        font-size: 11px;
+                        font-weight: 600;
+                        padding: 3px 8px;
+                        border-radius: 5px;
+                        border: 1px solid var(--border-color);
+                        background: var(--bg-card);
+                        color: var(--text-primary);
+                        cursor: pointer;
+                        outline: none;
+                    ">
+                        <option value="lead" ${c.status === 'lead' ? 'selected' : ''}>Novo Lead</option>
+                        <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contatado</option>
+                        <option value="proposal" ${c.status === 'proposal' ? 'selected' : ''}>Proposta Enviada</option>
+                        <option value="negotiating" ${c.status === 'negotiating' ? 'selected' : ''}>Em Negociação</option>
+                        <option value="won" ${c.status === 'won' ? 'selected' : ''}>Ganho (Won)</option>
+                        <option value="lost" ${c.status === 'lost' ? 'selected' : ''}>Perdido (Lost)</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="contact-comm-info" style="display:flex; flex-direction:column; max-width:160px;">
+                        <span style="font-size:11px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${lastTimelineItem ? lastTimelineItem.description : 'Sem interações'}">${lastInteractionText}</span>
+                        <span style="font-size:9.5px; color:var(--text-muted);">${lastTimelineItem ? formatDate(lastTimelineItem.timestamp) : ""}</span>
+                    </div>
+                </td>
+                <td style="text-align:right;">
+                    <div class="kanban-card-actions" style="display:inline-flex; gap:2px;">
+                        <button class="btn-icon-only btn-send-template" title="Enviar E-mail com Modelo" style="color:var(--color-primary); width:26px; height:26px;"><i data-lucide="mail-plus" style="width:13px;height:13px;"></i></button>
+                        <button class="btn-icon-only btn-view" title="Ver Detalhes" style="width:26px; height:26px;"><i data-lucide="eye" style="width:13px;height:13px;"></i></button>
+                        <button class="btn-icon-only btn-edit" title="Editar" style="width:26px; height:26px;"><i data-lucide="edit-2" style="width:13px;height:13px;"></i></button>
+                        <button class="btn-icon-only btn-delete" title="Excluir" style="width:26px; height:26px;"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
+                    </div>
+                </td>
+            `;
 
-        tr.querySelector(".btn-send-template").addEventListener("click", (e) => { e.stopPropagation(); openSendTemplateModal(null, c.id); });
-        tr.querySelector(".btn-view").addEventListener("click", () => openContactDetails(c.id));
-        tr.querySelector(".btn-edit").addEventListener("click", () => openEditContact(c.id));
-        tr.querySelector(".btn-delete").addEventListener("click", () => deleteContact(c.id));
-
-        if (tbody) tbody.appendChild(tr);
+            bindRowActions(tr, c);
+            if (tbody) tbody.appendChild(tr);
+        }
     });
 
     // Re-initialize Lucide icons
@@ -12420,6 +12502,28 @@ if (btnPullAgentLeadsDirect) {
 
 // Wire Search & Filter Input Listeners for Contacts Table Engine
 const bindContactsEngineEvents = () => {
+    const btnCards = document.getElementById('btnContactsViewCards');
+    const btnTable = document.getElementById('btnContactsViewTable');
+
+    if (btnCards && btnTable) {
+        btnCards.onclick = () => {
+            contactsTableState.viewMode = 'cards';
+            btnCards.classList.add('active');
+            btnCards.style.cssText = 'padding: 4px 10px; font-size: 11.5px; font-weight: 600; border: none; background: var(--bg-card); color: var(--color-primary); cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 4px; box-shadow: var(--shadow-sm);';
+            btnTable.classList.remove('active');
+            btnTable.style.cssText = 'padding: 4px 10px; font-size: 11.5px; font-weight: 600; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 4px;';
+            renderContacts();
+        };
+
+        btnTable.onclick = () => {
+            contactsTableState.viewMode = 'table';
+            btnTable.classList.add('active');
+            btnTable.style.cssText = 'padding: 4px 10px; font-size: 11.5px; font-weight: 600; border: none; background: var(--bg-card); color: var(--color-primary); cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 4px; box-shadow: var(--shadow-sm);';
+            btnCards.classList.remove('active');
+            btnCards.style.cssText = 'padding: 4px 10px; font-size: 11.5px; font-weight: 600; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 4px;';
+            renderContacts();
+        };
+    }
     const searchInput = document.getElementById('contactsSearchInput');
     const globalSearchInput = document.getElementById('globalSearch');
     const nicheSelect = document.getElementById('contactsNicheFilter');
