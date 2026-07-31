@@ -565,20 +565,9 @@
                 <div class="view-header flex-header">
                     <div>
                         <h1 class="view-title">Gestão de Contatos</h1>
-                        <p class="view-subtitle">Gerencie leads de tráfego pago, envie propostas e organize dados.</p>
+                        <p class="view-subtitle">Motor inteligente de leads B2B, propostas e histórico de prospecção.</p>
                     </div>
                     <div class="header-filters" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                        <select class="form-control select-filter" id="filterStatus" style="width: 170px;">
-                            <option value="all">Todos os Estágios</option>
-                            <option value="lead">Novo Lead</option>
-                            <option value="contacted">Contatado</option>
-                            <option value="proposal">Proposta Enviada</option>
-                            <option value="negotiating">Em Negociação</option>
-                            <option value="won">Ganho (Won)</option>
-                            <option value="lost">Perdido (Lost)</option>
-                            <option value="agente">🤖 Leads Agente AI</option>
-                        </select>
-
                         <!-- Backup/Data Actions Group -->
                         <div style="display: flex; gap: 4px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 2px; background: var(--bg-app); align-items: center; height: 38px;">
                             <button class="btn btn-icon-only btn-sm" id="btnExportBackup" title="Exportar Backup de Dados (JSON)" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center; border:none; background:transparent; cursor:pointer;">
@@ -591,7 +580,7 @@
                         </div>
 
                         <!-- Agente Comercial Sync Actions -->
-                        <button class="btn btn-primary" id="btnPullAgentLeadsDirect" style="display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #4F46E5, #06B6D4);" title="Puxar todos os 100+ leads contatados e novos do Agente Comercial">
+                        <button class="btn btn-primary" id="btnPullAgentLeadsDirect" style="display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #4F46E5, #06B6D4);" title="Puxar todos os leads contatados e novos do Agente Comercial">
                             <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
                             <span>Puxar Leads do Agente</span>
                         </button>
@@ -613,6 +602,94 @@
                             <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
                             <span>Adicionar Contato</span>
                         </button>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Ribbon -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Total de Leads</span>
+                            <h4 id="kpiTotalContactsCount" style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 2px 0 0 0;">0</h4>
+                        </div>
+                        <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(79,70,229,0.1); color: var(--color-primary); display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Gráfica Quick</span>
+                            <h4 id="kpiGraficaContactsCount" style="font-size: 20px; font-weight: 700; color: #0d9488; margin: 2px 0 0 0;">0</h4>
+                        </div>
+                        <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(13,148,136,0.1); color: #0d9488; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="printer" style="width: 18px; height: 18px;"></i>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Leads Agente AI</span>
+                            <h4 id="kpiAgentContactsCount" style="font-size: 20px; font-weight: 700; color: #6366f1; margin: 2px 0 0 0;">0</h4>
+                        </div>
+                        <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(99,102,241,0.1); color: #6366f1; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="bot" style="width: 18px; height: 18px;"></i>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Valor em Funil</span>
+                            <h4 id="kpiTotalPipelineValue" style="font-size: 20px; font-weight: 700; color: #059669; margin: 2px 0 0 0;">R$ 0</h4>
+                        </div>
+                        <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(5,150,105,0.1); color: #059669; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="dollar-sign" style="width: 18px; height: 18px;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instant Search & Filters Toolbar -->
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 14px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; gap: 10px; flex: 1; min-width: 280px; align-items: center;">
+                        <div style="position: relative; flex: 1;">
+                            <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--text-muted);"></i>
+                            <input type="text" id="contactsSearchInput" class="form-control" placeholder="Buscar por Nome, Empresa, Telefone, WhatsApp, E-mail ou Notas..." style="padding-left: 36px; height: 38px; font-size: 13px;">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        <!-- Filter Nicho -->
+                        <select class="form-control" id="contactsNicheFilter" style="width: 150px; height: 38px; font-size: 12.5px;">
+                            <option value="all">Todos os Nichos</option>
+                            <option value="Gráfica">Gráfica</option>
+                            <option value="Serviços B2B">Serviços B2B</option>
+                            <option value="Negócio Local">Negócio Local</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Turismo">Turismo</option>
+                            <option value="Saúde / Estética">Saúde / Estética</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+
+                        <!-- Filter Status/Stage -->
+                        <select class="form-control" id="filterStatus" style="width: 160px; height: 38px; font-size: 12.5px;">
+                            <option value="all">Todos os Estágios</option>
+                            <option value="lead">Novo Lead</option>
+                            <option value="contacted">Contatado</option>
+                            <option value="proposal">Proposta Enviada</option>
+                            <option value="negotiating">Em Negociação</option>
+                            <option value="won">Ganho (Won)</option>
+                            <option value="lost">Perdido (Lost)</option>
+                            <option value="agente">🤖 Leads Agente AI</option>
+                        </select>
+
+                        <!-- Items Per Page -->
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Exibir:</span>
+                            <select id="contactsPerPageSelect" class="form-control" style="width: 80px; height: 38px; font-size: 12.5px;">
+                                <option value="15">15</option>
+                                <option value="25">25</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                                <option value="all">Todos</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -667,20 +744,20 @@
                     </div>
                 </div>
 
-                <div class="table-card">
-                    <div class="table-container">
+                <div class="table-card" style="box-shadow: var(--shadow-sm); border-radius: var(--radius-md); overflow: hidden;">
+                    <div class="table-container" style="overflow-x: auto;">
                         <table class="data-table" id="contactsTable">
                             <thead>
                                 <tr>
                                     <th style="width: 36px; text-align: center;"><input type="checkbox" id="selectAllContacts" title="Selecionar Todos"></th>
-                                    <th>Contato</th>
-                                    <th>Empresa</th>
-                                    <th>Nicho</th>
-                                    <th>Email/Telefone</th>
-                                    <th>Valor Estimado</th>
-                                    <th>Estágio</th>
+                                    <th style="cursor: pointer;" onclick="sortContactsTable('name')">Contato <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th style="cursor: pointer;" onclick="sortContactsTable('company')">Empresa <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th style="cursor: pointer;" onclick="sortContactsTable('niche')">Nicho <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th>Contato / WhatsApp</th>
+                                    <th style="cursor: pointer;" onclick="sortContactsTable('value')">Valor Estimado <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
+                                    <th style="cursor: pointer;" onclick="sortContactsTable('status')">Estágio <i data-lucide="arrow-up-down" style="width: 11px; height: 11px; opacity: 0.5;"></i></th>
                                     <th>Última Interação</th>
-                                    <th>Ações</th>
+                                    <th style="text-align: right;">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="contactsTableBody">
@@ -688,10 +765,19 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="table-empty-state hidden" id="contactsEmptyState">
-                        <i data-lucide="users-round" class="empty-icon"></i>
-                        <h3>Nenhum contato encontrado</h3>
-                        <p>Tente ajustar a sua busca ou adicione um novo contato para começar.</p>
+
+                    <!-- Pagination Controls Footer -->
+                    <div id="contactsPaginationContainer" style="padding: 14px 20px; border-top: 1px solid var(--border-color); background: var(--bg-card); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                        <span id="contactsPaginationInfo" style="font-size: 13px; font-weight: 500; color: var(--text-secondary);">Exibindo 0 a 0 de 0 contatos</span>
+                        <div id="contactsPaginationButtons" style="display: flex; gap: 4px; align-items: center;">
+                            <!-- Dynamic Pagination Buttons -->
+                        </div>
+                    </div>
+
+                    <div class="table-empty-state hidden" id="contactsEmptyState" style="padding: 40px 20px;">
+                        <i data-lucide="users-round" class="empty-icon" style="width: 48px; height: 48px; opacity: 0.4;"></i>
+                        <h3 style="font-size: 16px; margin-top: 12px;">Nenhum contato encontrado</h3>
+                        <p style="font-size: 13px; color: var(--text-secondary);">Tente ajustar sua busca ou os filtros para localizar o lead desejado.</p>
                     </div>
                 </div>
             </section>
