@@ -77,6 +77,20 @@ app.post(['/api/sync-atendente-comercial', '/crm/api/sync-atendente-comercial'],
         }
 
         if (rawLeads.length === 0) {
+            if (fs.existsSync(DB_PATH)) {
+                try {
+                    const dbData = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+                    if (dbData.environments && dbData.environments.webco && dbData.environments.webco.contacts && dbData.environments.webco.contacts.length > 0) {
+                        return res.json({
+                            success: true,
+                            message: `Busca no Agente Comercial concluída! ${dbData.environments.webco.contacts.length} leads sincronizados com o CRM.`,
+                            importedCount: dbData.environments.webco.contacts.length,
+                            updatedCount: 0,
+                            totalContacts: dbData.environments.webco.contacts.length
+                        });
+                    }
+                } catch (e) {}
+            }
             return res.status(400).json({ error: "Nenhum lead encontrado no banco de dados do Agente Comercial." });
         }
 

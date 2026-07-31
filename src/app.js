@@ -44,15 +44,3513 @@ const defaultDocuments = [
 ];
 
 const defaultContacts = [
-    { id: "c1", name: "João Silva", company: "Inova Tech", email: "joao@inovatech.com.br", phone: "(11) 98765-4321", value: 3500.00, status: "negotiating", niche: "SaaS / Startup", notes: "Interessado em Criação de Site e SEO.", createdAt: "2026-07-05T14:30:00.000Z", timeline: [{ id: "act1", type: "note", description: "Contato cadastrado no sistema.", timestamp: "2026-07-05T14:30:00.000Z" }] },
-    { id: "c2", name: "Maria Oliveira", company: "Giga Corp", email: "maria.oliveira@gigacorp.com", phone: "(21) 99888-7766", value: 8700.00, status: "won", niche: "E-commerce", notes: "Compra fechada de Site + Google Ads.", createdAt: "2026-07-01T09:15:00.000Z", timeline: [{ id: "act2", type: "note", description: "Lead convertido em cliente.", timestamp: "2026-07-09T18:12:00.000Z" }] },
-    { id: "c3", name: "Carlos Souza", company: "Acme Ltda", email: "carlos@acmelimitada.com", phone: "(31) 97777-6655", value: 1200.00, status: "proposal", niche: "Negócio Local", notes: "Aguardando resposta da proposta de Google Ads.", createdAt: "2026-07-08T11:00:00.000Z", timeline: [] },
-    { id: "c4", name: "Ana Costa", company: "Tech Soluções", email: "ana@techsolucoes.tech", phone: "(11) 96543-2109", value: 3200.00, status: "lead", niche: "Serviços B2B", notes: "Lead do Google Ads. Quer fazer site novo.", createdAt: "2026-07-12T10:00:00.000Z", timeline: [] },
-    { id: "c_parana_ecoturismo", name: "Marcio", company: "Paraná Ecoturismo", email: "marcio@paranaecoturismo.com.br", phone: "41 96252186", value: 1540.00, status: "won", niche: "Turismo", notes: "Localizado em Morretes. Representante: Marcio", createdAt: "2026-04-13T12:00:00.000Z", timeline: [
-        { id: "act_parana_1", type: "note", description: "Cadastrado no sistema. Ramo: Turismo. Representante: Marcio.", timestamp: "2026-04-13T12:00:00.000Z" },
-        { id: "act_parana_2", type: "note", description: "Compra fechada de Criação de Site por R$ 400.", timestamp: "2026-04-13T12:30:00.000Z" },
-        { id: "act_parana_3", type: "note", description: "Pagamento efetuado: R$ 500 por atualização do site após 3 meses.", timestamp: "2026-07-13T10:00:00.000Z" }
-    ] }
+    {
+        "id": "c_agente_1785464786550_p521",
+        "name": "Mine",
+        "company": "Mine",
+        "email": "",
+        "phone": "(11) 97570-2321",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Lead importado manualmente em 17/07/2026, 15:06:27",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-17T18:06:27.677Z",
+        "timeline": [
+            {
+                "id": "act_1785464786550",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.550Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_j1b5",
+        "name": "Gráfica Rápida Profissional Copacabana Zona Sul Barata Ribeiro",
+        "company": "Gráfica Rápida Profissional Copacabana Zona Sul Barata Ribeiro",
+        "email": "",
+        "phone": "(21) 2549-2815",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_qaqh",
+        "name": "TAG • GRÁFICA RÁPIDA Copacabana",
+        "company": "TAG • GRÁFICA RÁPIDA Copacabana",
+        "email": "",
+        "phone": "(21) 2227-1216",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_1lfe",
+        "name": "Gráfica ServPrint Barra Funda",
+        "company": "Gráfica ServPrint Barra Funda",
+        "email": "",
+        "phone": "(11) 98783-9772",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (HTTP 400)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_hgc4",
+        "name": "Gráfica Ghds",
+        "company": "Gráfica Ghds",
+        "email": "",
+        "phone": "(11) 99431-0120",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_nc5g",
+        "name": "GráFica Em Osasco 24 Horas",
+        "company": "GráFica Em Osasco 24 Horas",
+        "email": "",
+        "phone": "(11) 96292-0303",
+        "niche": "Gráfica",
+        "status": "proposal",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_dzt2",
+        "name": "Teck Prints",
+        "company": "Teck Prints",
+        "email": "",
+        "phone": "(11) 3688-1122",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_kyz2",
+        "name": "CardPress Barra Funda",
+        "company": "CardPress Barra Funda",
+        "email": "",
+        "phone": "(11) 2626-1369",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_4cmz",
+        "name": "Gráfica Rápida Aquarela",
+        "company": "Gráfica Rápida Aquarela",
+        "email": "",
+        "phone": "(11) 3681-1402",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_vktq",
+        "name": "Leograf Gráfica Editora",
+        "company": "Leograf Gráfica Editora",
+        "email": "",
+        "phone": "(11) 3658-5000",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Copyright antigo (2020))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_26qv",
+        "name": "Click Cópias e Serviços",
+        "company": "Click Cópias e Serviços",
+        "email": "",
+        "phone": "(11) 3683-6191",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_raxn",
+        "name": "Copiadora Charlie Osasco",
+        "company": "Copiadora Charlie Osasco",
+        "email": "",
+        "phone": "(11) 3684-0333",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_jqtk",
+        "name": "HL Acabamentos Gráficos",
+        "company": "HL Acabamentos Gráficos",
+        "email": "",
+        "phone": "(11) 4346-2000",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_excv",
+        "name": "Fusão Impressão Digital",
+        "company": "Fusão Impressão Digital",
+        "email": "",
+        "phone": "(11) 3616-2000",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_8iri",
+        "name": "Central de Cópias do Brasil",
+        "company": "Central de Cópias do Brasil",
+        "email": "",
+        "phone": "(11) 97392-7162",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_xqr0",
+        "name": "DJP Gráfica e Sublimação",
+        "company": "DJP Gráfica e Sublimação",
+        "email": "",
+        "phone": "(11) 97724-8068",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_r8bt",
+        "name": "Shigueko Gráfica Adesivos e Carimbos",
+        "company": "Shigueko Gráfica Adesivos e Carimbos",
+        "email": "",
+        "phone": "(11) 95425-1176",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_qb3w",
+        "name": "Copyfast",
+        "company": "Copyfast",
+        "email": "",
+        "phone": "(11) 4624-0030",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_xmra",
+        "name": "Braspor Gráfica Editora",
+        "company": "Braspor Gráfica Editora",
+        "email": "",
+        "phone": "(11) 3601-2226",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_dmsb",
+        "name": "Grafix",
+        "company": "Grafix",
+        "email": "",
+        "phone": "(11) 97787-3991",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_3zs2",
+        "name": "Ideal SoluçõEs Digitais",
+        "company": "Ideal SoluçõEs Digitais",
+        "email": "",
+        "phone": "(11) 97641-6641",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_gspm",
+        "name": "GVH Gráfica Online",
+        "company": "GVH Gráfica Online",
+        "email": "",
+        "phone": "(11) 98456-6956",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_t7dp",
+        "name": "Rei dos Panfletos",
+        "company": "Rei dos Panfletos",
+        "email": "",
+        "phone": "(11) 3683-5127",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_t3d6",
+        "name": "Dinu's Artes Gráficas",
+        "company": "Dinu's Artes Gráficas",
+        "email": "",
+        "phone": "(11) 3683-4488",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_6w2x",
+        "name": "Grafica Osasco Colors",
+        "company": "Grafica Osasco Colors",
+        "email": "",
+        "phone": "(11) 95283-3700",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_pb1i",
+        "name": "Gráfica JF Impressão Digital (em Osasco",
+        "company": "Gráfica JF Impressão Digital (em Osasco",
+        "email": "",
+        "phone": "(11) 98119-2357",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_7k5z",
+        "name": "MB Gráfica",
+        "company": "MB Gráfica",
+        "email": "",
+        "phone": "(11) 3685-4951",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_o77p",
+        "name": "Gráfica Artself",
+        "company": "Gráfica Artself",
+        "email": "",
+        "phone": "(11) 98868-8050",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_i3nb",
+        "name": "ENLUMOS fotografia e presentes",
+        "company": "ENLUMOS fotografia e presentes",
+        "email": "",
+        "phone": "(11) 97708-1715",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_493p",
+        "name": "Gráfica FuturaIM (Unidade Osasco)",
+        "company": "Gráfica FuturaIM (Unidade Osasco)",
+        "email": "",
+        "phone": "(11) 3654-1571",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_rfhe",
+        "name": "Gráfica Yara",
+        "company": "Gráfica Yara",
+        "email": "",
+        "phone": "(11) 3681-6590",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_kz5e",
+        "name": "Gráfica Jatobá",
+        "company": "Gráfica Jatobá",
+        "email": "",
+        "phone": "(11) 3682-3287",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_garx",
+        "name": "Artes Graficas Freire",
+        "company": "Artes Graficas Freire",
+        "email": "",
+        "phone": "(11) 3699-1112",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_mnzr",
+        "name": "Gráfica Pinheiros Visual Pro Experience",
+        "company": "Gráfica Pinheiros Visual Pro Experience",
+        "email": "",
+        "phone": "(11) 96188-1742",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_ty6a",
+        "name": "Gráficas Mazal",
+        "company": "Gráficas Mazal",
+        "email": "",
+        "phone": "(11) 99764-9852",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_hxiw",
+        "name": "Suba Print",
+        "company": "Suba Print",
+        "email": "",
+        "phone": "(11) 94535-5555",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_6biw",
+        "name": "Gráfica Luma",
+        "company": "Gráfica Luma",
+        "email": "",
+        "phone": "(11) 3672-5077",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_4ock",
+        "name": "Olhartístico Digital",
+        "company": "Olhartístico Digital",
+        "email": "",
+        "phone": "(11) 93335-1194",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_99gs",
+        "name": "Color Digital Gráfica",
+        "company": "Color Digital Gráfica",
+        "email": "",
+        "phone": "(11) 2779-5041",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Copyright antigo (2020))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_24mc",
+        "name": "impressão de apostilas",
+        "company": "impressão de apostilas",
+        "email": "",
+        "phone": "(11) 96787-5519",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_8nsm",
+        "name": "Gráfica Critério",
+        "company": "Gráfica Critério",
+        "email": "",
+        "phone": "(11) 3064-3992",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_rw8a",
+        "name": "Postnet Perdizes",
+        "company": "Postnet Perdizes",
+        "email": "",
+        "phone": "(11) 2506-7888",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_dpz1",
+        "name": "Impressão e encadernação",
+        "company": "Impressão e encadernação",
+        "email": "",
+        "phone": "(11) 3807-7562",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_lu24",
+        "name": "Datanew",
+        "company": "Datanew",
+        "email": "",
+        "phone": "(11) 3871-0227",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_199n",
+        "name": "Best Design Gráfica Digital",
+        "company": "Best Design Gráfica Digital",
+        "email": "",
+        "phone": "(11) 96609-4310",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_v2cl",
+        "name": "GR Soluções Gráficas",
+        "company": "GR Soluções Gráficas",
+        "email": "",
+        "phone": "(11) 3675-3948",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_0td5",
+        "name": "Imax Digital Gráfica Rápida e Com. Visual",
+        "company": "Imax Digital Gráfica Rápida e Com. Visual",
+        "email": "",
+        "phone": "(11) 98275-9009",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_rn78",
+        "name": "Copy Set Gráfica e Copiadora",
+        "company": "Copy Set Gráfica e Copiadora",
+        "email": "",
+        "phone": "(11) 3812-5058",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (HTTP 400)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_m1qx",
+        "name": "Forte Papelaria e Copiadora",
+        "company": "Forte Papelaria e Copiadora",
+        "email": "",
+        "phone": "(11) 95453-1456",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_meud",
+        "name": "CartõEs De Natal",
+        "company": "CartõEs De Natal",
+        "email": "",
+        "phone": "(11) 98180-9901",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_or2s",
+        "name": "Futaba Impressão Digital",
+        "company": "Futaba Impressão Digital",
+        "email": "",
+        "phone": "(11) 97305-3032",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_sqnc",
+        "name": "Cópias e Serviços Pinheiros",
+        "company": "Cópias e Serviços Pinheiros",
+        "email": "",
+        "phone": "(11) 3814-0010",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_spxw",
+        "name": "Print Tech Impressões Técnicas",
+        "company": "Print Tech Impressões Técnicas",
+        "email": "",
+        "phone": "(11) 3872-2118",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_i7rw",
+        "name": "Papiro Gráfica Rápida e Papelaria",
+        "company": "Papiro Gráfica Rápida e Papelaria",
+        "email": "",
+        "phone": "(11) 3673-2868",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_l808",
+        "name": "AroPrint",
+        "company": "AroPrint",
+        "email": "",
+        "phone": "(11) 3816-0459",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_tt0u",
+        "name": "Ggraf",
+        "company": "Ggraf",
+        "email": "",
+        "phone": "(11) 3062-4251",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_yw12",
+        "name": "Fortrox Copiadora & Gráfica Digital",
+        "company": "Fortrox Copiadora & Gráfica Digital",
+        "email": "",
+        "phone": "(11) 3062-2814",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_jl6v",
+        "name": "Imprimix Pinheiros",
+        "company": "Imprimix Pinheiros",
+        "email": "",
+        "phone": "(11) 99943-4554",
+        "niche": "Gráfica",
+        "status": "proposal",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_mlnl",
+        "name": "Think About",
+        "company": "Think About",
+        "email": "",
+        "phone": "(11) 3675-6477",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_ruq9",
+        "name": "Gráfica Primeira",
+        "company": "Gráfica Primeira",
+        "email": "",
+        "phone": "(11) 3863-2082",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_er9w",
+        "name": "Digital Brigido",
+        "company": "Digital Brigido",
+        "email": "",
+        "phone": "(11) 3032-1124",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_wqo9",
+        "name": "West Copy",
+        "company": "West Copy",
+        "email": "",
+        "phone": "(11) 3676-1401",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_82ad",
+        "name": "Comprint Máquinas e Materiais Gráficos",
+        "company": "Comprint Máquinas e Materiais Gráficos",
+        "email": "",
+        "phone": "(11) 3371-3371",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_y84g",
+        "name": "Grafiset Cópias",
+        "company": "Grafiset Cópias",
+        "email": "",
+        "phone": "(11) 3085-1666",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_8a15",
+        "name": "Starting Copias Express",
+        "company": "Starting Copias Express",
+        "email": "",
+        "phone": "(11) 95351-9669",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_ht79",
+        "name": "Color Art",
+        "company": "Color Art",
+        "email": "",
+        "phone": "(11) 3801-2421",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_wi2r",
+        "name": "LCM Indústria e Comércio",
+        "company": "LCM Indústria e Comércio",
+        "email": "",
+        "phone": "(19) 97405-9945",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_g96b",
+        "name": "Gráfica HDprint (Gráfica Rápida",
+        "company": "Gráfica HDprint (Gráfica Rápida",
+        "email": "",
+        "phone": "(11) 2892-2327",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_rgnq",
+        "name": "Print Copy",
+        "company": "Print Copy",
+        "email": "",
+        "phone": "(11) 3031-0922",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_db8b",
+        "name": "Novimaq Conveniência Gráfica",
+        "company": "Novimaq Conveniência Gráfica",
+        "email": "",
+        "phone": "(11) 3862-1541",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_w5pp",
+        "name": "Idéia Ação Comércio e Serviços",
+        "company": "Idéia Ação Comércio e Serviços",
+        "email": "",
+        "phone": "(11) 3873-2164",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_c93z",
+        "name": "AlphaGraphics Pinheiros",
+        "company": "AlphaGraphics Pinheiros",
+        "email": "",
+        "phone": "(11) 3035-3700",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_g94y",
+        "name": "Symposion Gráfica e Encadernadora",
+        "company": "Symposion Gráfica e Encadernadora",
+        "email": "",
+        "phone": "(11) 3672-2804",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_5mq1",
+        "name": "Cyan Artes Gráficas",
+        "company": "Cyan Artes Gráficas",
+        "email": "",
+        "phone": "(11) 97336-3008",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_rvlw",
+        "name": "Visual Print",
+        "company": "Visual Print",
+        "email": "",
+        "phone": "(11) 3031-3985",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_nofy",
+        "name": "Uniplotagem e Cópias",
+        "company": "Uniplotagem e Cópias",
+        "email": "",
+        "phone": "(11) 2628-1944",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.552Z",
+        "timeline": [
+            {
+                "id": "act_1785464786552",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.552Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786552_p2pz",
+        "name": "Planet Cop",
+        "company": "Planet Cop",
+        "email": "",
+        "phone": "(11) 2872-9531",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_av25",
+        "name": "Four Cópias Plotagens",
+        "company": "Four Cópias Plotagens",
+        "email": "",
+        "phone": "(11) 3816-1122",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_1g6v",
+        "name": "Master Copy",
+        "company": "Master Copy",
+        "email": "",
+        "phone": "(11) 94226-3400",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_rs91",
+        "name": "Lazuli Editora",
+        "company": "Lazuli Editora",
+        "email": "",
+        "phone": "(11) 3729-6077",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_ysud",
+        "name": "InPrima Soluções Gráficas",
+        "company": "InPrima Soluções Gráficas",
+        "email": "",
+        "phone": "(11) 4858-3180",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_oqm2",
+        "name": "CPVisual",
+        "company": "CPVisual",
+        "email": "",
+        "phone": "(11) 3061-3760",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_c0h8",
+        "name": "Banner Adesivo Placas Faixas Serviços gráficos Ponto7 SP",
+        "company": "Banner Adesivo Placas Faixas Serviços gráficos Ponto7 SP",
+        "email": "",
+        "phone": "(11) 3037-7196",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_ytab",
+        "name": "Diana Cecchini Vendas Gráfica",
+        "company": "Diana Cecchini Vendas Gráfica",
+        "email": "",
+        "phone": "(11) 98539-4863",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_ubqr",
+        "name": "Copy House",
+        "company": "Copy House",
+        "email": "",
+        "phone": "(21) 2508-6000",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_vfxh",
+        "name": "PGW Gráfica",
+        "company": "PGW Gráfica",
+        "email": "",
+        "phone": "(11) 95370-9104",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_o6n9",
+        "name": "AcriMundi Cortes e Gravações a Laser",
+        "company": "AcriMundi Cortes e Gravações a Laser",
+        "email": "",
+        "phone": "(11) 98912-3375",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_0i0a",
+        "name": "SCP Papelaria",
+        "company": "SCP Papelaria",
+        "email": "",
+        "phone": "(11) 98631-9362",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_rbbq",
+        "name": "Copiadora Engecopy Comécio",
+        "company": "Copiadora Engecopy Comécio",
+        "email": "",
+        "phone": "(11) 3097-0107",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_40ba",
+        "name": "Escripel Papelaria e Informática",
+        "company": "Escripel Papelaria e Informática",
+        "email": "",
+        "phone": "(11) 2359-2501",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_55mm",
+        "name": "RA Paper",
+        "company": "RA Paper",
+        "email": "",
+        "phone": "(11) 93224-6287",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_95zt",
+        "name": "Carimbo Letterpress",
+        "company": "Carimbo Letterpress",
+        "email": "",
+        "phone": "(11) 3494-6788",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_i4sf",
+        "name": "Artur Cópias",
+        "company": "Artur Cópias",
+        "email": "",
+        "phone": "(11) 3032-0677",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_l0ro",
+        "name": "Prata Design Gráfico",
+        "company": "Prata Design Gráfico",
+        "email": "",
+        "phone": "(11) 3023-1569",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_4rww",
+        "name": "Comunika Visual",
+        "company": "Comunika Visual",
+        "email": "",
+        "phone": "(11) 98198-8580",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_itli",
+        "name": "Gráfica Rápida Jundiaí",
+        "company": "Gráfica Rápida Jundiaí",
+        "email": "",
+        "phone": "(11) 97305-9611",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_97z1",
+        "name": "Gráfica Jundiaí",
+        "company": "Gráfica Jundiaí",
+        "email": "",
+        "phone": "(11) 4817-7382",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_75mr",
+        "name": "Gráfica PoliSet",
+        "company": "Gráfica PoliSet",
+        "email": "",
+        "phone": "(11) 3379-2430",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_867u",
+        "name": "Gráfica Rápida Max",
+        "company": "Gráfica Rápida Max",
+        "email": "",
+        "phone": "(11) 95426-1143",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_hw2u",
+        "name": "Maltoni",
+        "company": "Maltoni",
+        "email": "",
+        "phone": "(11) 4521-4573",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_pnux",
+        "name": "Gráfica Imprima 1000",
+        "company": "Gráfica Imprima 1000",
+        "email": "",
+        "phone": "(11) 91720-8873",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_dfle",
+        "name": "JundGraph",
+        "company": "JundGraph",
+        "email": "",
+        "phone": "(11) 4586-9756",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_yegq",
+        "name": "Mettagraf",
+        "company": "Mettagraf",
+        "email": "",
+        "phone": "(11) 4584-0894",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_rz11",
+        "name": "Gráfica Art Cartões",
+        "company": "Gráfica Art Cartões",
+        "email": "",
+        "phone": "(11) 96393-9769",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Copyright antigo (2021))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_ynhl",
+        "name": "Firstweb Gráfica e Brindes",
+        "company": "Firstweb Gráfica e Brindes",
+        "email": "",
+        "phone": "(11) 3379-7848",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_0dlg",
+        "name": "Copiadora Jundiaí",
+        "company": "Copiadora Jundiaí",
+        "email": "",
+        "phone": "(11) 99486-7491",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_5sxm",
+        "name": "Impressos Jundiaí",
+        "company": "Impressos Jundiaí",
+        "email": "",
+        "phone": "(11) 97465-5557",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (HTTP 403)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_2mf2",
+        "name": "ChromoArte Gráfica & Comunicação Visual",
+        "company": "ChromoArte Gráfica & Comunicação Visual",
+        "email": "",
+        "phone": "(11) 4582-0886",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_1n69",
+        "name": "Gráfica Visão",
+        "company": "Gráfica Visão",
+        "email": "",
+        "phone": "(11) 97144-0298",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_0d80",
+        "name": "Razor Digital Gráfica Rápida",
+        "company": "Razor Digital Gráfica Rápida",
+        "email": "",
+        "phone": "(11) 98904-8308",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Copyright antigo (2022))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_hw12",
+        "name": "Jet Printer Jundiaí",
+        "company": "Jet Printer Jundiaí",
+        "email": "",
+        "phone": "(11) 95411-2646",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_qk2w",
+        "name": "Gráfica Setembro",
+        "company": "Gráfica Setembro",
+        "email": "",
+        "phone": "(11) 99415-4366",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Copyright antigo (2022))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_81uj",
+        "name": "Gráfica L'Two *",
+        "company": "Gráfica L'Two *",
+        "email": "",
+        "phone": "(11) 97338-9143",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_6l1x",
+        "name": "Seleto Print",
+        "company": "Seleto Print",
+        "email": "",
+        "phone": "(11) 94555-4700",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_1dl7",
+        "name": "Litografia Bandeirantes",
+        "company": "Litografia Bandeirantes",
+        "email": "",
+        "phone": "(11) 4585-5252",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_oad7",
+        "name": "Gráfica Apollo",
+        "company": "Gráfica Apollo",
+        "email": "",
+        "phone": "(11) 4587-5248",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_tymp",
+        "name": "Giton ComunicaçãO",
+        "company": "Giton ComunicaçãO",
+        "email": "",
+        "phone": "(11) 97510-2321",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_8nyb",
+        "name": "Dani Artes",
+        "company": "Dani Artes",
+        "email": "",
+        "phone": "(11) 97143-2657",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_r9vw",
+        "name": "Gráfica RCA",
+        "company": "Gráfica RCA",
+        "email": "",
+        "phone": "(11) 97225-6537",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_wvsz",
+        "name": "Grafica Mil Coisas Personalizadas",
+        "company": "Grafica Mil Coisas Personalizadas",
+        "email": "",
+        "phone": "(11) 94736-5488",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_wsuu",
+        "name": "Luma Sign",
+        "company": "Luma Sign",
+        "email": "",
+        "phone": "(11) 4582-1623",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_e4to",
+        "name": "Pixel Gráfica e Personalizados",
+        "company": "Pixel Gráfica e Personalizados",
+        "email": "",
+        "phone": "(11) 97472-5593",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_kaas",
+        "name": "Gráfica Blooprint",
+        "company": "Gráfica Blooprint",
+        "email": "",
+        "phone": "(11) 97559-2299",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_lliv",
+        "name": "Formatho Gráfica & Comunicação Visual",
+        "company": "Formatho Gráfica & Comunicação Visual",
+        "email": "",
+        "phone": "(11) 4816-6003",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_dadw",
+        "name": "Gráfica Armi",
+        "company": "Gráfica Armi",
+        "email": "",
+        "phone": "(11) 98700-2745",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_lao6",
+        "name": "Gráfica Abreu",
+        "company": "Gráfica Abreu",
+        "email": "",
+        "phone": "(11) 4587-9051",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_mpy8",
+        "name": "Gráfica Cartão Ouro",
+        "company": "Gráfica Cartão Ouro",
+        "email": "",
+        "phone": "(11) 4521-5217",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_wuxq",
+        "name": "Cartão Express",
+        "company": "Cartão Express",
+        "email": "",
+        "phone": "(11) 97760-6300",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_2lhl",
+        "name": "Libergraf Composições Gráficas",
+        "company": "Libergraf Composições Gráficas",
+        "email": "",
+        "phone": "(11) 4587-0753",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_2nje",
+        "name": "CSR Digital Print",
+        "company": "CSR Digital Print",
+        "email": "",
+        "phone": "(11) 93907-2928",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_cclo",
+        "name": "Sua Gráfica Express",
+        "company": "Sua Gráfica Express",
+        "email": "",
+        "phone": "(11) 98271-2857",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_7x7t",
+        "name": "Genius Print",
+        "company": "Genius Print",
+        "email": "",
+        "phone": "(11) 99918-6837",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_he0v",
+        "name": "Gráfica Imprimax Jundiaí",
+        "company": "Gráfica Imprimax Jundiaí",
+        "email": "",
+        "phone": "(11) 98784-7224",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_9jld",
+        "name": "Gráfica Leonel",
+        "company": "Gráfica Leonel",
+        "email": "",
+        "phone": "(11) 4521-7653",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_9ew8",
+        "name": "Volken",
+        "company": "Volken",
+        "email": "",
+        "phone": "(11) 4587-8900",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_c03v",
+        "name": "Beviarte",
+        "company": "Beviarte",
+        "email": "",
+        "phone": "(11) 4607-9801",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_1st8",
+        "name": "JunTor Gráfica",
+        "company": "JunTor Gráfica",
+        "email": "",
+        "phone": "(11) 4587-8047",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_yar8",
+        "name": "Gráfica Rápida Precisão",
+        "company": "Gráfica Rápida Precisão",
+        "email": "",
+        "phone": "(11) 97709-4310",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_dind",
+        "name": "Sonvia",
+        "company": "Sonvia",
+        "email": "",
+        "phone": "(11) 92135-9988",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_kyme",
+        "name": "ImpressoMix Serviços de Impressão",
+        "company": "ImpressoMix Serviços de Impressão",
+        "email": "",
+        "phone": "(11) 3963-5530",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_seha",
+        "name": "Jet Printer Maxi Shopping",
+        "company": "Jet Printer Maxi Shopping",
+        "email": "",
+        "phone": "(11) 91448-9817",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_6drh",
+        "name": "Digibanners Várzea Paulista",
+        "company": "Digibanners Várzea Paulista",
+        "email": "",
+        "phone": "(11) 97194-4923",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_snjw",
+        "name": "Digital Gráfica",
+        "company": "Digital Gráfica",
+        "email": "",
+        "phone": "(11) 97056-9181",
+        "niche": "Gráfica",
+        "status": "contacted",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_yjly",
+        "name": "Digibanners Comunicação Visual",
+        "company": "Digibanners Comunicação Visual",
+        "email": "",
+        "phone": "(11) 96848-1695",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_46vx",
+        "name": "DS Soluções Gráficas e Digitais",
+        "company": "DS Soluções Gráficas e Digitais",
+        "email": "",
+        "phone": "(11) 91833-1122",
+        "niche": "Gráfica",
+        "status": "proposal",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_epdz",
+        "name": "Nova Era Comunicação Visual",
+        "company": "Nova Era Comunicação Visual",
+        "email": "",
+        "phone": "(11) 4584-4543",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_qwil",
+        "name": "vitoria grafica e artes digitais",
+        "company": "vitoria grafica e artes digitais",
+        "email": "",
+        "phone": "(11) 96310-9868",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_570u",
+        "name": "Papyrus",
+        "company": "Papyrus",
+        "email": "",
+        "phone": "(11) 4587-7014",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_loco",
+        "name": "Printer Soluções e Plotagens",
+        "company": "Printer Soluções e Plotagens",
+        "email": "",
+        "phone": "(11) 4805-1220",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_0iu9",
+        "name": "Postnet",
+        "company": "Postnet",
+        "email": "",
+        "phone": "(11) 3963-8023",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_arrj",
+        "name": "Gráfica C.R.M",
+        "company": "Gráfica C.R.M",
+        "email": "",
+        "phone": "(11) 4526-4851",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_63jt",
+        "name": "Gráfica Blantes",
+        "company": "Gráfica Blantes",
+        "email": "",
+        "phone": "(11) 99825-1369",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_k2y0",
+        "name": "PÉROLA Impressões e Cópias",
+        "company": "PÉROLA Impressões e Cópias",
+        "email": "",
+        "phone": "(11) 97573-5602",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_xr44",
+        "name": "Art Brasil",
+        "company": "Art Brasil",
+        "email": "",
+        "phone": "(11) 4586-0624",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_mns4",
+        "name": "Bellartes Gráfica",
+        "company": "Bellartes Gráfica",
+        "email": "",
+        "phone": "(11) 4497-0556",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_2o3f",
+        "name": "Gráfica Aliança",
+        "company": "Gráfica Aliança",
+        "email": "",
+        "phone": "(11) 94434-4549",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_a33h",
+        "name": "Grafica Fagian",
+        "company": "Grafica Fagian",
+        "email": "",
+        "phone": "(11) 4587-6208",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_z2ta",
+        "name": "Viz Print Gráfica Rápida e Personalizados",
+        "company": "Viz Print Gráfica Rápida e Personalizados",
+        "email": "",
+        "phone": "(11) 99572-1162",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_c3h7",
+        "name": "Gráfica 011",
+        "company": "Gráfica 011",
+        "email": "",
+        "phone": "(11) 94150-2557",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (HTTP 400)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_qcce",
+        "name": "Copiadora Rosário",
+        "company": "Copiadora Rosário",
+        "email": "",
+        "phone": "(11) 4522-2364",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_n1sw",
+        "name": "Rsc Impressão Digital",
+        "company": "Rsc Impressão Digital",
+        "email": "",
+        "phone": "(11) 4607-4275",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_7ky4",
+        "name": "DSJ Comunicação Visual",
+        "company": "DSJ Comunicação Visual",
+        "email": "",
+        "phone": "(11) 98570-5322",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_snq8",
+        "name": "Grafor",
+        "company": "Grafor",
+        "email": "",
+        "phone": "(11) 4533-1092",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Sem site no Google Maps",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_8n1n",
+        "name": "Lenx Designer",
+        "company": "Lenx Designer",
+        "email": "",
+        "phone": "(11) 96603-2754",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_dv1h",
+        "name": "Intensa Arte",
+        "company": "Intensa Arte",
+        "email": "",
+        "phone": "(11) 95555-7940",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_zr6d",
+        "name": "Rm ComunicaçãO Visual",
+        "company": "Rm ComunicaçãO Visual",
+        "email": "",
+        "phone": "(11) 4607-0252",
+        "niche": "Gráfica",
+        "status": "lost",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    },
+    {
+        "id": "c_agente_1785464786553_1ag4",
+        "name": "Adesivos Pozzani",
+        "company": "Adesivos Pozzani",
+        "email": "",
+        "phone": "(11) 94695-9990",
+        "niche": "Gráfica",
+        "status": "lead",
+        "value": 400,
+        "notes": "Site existente (avaliar qualidade)",
+        "source": "Agente Comercial",
+        "createdAt": "2026-07-31T02:26:26.553Z",
+        "timeline": [
+            {
+                "id": "act_1785464786553",
+                "type": "note",
+                "description": "🤖 Lead importado do Agente Comercial AI.",
+                "timestamp": "2026-07-31T02:26:26.553Z"
+            }
+        ]
+    }
 ];
 
 const defaultCustomers = [
