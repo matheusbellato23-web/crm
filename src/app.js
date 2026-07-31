@@ -22,6 +22,16 @@ const defaultProducts = [
 
 const defaultDocuments = [
     {
+        id: "doc_webco_checklist_site_2026",
+        title: "Checklist & Briefing Completo para Criação de Sites - WEBCO Agency",
+        category: "outros",
+        description: "Guia definitivo e checklist oficial com todos os itens necessários para desenvolvimento de sites profissionais (Identidade Visual, Paleta de Cores, Logo, Banner, WhatsApp, E-mail, Redes Sociais, Domínio e Estrutura de Páginas).",
+        fileName: "Checklist_Briefing_Criacao_de_Site_WEBCO.pdf",
+        fileType: "application/pdf",
+        tags: "checklist, briefing, site, webco, logo, paleta, whatsapp, email, dominio",
+        createdAt: "2026-07-31T10:00:00.000Z"
+    },
+    {
         id: "doc_default_1",
         title: "Proposta Comercial Padrão - WEBCO 2026",
         category: "proposta",
