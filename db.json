@@ -3529,7 +3529,27 @@
           "fileName": "Checklist_Briefing_Criacao_de_Site_WEBCO.pdf",
           "fileType": "application/pdf",
           "tags": "checklist, briefing, site, webco, logo, paleta, whatsapp, email, dominio",
-          "createdAt": "2026-07-31T13:23:06.531Z"
+          "createdAt": "2026-07-31T10:00:00.000Z"
+        },
+        {
+          "id": "doc_default_1",
+          "title": "Proposta Comercial Padrão - WEBCO 2026",
+          "category": "proposta",
+          "description": "Modelo oficial de proposta comercial para desenvolvimento de sites profissionais, landing pages e soluções digitais.",
+          "fileName": "Proposta_Comercial_WEBCO_2026.pdf",
+          "fileType": "application/pdf",
+          "tags": "proposta, comercial, pdf, sites",
+          "createdAt": "2026-07-30T10:00:00.000Z"
+        },
+        {
+          "id": "doc_default_2",
+          "title": "Portfólio de Cases & Projetos WEBCO",
+          "category": "portfolio",
+          "description": "Apresentação visual com principais cases de sucesso, métricas de resultados e telas de sites desenvolvidos.",
+          "fileName": "Portfolio_Cases_WEBCO.pdf",
+          "fileType": "application/pdf",
+          "tags": "portfolio, cases, apresentacao, webco",
+          "createdAt": "2026-07-30T10:30:00.000Z"
         }
       ]
     }
