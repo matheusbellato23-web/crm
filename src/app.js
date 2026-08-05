@@ -12092,8 +12092,8 @@ function previewDocument(doc) {
     if (!modal) return;
 
     document.getElementById('docPreviewTitle').innerText = doc.title || 'Visualizar Documento';
-
     const frame = document.getElementById('docPreviewFrame');
+
     if (doc.fileData && doc.fileData.startsWith('data:')) {
         frame.removeAttribute('srcdoc');
         frame.src = doc.fileData;
@@ -12125,7 +12125,7 @@ function previewDocument(doc) {
                     <p><strong>Descrição:</strong> ${doc.description || 'Nenhuma descrição informada.'}</p>
                     <p><strong>Arquivo:</strong> ${doc.fileName || 'documento.pdf'}</p>
                     <p style="margin-top:20px;padding:16px;background:#ffffff;border-left:4px solid #4F46E5;border-radius:4px;">
-                        ℹ️ Você pode substituir este arquivo por um PDF real do seu computador clicando no botão <strong>Editar Documento</strong>.
+                        ℹ️ Clique no botão <strong>Editar Documento</strong> e faça upload do seu PDF real do seu computador para ter a pré-visualização e download fieis ao arquivo original.
                     </p>
                 </div>
                 <div class="footer">WEBCO Agency &copy; 2026 - Todos os direitos reservados</div>
@@ -12162,71 +12162,19 @@ function previewDocument(doc) {
     safeCreateIcons();
 }
 
-function createDynamicPdfBase64(title, description) {
-    const textTitle = (title || 'Documento WEBCO').replace(/[^a-zA-Z0-9 _-]/g, '');
-    const textDesc = (description || 'Documento Oficial WEBCO Agency').replace(/[^a-zA-Z0-9 _-]/g, '').substring(0, 150);
-    const pdfRaw = `%PDF-1.4
-1 0 obj
-<< /Type /Catalog /Pages 2 0 R >>
-endobj
-2 0 obj
-<< /Type /Pages /Kinds [3 0 R] /Count 1 >>
-endobj
-3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
-endobj
-4 0 obj
-<< /Length 300 >>
-stream
-BT
-/F1 18 Tf
-50 720 Td
-(${textTitle}) Tj
-/F1 12 Tf
-0 -30 Td
-(WEBCO Agency - Solucoes Digitais) Tj
-0 -40 Td
-(${textDesc}) Tj
-0 -40 Td
-(Contato: matheusbellato23@webcoagency.site | WhatsApp: 11 91814-7277) Tj
-ET
-endstream
-endobj
-5 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
-endobj
-xref
-0 6
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-0000000244 00000 n 
-0000000550 00000 n 
-trailer
-<< /Size 6 /Root 1 0 R >>
-startxref
-625
-%%EOF`;
-    return 'data:application/pdf;base64,' + btoa(pdfRaw);
-}
-
 function downloadDocumentFile(doc) {
-    let fileUrl = doc.fileData;
-    let fileName = doc.fileName || `${(doc.title || 'Documento').replace(/\s+/g, '_')}.pdf`;
-    if (!fileName.toLowerCase().endsWith('.pdf')) fileName += '.pdf';
-
-    if (!fileUrl || !fileUrl.startsWith('data:')) {
-        fileUrl = createDynamicPdfBase64(doc.title, doc.description);
+    if (!doc.fileData || !doc.fileData.startsWith('data:')) {
+        showToast('⚠️ Este documento ainda não possui um arquivo PDF real anexado. Clique em "Editar Documento" para subir o seu PDF original.', 'warning');
+        return;
     }
 
     const a = document.createElement('a');
-    a.href = fileUrl;
-    a.download = fileName;
+    a.href = doc.fileData;
+    a.download = doc.fileName || `${(doc.title || 'Documento').replace(/\s+/g, '_')}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    showToast(`⬇️ Download do PDF "${fileName}" concluído com sucesso!`, 'success');
+    showToast(`⬇️ Download do PDF original "${doc.fileName || doc.title}" concluído!`, 'success');
 }
 
 // Setup Drag & Drop Zone
