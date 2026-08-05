@@ -3519,6 +3519,8 @@
           "fileName": "Briefing_Criacao_de_Site_Cliente.pdf",
           "fileType": "application/pdf",
           "tags": "briefing, formulario cliente, criacao de site, dados cliente, contrato, logo, whatsapp, cores",
+          "fileSize": 45000,
+          "fileData": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaW5kcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagozIDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgNjEyIDc5Ml0gL0NvbnRlbnRzIDQgMCBSIC9SZXNvdXJjZXMgPDwgL0ZvbnQgPDwgL0YxIDUgMCBSID4+ID4+ID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggMzUwID4+CnN0cmVhbQpCVAovRjEgMTggVGYKNTAgNzIwIFRkCihGb3JtdWzDoXJpbyBkZSBCcmllZmluZyBwYXJhIENyaWHDp8OjbyBkZSBTaXRlIENsaWVudGUpIFRqCi9GMSAxMiBUZgowIC0zMCBUZAooV0VCQ08gQWdlbmN5IC0gU29sdWNvZXMgRGlnaXRhaXMgJiBDcmlhY2FvIGRlIFNpdGVzKSBUagowIC00MCBUZAooRm9ybXVsw6FyaW8gb2ZpY2lhbCBkZSBjb2xldGEgZGUgZGFkb3MgcGFyYSBlbnZpbyBhbyBjbGllbnRlLiBOb21lLCBTbG9nYW4sIExvZ28sKSBUagowIC0yMCBUZAooIFBhbGV0YSBkZSBDb3JlcywgV2hhdHNBcHAgZSBTZXJ2acOnb3MuKSBUagowIC00MCBUZAooQ29udGF0bzogbWF0aGV1c2JlbGxhdG8yM0B3ZWJjb2FnZW5jeS5zaXRlIHwgV2hhdHNBcHA6IDExIDkxODE0LTcyNzcpIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI0NCAwMDAwMCBuIAowMDAwMDAwNTUwIDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNjI1CiUlRU9G",
           "createdAt": "2026-07-31T10:45:00.000Z"
         },
         {
@@ -3528,7 +3530,9 @@
           "description": "Guia definitivo e checklist oficial com todos os itens necessários para desenvolvimento de sites profissionais (Identidade Visual, Paleta de Cores, Logo, Banner, WhatsApp, E-mail, Redes Sociais, Domínio e Estrutura de Páginas).",
           "fileName": "Checklist_Briefing_Criacao_de_Site_WEBCO.pdf",
           "fileType": "application/pdf",
-          "tags": "checklist, briefing, site, webco, logo, paleta, whatsapp, email, dominio",
+          "tags": "checklist, briefing, site, webco, logo, paleta, whatsapp, email, dominio, contrato",
+          "fileSize": 48000,
+          "fileData": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaW5kcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagozIDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgNjEyIDc5Ml0gL0NvbnRlbnRzIDQgMCBSIC9SZXNvdXJjZXMgPDwgL0ZvbnQgPDwgL0YxIDUgMCBSID4+ID4+ID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggMzQxID4+CnN0cmVhbQpCVAovRjEgMTggVGYKNTAgNzIwIFRkCihDaGVja2xpc3QgJiBCcmllZmluZyBDb21wbGV0byBwYXJhIENyaWHDp8OjbyBkZSBTaXRlcykgVGoKL0YxIDEyIFRmCjAgLTMwIFRkCihXRUJDTyBBZ2VuY3kgLSBTb2x1Y29lcyBEaWdpdGFpcyAmIENyaWFjYW8gZGUgU2l0ZXMpIFRqCjAgLTQwIFRkCihHdWlhIGRlZmluaXRpdm8gZSBjaGVja2xpc3Qgb2ZpY2lhbCBjb20gdG9kb3Mgb3MgaXRlbnMgbmVjZXNzw6FyaW9zIHBhcmEgZGVzZW52b2wpIFRqCjAgLTIwIFRkCih2aW1lbnRvIGRlIHNpdGVzIHByb2Zpc3Npb25haXMuKSBUagowIC00MCBUZAooQ29udGF0bzogbWF0aGV1c2JlbGxhdG8yM0B3ZWJjb2FnZW5jeS5zaXRlIHwgV2hhdHNBcHA6IDExIDkxODE0LTcyNzcpIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI0NCAwMDAwMCBuIAowMDAwMDAwNTUwIDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNjI1CiUlRU9G",
           "createdAt": "2026-07-31T10:00:00.000Z"
         },
         {
@@ -3539,6 +3543,8 @@
           "fileName": "Proposta_Comercial_WEBCO_2026.pdf",
           "fileType": "application/pdf",
           "tags": "proposta, comercial, pdf, sites",
+          "fileSize": 52000,
+          "fileData": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaW5kcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagozIDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgNjEyIDc5Ml0gL0NvbnRlbnRzIDQgMCBSIC9SZXNvdXJjZXMgPDwgL0ZvbnQgPDwgL0YxIDUgMCBSID4+ID4+ID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggMzMzID4+CnN0cmVhbQpCVAovRjEgMTggVGYKNTAgNzIwIFRkCihQcm9wb3N0YSBDb21lcmNpYWwgUGFkcsOjbyAtIFdFQkNPIDIwMjYpIFRqCi9GMSAxMiBUZgowIC0zMCBUZAooV0VCQ08gQWdlbmN5IC0gU29sdWNvZXMgRGlnaXRhaXMgJiBDcmlhY2FvIGRlIFNpdGVzKSBUagowIC00MCBUZAooTW9kZWxvIG9maWNpYWwgZGUgcHJvcG9zdGEgY29tZXJjaWFsIHBhcmEgZGVzZW52b2x2aW1lbnRvIGRlIHNpdGVzIHByb2Zpc3Npb25haXMpIFRqCjAgLTIwIFRkCigsIGxhbmRpbmcgcGFnZXMgZSBzb2x1w6fDtWVzIGRpZ2l0YWlzLikgVGoKMCAtNDAgVGQKKENvbnRhdG86IG1hdGhldXNiZWxsYXRvMjNAd2ViY29hZ2VuY3kuc2l0ZSB8IFdoYXRzQXBwOiAxMSA5MTgxNC03Mjc3KSBUagpFVAplbmRzdHJlYW0KZW5kb2JqCjUgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+CmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyNDQgMDAwMDAgbiAKMDAwMDAwMDU1MCAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDYgL1Jvb3QgMSAwIFIgPj4Kc3RhcnR4cmVmCjYyNQolJUVPRg==",
           "createdAt": "2026-07-30T10:00:00.000Z"
         },
         {
@@ -3549,6 +3555,8 @@
           "fileName": "Portfolio_Cases_WEBCO.pdf",
           "fileType": "application/pdf",
           "tags": "portfolio, cases, apresentacao, webco",
+          "fileSize": 55000,
+          "fileData": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaW5kcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagozIDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgNjEyIDc5Ml0gL0NvbnRlbnRzIDQgMCBSIC9SZXNvdXJjZXMgPDwgL0ZvbnQgPDwgL0YxIDUgMCBSID4+ID4+ID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggMzIxID4+CnN0cmVhbQpCVAovRjEgMTggVGYKNTAgNzIwIFRkCihQb3J0ZsOzbGlvIGRlIENhc2VzICYgUHJvamV0b3MgV0VCQ08pIFRqCi9GMSAxMiBUZgowIC0zMCBUZAooV0VCQ08gQWdlbmN5IC0gU29sdWNvZXMgRGlnaXRhaXMgJiBDcmlhY2FvIGRlIFNpdGVzKSBUagowIC00MCBUZAooQXByZXNlbnRhw6fDo28gdmlzdWFsIGNvbSBwcmluY2lwYWlzIGNhc2VzIGRlIHN1Y2Vzc28sIG3DqXRyaWNhcyBkZSByZXN1bHRhZG9zIGUgdGUpIFRqCjAgLTIwIFRkCihsYXMgZGUgc2l0ZXMgZGVzZW52b2x2aWRvcy4pIFRqCjAgLTQwIFRkCihDb250YXRvOiBtYXRoZXVzYmVsbGF0bzIzQHdlYmNvYWdlbmN5LnNpdGUgfCBXaGF0c0FwcDogMTEgOTE4MTQtNzI3NykgVGoKRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQ0IDAwMDAwIG4gCjAwMDAwMDA1NTAgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo2MjUKJSVFT0Y=",
           "createdAt": "2026-07-30T10:30:00.000Z"
         }
       ]

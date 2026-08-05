@@ -3679,10 +3679,11 @@
             <div class="modal-body" style="flex:1;min-height:0;padding:0;display:flex;flex-direction:column;background:#1e1e1e;">
                 <iframe id="docPreviewFrame" style="width:100%;height:100%;border:none;" src="about:blank"></iframe>
             </div>
-            <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
                 <button type="button" class="btn btn-secondary" id="btnCloseDocPreviewModal2">Fechar</button>
-                <div style="display:flex;gap:8px;">
-                    <button type="button" class="btn btn-secondary" id="btnCopyDocInfo"><i data-lucide="copy" style="width:13px;height:13px;"></i> Copiar Título / Info</button>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button type="button" class="btn btn-secondary" id="btnEditDocFromPreview"><i data-lucide="pencil" style="width:13px;height:13px;"></i> Editar Documento</button>
+                    <button type="button" class="btn btn-secondary" id="btnCopyDocInfo"><i data-lucide="copy" style="width:13px;height:13px;"></i> Copiar Info</button>
                     <button type="button" class="btn btn-primary" id="btnDownloadDocFromPreview"><i data-lucide="download" style="width:13px;height:13px;"></i> Baixar Arquivo</button>
                 </div>
             </div>
