@@ -3819,6 +3819,15 @@
                 <form id="affiliateForm">
                     <input type="hidden" id="affiliateFormId">
                     <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+                        <div class="form-group" style="background: rgba(79,70,229,0.06); padding: 12px; border-radius: 8px; border: 1px solid rgba(79,70,229,0.2);">
+                            <label for="affiliateCustomerSelect" style="color: var(--color-primary); font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="user-check" style="width: 15px; height: 15px;"></i>
+                                <span>Vincular a um Cliente Existente da Plataforma (Preenchimento Automático)</span>
+                            </label>
+                            <select id="affiliateCustomerSelect" class="form-control" style="margin-top: 4px; font-weight: 600;">
+                                <option value="">-- Selecione um cliente da lista (ou digite manualmente) --</option>
+                            </select>
+                        </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="affiliateName">Nome Completo / Razão Social *</label>
