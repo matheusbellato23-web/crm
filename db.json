@@ -3508,6 +3508,27 @@
               "timestamp": "2026-07-31T02:26:26.553Z"
             }
           ]
+        },
+        {
+          "id": "c_ariana_1786053090008",
+          "name": "Gráfica Ariana",
+          "company": "Gráfica Ariana",
+          "email": "contato@graficaariana.com.br",
+          "phone": "(11) 98765-4321",
+          "niche": "Gráfica",
+          "status": "proposal",
+          "value": 400,
+          "notes": "Proposta Comercial criada para criação de site único (R$ 400 - 50% entrada e 50% entrega).",
+          "source": "Comercial WEBCO",
+          "createdAt": "2026-08-06T21:51:30.008Z",
+          "timeline": [
+            {
+              "id": "act_ariana_1",
+              "type": "note",
+              "description": "📄 Proposta Comercial enviada por Matheus Bellato (R$ 400,00 - 5 dias de entrega).",
+              "timestamp": "2026-08-06T21:51:30.011Z"
+            }
+          ]
         }
       ],
       "documents": [
@@ -3558,6 +3579,30 @@
           "fileSize": 55000,
           "fileData": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaW5kcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagozIDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgNjEyIDc5Ml0gL0NvbnRlbnRzIDQgMCBSIC9SZXNvdXJjZXMgPDwgL0ZvbnQgPDwgL0YxIDUgMCBSID4+ID4+ID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggMzIxID4+CnN0cmVhbQpCVAovRjEgMTggVGYKNTAgNzIwIFRkCihQb3J0ZsOzbGlvIGRlIENhc2VzICYgUHJvamV0b3MgV0VCQ08pIFRqCi9GMSAxMiBUZgowIC0zMCBUZAooV0VCQ08gQWdlbmN5IC0gU29sdWNvZXMgRGlnaXRhaXMgJiBDcmlhY2FvIGRlIFNpdGVzKSBUagowIC00MCBUZAooQXByZXNlbnRhw6fDo28gdmlzdWFsIGNvbSBwcmluY2lwYWlzIGNhc2VzIGRlIHN1Y2Vzc28sIG3DqXRyaWNhcyBkZSByZXN1bHRhZG9zIGUgdGUpIFRqCjAgLTIwIFRkCihsYXMgZGUgc2l0ZXMgZGVzZW52b2x2aWRvcy4pIFRqCjAgLTQwIFRkCihDb250YXRvOiBtYXRoZXVzYmVsbGF0bzIzQHdlYmNvYWdlbmN5LnNpdGUgfCBXaGF0c0FwcDogMTEgOTE4MTQtNzI3NykgVGoKRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQ0IDAwMDAwIG4gCjAwMDAwMDA1NTAgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo2MjUKJSVFT0Y=",
           "createdAt": "2026-07-30T10:30:00.000Z"
+        }
+      ],
+      "proposals": [
+        {
+          "id": "prop_ariana_2026",
+          "contactId": "c_ariana_1786053090008",
+          "productId": "prod_site_institucional",
+          "productName": "Desenvolvimento de Site Institucional - Gráfica Ariana",
+          "value": 400,
+          "recurrence": "single",
+          "status": "pending",
+          "date": "2026-08-06",
+          "validityDays": 15,
+          "deliveryDays": 5,
+          "responsible": "Matheus Bellato",
+          "paymentTerms": "50% de entrada no início (R$ 200,00) e 50% na entrega final (R$ 200,00)",
+          "scope": [
+            "Desenvolvimento de Site Profissional para a Gráfica Ariana",
+            "Layout Responsivo Otimizado para Celulares e Computadores",
+            "Botão de WhatsApp Flutuante com Direcionamento Direto de Clientes",
+            "Página de Apresentação de Serviços da Gráfica e Formulário de Contato",
+            "Otimização SEO Básica e Integração com Redes Sociais"
+          ],
+          "notes": "Proposta criada por Matheus Bellato da WEBCO Agency. Prazo de entrega em até 5 dias corridos."
         }
       ]
     }
