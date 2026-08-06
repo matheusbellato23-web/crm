@@ -3791,6 +3791,17 @@ function applyDashboardCustomization() {
 
 // Helper to get active environment data
 function getEnv() {
+    const env = state.environments[state.currentEnv] || state.environments.webco;
+    if (env && env.contacts) {
+        env.contacts.forEach(c => {
+            if (c.value > 1000000 || isNaN(c.value)) {
+                c.value = 0;
+            }
+        });
+    }
+    return env;
+};
+function _getEnvOriginal() {
     const env = state.currentEnv || "webco";
     if (!state.environments[env]) {
         state.environments[env] = {
@@ -4144,6 +4155,15 @@ let cashFlowChart = null;
 let revenueByNicheChart = null;
 
 // Helpers & Formatting
+
+// Lead Value Sanitizer (Prevents absurd numbers > R$ 1M or phone numbers in value field)
+const sanitizeLeadValue = (val) => {
+    let num = Number(val);
+    if (isNaN(num) || !isFinite(num) || num > 1000000 || num < 0) {
+        return 0;
+    }
+    return num;
+};
 const formatCurrency = (value) => {
     if (state.privacyMode) return "R$ ••••••";
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -12571,3 +12591,14 @@ if (document.readyState === 'loading') {
 } else {
     bindContactsEngineEvents();
 }
+
+
+// Automatic Background Polling for WhatsApp & Lead Sync Updates (Every 10 Minutes)
+setInterval(() => {
+    if (typeof loadState === 'function') {
+        console.log('[CLIENT AUTO-POLL] Syncing state from server...');
+        loadState().then(() => {
+            if (typeof renderAll === 'function') renderAll();
+        });
+    }
+}, 10 * 60 * 1000);

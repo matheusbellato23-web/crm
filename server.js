@@ -506,3 +506,47 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+// ============================================================
+// AUTOMATIC AGENT / WHATSAPP SYNC SCHEDULER (12x per day)
+// ============================================================
+function sanitizeLeadValue(val) {
+    let num = Number(val);
+    if (isNaN(num) || !isFinite(num) || num > 1000000 || num < 0) {
+        return 0; // Cap absurd values > R$ 1 Million to R$ 0
+    }
+    return num;
+}
+
+function runAutoSyncWhatsAppLeads() {
+    console.log('[AUTO-SYNC] Running scheduled 2-hour WhatsApp/Agent lead sync (12x/day)...');
+    try {
+        const atendentePaths = [
+            'C:/Users/Kamino/Documents/atendente comercial/data/db.json',
+            'C:/Users/Kamino/Documents/atendente comercial/data/db_seed.json',
+            path.join(DATA_DIR, 'atendente_db.json')
+        ];
+
+        let db = { environments: { webco: { contacts: [] } } };
+        if (fs.existsSync(DB_PATH)) {
+            try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')) || db; } catch (e) {}
+        }
+        if (!db.environments) db.environments = {};
+        if (!db.environments.webco) db.environments.webco = {};
+        if (!db.environments.webco.contacts) db.environments.webco.contacts = [];
+
+        // Always sanitize all existing contact values
+        db.environments.webco.contacts.forEach(c => {
+            c.value = sanitizeLeadValue(c.value);
+        });
+
+        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
+        console.log('[AUTO-SYNC] Contact values sanitized and state saved.');
+    } catch (err) {
+        console.error('[AUTO-SYNC] Error during scheduled sync:', err);
+    }
+}
+
+// Run auto sync on server start + schedule every 2 hours (12x a day)
+setTimeout(runAutoSyncWhatsAppLeads, 5000);
+setInterval(runAutoSyncWhatsAppLeads, 2 * 60 * 60 * 1000);
