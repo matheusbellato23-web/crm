@@ -3594,7 +3594,7 @@
           "validityDays": 15,
           "deliveryDays": 5,
           "responsible": "Matheus Bellato",
-          "paymentTerms": "50% de entrada no início (R$ 200,00) e 50% na entrega final (R$ 200,00)",
+          "paymentTerms": "50% de entrada no início (R$ 200,00) e 50% na entrega final (R$ 200,00). Chave Pix: (11) 97570-2321",
           "scope": [
             "Desenvolvimento de Site Profissional para a Gráfica Ariana",
             "Layout Responsivo Otimizado para Celulares e Computadores",
@@ -3602,7 +3602,8 @@
             "Página de Apresentação de Serviços da Gráfica e Formulário de Contato",
             "Otimização SEO Básica e Integração com Redes Sociais"
           ],
-          "notes": "Proposta criada por Matheus Bellato da WEBCO Agency. Prazo de entrega em até 5 dias corridos."
+          "notes": "Proposta criada por Matheus Bellato da WEBCO Agency. Chave Pix: (11) 97570-2321. Prazo de entrega em até 5 dias corridos.",
+          "pixKey": "(11) 97570-2321"
         }
       ]
     }
