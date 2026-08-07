@@ -3997,15 +3997,18 @@ function applyDashboardCustomization() {
 // Helper to get active environment data
 function getEnv() {
     const env = state.environments[state.currentEnv] || state.environments.webco;
-    if (env && env.contacts) {
-        env.contacts.forEach(c => {
-            if (c.value > 1000000 || isNaN(c.value)) {
-                c.value = 0;
-            }
-        });
+    if (env) {
+        if (env.contacts) {
+            env.contacts.forEach(c => {
+                if (c.value > 1000000 || isNaN(c.value)) {
+                    c.value = 0;
+                }
+            });
+        }
+        env.marketingAssets = [...defaultMarketingAssets];
     }
     return env;
-};
+}
 function _getEnvOriginal() {
     const env = state.currentEnv || "webco";
     if (!state.environments[env]) {
