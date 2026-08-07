@@ -3864,7 +3864,16 @@ function _getEnvOriginal() {
     if (!state.environments[env].contractedServices || state.environments[env].contractedServices.length === 0) state.environments[env].contractedServices = [...defaultContractedServices];
     if (!state.environments[env].contracts) state.environments[env].contracts = [...defaultContractsList];
     if (!state.environments[env].events) state.environments[env].events = [...defaultEvents];
-    if (!state.environments[env].marketingAssets) state.environments[env].marketingAssets = [...defaultMarketingAssets];
+    if (!state.environments[env].marketingAssets) {
+        state.environments[env].marketingAssets = [...defaultMarketingAssets];
+    } else {
+        // Merge missing default marketing assets (like Gráfica Ariana strategies)
+        defaultMarketingAssets.forEach(defAsset => {
+            if (!state.environments[env].marketingAssets.some(a => a.id === defAsset.id)) {
+                state.environments[env].marketingAssets.push(defAsset);
+            }
+        });
+    }
     if (!state.environments[env].niches) state.environments[env].niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Turismo", "Saúde / Estética", "Outro"];
     if (state.environments[env].balanceAdjustment === undefined) state.environments[env].balanceAdjustment = 0;
     // ⚠️ CRITICAL: Always ensure templates and documents arrays exist so they are never lost on schema migration
