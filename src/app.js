@@ -3622,6 +3622,7 @@ const defaultContacts = [
 ];
 
 const defaultCustomers = [
+    { id: "cust_ariana_site", contactId: "c_ariana_2026", name: "Gráfica Ariana", company: "Gráfica Ariana", niche: "Gráfica", productName: "Criação de Site Institucional", value: 400.00, type: "single", status: "active", createdAt: "2026-08-06T12:00:00.000Z" },
     { id: "cust1", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Desenvolvimento E-commerce", value: 7500.00, type: "single", status: "active", createdAt: "2026-07-09T18:12:00.000Z" },
     { id: "cust2", contactId: "c2", name: "Maria Oliveira", company: "Giga Corp", niche: "E-commerce", productName: "Gestão de Google Ads", value: 1200.00, type: "monthly", status: "active", createdAt: "2026-07-09T18:12:00.000Z" },
     { id: "cust_parana_site", contactId: "c_parana_ecoturismo", name: "Marcio", company: "Paraná Ecoturismo", niche: "Turismo", productName: "Criação de Site", value: 400.00, type: "single", status: "active", createdAt: "2026-04-13T12:00:00.000Z" },

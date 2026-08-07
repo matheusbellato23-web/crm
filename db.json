@@ -3516,7 +3516,7 @@
           "email": "contato@graficaariana.com.br",
           "phone": "(11) 98765-4321",
           "niche": "Gráfica",
-          "status": "proposal",
+          "status": "won",
           "value": 400,
           "notes": "Proposta Comercial criada para criação de site único (R$ 400 - 50% entrada e 50% entrega).",
           "source": "Comercial WEBCO",
@@ -3666,6 +3666,47 @@
           "metrics": "120 leads/mês | CTR 4.8%",
           "cost": "R$ 1.500,00/mês",
           "notes": "Campanha nacional de atração de PMEs para criação de sites e tráfego pago."
+        }
+      ],
+      "customers": [
+        {
+          "id": "cust_ariana_site",
+          "contactId": "c_ariana_1786053090008",
+          "name": "Gráfica Ariana",
+          "company": "Gráfica Ariana",
+          "niche": "Gráfica",
+          "productName": "Criação de Site Institucional",
+          "value": 400,
+          "type": "single",
+          "status": "active",
+          "createdAt": "2026-08-07T02:04:25.149Z"
+        }
+      ],
+      "contracts": [
+        {
+          "id": "CONTR-ARIANA-1",
+          "contactId": "c_ariana_1786053090008",
+          "proposalId": "prop_ariana_2026",
+          "clientName": "Gráfica Ariana",
+          "company": "Gráfica Ariana",
+          "productName": "Criação de Site Institucional",
+          "value": 400,
+          "recurrence": "single",
+          "startDate": "2026-08-07",
+          "endDate": "2026-08-11",
+          "status": "active"
+        }
+      ],
+      "invoices": [
+        {
+          "id": "FAT-ARIANA-1",
+          "customerName": "Gráfica Ariana",
+          "company": "Gráfica Ariana",
+          "niche": "Gráfica",
+          "productName": "Criação de Site Institucional",
+          "value": 400,
+          "dueDate": "2026-08-11",
+          "status": "pending"
         }
       ]
     }
