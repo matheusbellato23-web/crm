@@ -12814,36 +12814,27 @@ function renderAffiliates() {
     }
 
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 30px; color: var(--text-muted);">Nenhum afiliado encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);">Nenhum afiliado encontrado.</td></tr>`;
         return;
     }
 
     filtered.forEach(aff => {
         const tr = document.createElement('tr');
-        tr.style.cssText = "height: 52px; border-bottom: 1px solid var(--border-color);";
+        tr.style.cssText = "height: 54px; border-bottom: 1px solid var(--border-color); cursor: pointer;";
+        tr.className = "affiliate-main-row";
         tr.innerHTML = `
             <td>
                 <div style="display:flex; align-items:center; gap:10px;">
+                    <button class="btn-toggle-detail" style="background:none; border:none; color:var(--color-primary); cursor:pointer; font-size:12px; padding:2px 4px;">▶</button>
                     <div class="contact-avatar" style="width:34px; height:34px; font-size:11px; flex-shrink:0; background:linear-gradient(135deg, #4F46E5, #06B6D4); color:#fff; font-weight:700;">${getInitials(aff.name)}</div>
                     <div style="min-width:0; flex:1;">
-                        <span style="font-weight:700; font-size:13px; color:var(--text-primary); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${aff.name}">${aff.name}</span>
-                        <span style="font-size:11px; color:var(--text-muted);">${aff.email} • ${aff.phone}</span>
+                        <span style="font-weight:700; font-size:13.5px; color:var(--text-primary); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${aff.name}">${aff.name}</span>
+                        <span style="font-size:11px; color:var(--text-muted);">Clique para ver dados bancários e link de afiliado</span>
                     </div>
                 </div>
             </td>
-            <td>
-                <div style="display:flex; flex-direction:column; gap:2px;">
-                    <span style="font-size:12px; font-weight:600; color:var(--text-primary);">${aff.document}</span>
-                    <span style="font-size:10.5px; color:var(--color-primary); font-family:monospace;" title="Chave Pix">🔑 ${aff.pixKey}</span>
-                </div>
-            </td>
-            <td>
-                <span style="display:inline-flex; align-items:center; gap:4px; font-family:monospace; font-size:12px; font-weight:700; background:rgba(79,70,229,0.1); color:#4F46E5; padding:3px 8px; border-radius:5px; border:1px solid rgba(79,70,229,0.2);">
-                    🏷️ ${aff.code}
-                </span>
-            </td>
             <td style="text-align:center;">
-                <span style="font-size:12.5px; font-weight:700; color:#06B6D4;">${aff.commissionRate}%</span>
+                <span style="font-size:13px; font-weight:700; color:#06B6D4; background:rgba(6,182,212,0.08); padding:4px 8px; border-radius:6px;">${aff.commissionRate}%</span>
             </td>
             <td style="text-align:center;">
                 <div style="display:flex; flex-direction:column; align-items:center;">
@@ -12863,7 +12854,7 @@ function renderAffiliates() {
                 </div>
             </td>
             <td style="text-align:right;">
-                <div style="display:inline-flex; gap:4px;">
+                <div style="display:inline-flex; gap:4px;" onclick="event.stopPropagation();">
                     <button class="btn-icon-only btn-payout-aff" data-id="${aff.id}" title="Lançar Pagamento Pix" style="color:#059669; background:rgba(5,150,105,0.1); border-radius:4px;"><i data-lucide="dollar-sign" style="width:14px;height:14px;"></i></button>
                     <button class="btn-icon-only btn-edit-aff" data-id="${aff.id}" title="Editar Afiliado"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
                     <button class="btn-icon-only btn-delete-aff" data-id="${aff.id}" title="Excluir Afiliado" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
