@@ -2142,8 +2142,8 @@
             <section id="marketingView" class="view-section">
                 <div class="view-header flex-header">
                     <div>
-                        <h1 class="view-title">Ativos & Canais de Marketing</h1>
-                        <p class="view-subtitle">Gerencie e monitore sites, landing pages, campanhas de anúncios (Google/FB) e redes sociais ativas da empresa.</p>
+                        <h1 class="view-title">Estratégias de Marketing & Canais — WEBCO Agency</h1>
+                        <p class="view-subtitle">Planejamento tático de captação de leads, tráfego pago (Meta/Google), automações, LinkedIn B2B e YouTube/TikTok para WEBCO Agency e Web Co. Labs.</p>
                     </div>
                     <button class="btn btn-primary" id="btnCreateMarketingAsset">
                         <i data-lucide="plus"></i>
@@ -2153,23 +2153,21 @@
 
                 <!-- Filters for Category -->
                 <div class="header-filters" style="margin-bottom: 20px;">
-                    <ul class="tasks-filters" id="marketingFilters" style="list-style:none; padding:0; display:flex; gap:8px; margin:0;">
-                        <li class="active" data-marketing-filter="all">
-                            <span>Todos os Ativos</span>
-                        </li>
-                        <li data-marketing-filter="sites">
-                            <span>Sites & Landing Pages</span>
-                        </li>
-                        <li data-marketing-filter="ads">
-                            <span>Anúncios (Google/FB)</span>
-                        </li>
-                        <li data-marketing-filter="organic">
-                            <span>Orgânico / SEO</span>
-                        </li>
-                        <li data-marketing-filter="social">
-                            <span>Redes Sociais & Conteúdo</span>
-                        </li>
-                    </ul>
+                    <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Plataforma:</span>
+                            <ul class="tasks-filters" id="marketingFilters" style="list-style:none; padding:0; display:flex; gap:6px; margin:0; flex-wrap:wrap;">
+                                <li class="active" data-marketing-filter="all"><span>Todos</span></li>
+                                <li data-marketing-filter="meta"><span>📸 Instagram / Facebook</span></li>
+                                <li data-marketing-filter="linkedin"><span>💼 LinkedIn B2B</span></li>
+                                <li data-marketing-filter="video"><span>🎥 YouTube / TikTok</span></li>
+                                <li data-marketing-filter="sites"><span>🖥️ Sites & LPs</span></li>
+                                <li data-marketing-filter="ads"><span>📣 Anúncios (Google/FB)</span></li>
+                                <li data-marketing-filter="organic"><span>🔍 Orgânico / SEO</span></li>
+                                <li data-marketing-filter="social"><span>💬 Direct & Automação</span></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Grid layout for cards -->
@@ -3282,12 +3280,15 @@
                             <input type="text" id="marketingAssetTitle" class="form-control" placeholder="Ex: Campanha Google Ads - B2B" required>
                         </div>
                         <div class="form-group">
-                            <label for="marketingAssetCategory">Categoria do Canal *</label>
+                            <label for="marketingAssetCategory">Plataforma / Canal *</label>
                             <select id="marketingAssetCategory" class="form-control" required>
-                                <option value="sites">🖥️ Sites & Landing Pages</option>
-                                <option value="ads">📣 Anúncios Patrocinados (Google/Facebook Ads)</option>
-                                <option value="organic">🔍 Tráfego Orgânico / SEO</option>
-                                <option value="social">✍️ Redes Sociais & Conteúdo (Blog)</option>
+                                <option value="meta">📸 Instagram / Facebook (Meta Ads, Feed, Direct)</option>
+                                <option value="linkedin">💼 LinkedIn B2B (Social Selling, Ads, Artigos)</option>
+                                <option value="video">🎥 YouTube / TikTok (Vídeos Longos & Curtos)</option>
+                                <option value="sites">🖥️ Sites & Landing Pages (WEBCO Agency)</option>
+                                <option value="ads">📣 Google Ads / Tráfego Pago</option>
+                                <option value="organic">🔍 SEO / Orgânico / Google Meu Negócio</option>
+                                <option value="social">💬 Direct & Automações (ManyChat / WhatsApp)</option>
                             </select>
                         </div>
                     </div>
