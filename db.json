@@ -3605,6 +3605,68 @@
           "notes": "Proposta criada por Matheus Bellato da WEBCO Agency. Chave Pix: (11) 97570-2321. Prazo de entrega em até 5 dias corridos.",
           "pixKey": "(11) 97570-2321"
         }
+      ],
+      "marketingAssets": [
+        {
+          "id": "ma_strat_1",
+          "title": "Site Institucional Exclusivo - Gráfica Ariana",
+          "category": "sites",
+          "status": "active",
+          "url": "https://graficaariana.com.br",
+          "metrics": "Subindo na Hostinger (IP 2.24.117.26) • 5 dias de entrega",
+          "cost": "R$ 400,00 (50/50)",
+          "notes": "Site responsivo com botão de WhatsApp direto para orçamentos rápidos da gráfica."
+        },
+        {
+          "id": "ma_strat_2",
+          "title": "Campanha Google Ads - Prospecção Gráfica Ariana",
+          "category": "ads",
+          "status": "active",
+          "url": "https://ads.google.com",
+          "metrics": "Palavras-chave: gráfica rápida, impressão gráfica, panfletos SP",
+          "cost": "R$ 600,00/mês",
+          "notes": "Anúncios focados em captar clientes locais que buscam serviços de gráfica rápida."
+        },
+        {
+          "id": "ma_strat_3",
+          "title": "WhatsApp Direct Lead Converter (Gráfica Ariana)",
+          "category": "social",
+          "status": "active",
+          "url": "https://wa.me/5511975702321",
+          "metrics": "Redirecionamento 1-clique | Chave Pix 11975702321",
+          "cost": "R$ 0,00",
+          "notes": "Integração do botão de atendimento instantâneo diretamente para o WhatsApp comercial."
+        },
+        {
+          "id": "ma_strat_4",
+          "title": "SEO Local & Google Meu Negócio - Gráfica Ariana",
+          "category": "organic",
+          "status": "active",
+          "url": "https://maps.google.com",
+          "metrics": "Otimização para mapa local e buscas regionais",
+          "cost": "R$ 0,00",
+          "notes": "Cadastro e otimização das palavras-chave locais para gráfica nas primeiras posições."
+        },
+        {
+          "id": "ma_strat_5",
+          "title": "Site Principal & Landing Pages - WEBCO Agency",
+          "category": "sites",
+          "status": "active",
+          "url": "https://webcoagency.site",
+          "metrics": "2.4k visitas/mês | Hostinger VPS",
+          "cost": "R$ 45,00/mês",
+          "notes": "Site institucional e landing pages de conversão de clientes."
+        },
+        {
+          "id": "ma_strat_6",
+          "title": "Campanha Google Ads - WEBCO Agency (Criação de Sites)",
+          "category": "ads",
+          "status": "active",
+          "url": "https://ads.google.com",
+          "metrics": "120 leads/mês | CTR 4.8%",
+          "cost": "R$ 1.500,00/mês",
+          "notes": "Campanha nacional de atração de PMEs para criação de sites e tráfego pago."
+        }
       ]
     }
   }
