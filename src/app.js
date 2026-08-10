@@ -8383,8 +8383,8 @@ function populateProposalDropdowns() {
     
     // Also trigger preview updates when main selectors change
     cSelect.addEventListener("change", updateProposalPreview);
-    document.getElementById("proposalFinalValue").addEventListener("input", updateProposalPreview);
-    document.getElementById("proposalRecurrence").addEventListener("change", updateProposalPreview);
+    const _el_proposalFinalValue = document.getElementById("proposalFinalValue"); if (_el_proposalFinalValue) _el_proposalFinalValue.addEventListener("input", updateProposalPreview);
+    const _el_proposalRecurrence = document.getElementById("proposalRecurrence"); if (_el_proposalRecurrence) _el_proposalRecurrence.addEventListener("change", updateProposalPreview);
 
     updateProposalAddons();
 }
@@ -9604,7 +9604,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     
     // Bind proposals actions
-    document.getElementById("btnCreateProposal").addEventListener("click", openCreateProposal);
+    const _el_btnCreateProposal = document.getElementById("btnCreateProposal"); if (_el_btnCreateProposal) _el_btnCreateProposal.addEventListener("click", openCreateProposal);
     document.getElementById("btnBackToProposalsList").addEventListener("click", () => {
         document.getElementById("proposalBuilderWrapper").classList.add("hidden");
         document.getElementById("proposalsListWrapper").classList.remove("hidden");
@@ -9612,10 +9612,10 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnPrintProposal").addEventListener("click", () => {
         window.print();
     });
-    document.getElementById("btnSaveProposal").addEventListener("click", saveProposal);
+    const _el_btnSaveProposal = document.getElementById("btnSaveProposal"); if (_el_btnSaveProposal) _el_btnSaveProposal.addEventListener("click", saveProposal);
     
     // Form change listeners to feed live preview
-    document.getElementById("proposalContactSelect").addEventListener("change", updateProposalPreview);
+    const _el_proposalContactSelect = document.getElementById("proposalContactSelect"); if (_el_proposalContactSelect) _el_proposalContactSelect.addEventListener("change", updateProposalPreview);
     document.getElementById("proposalProductSelect").addEventListener("change", (e) => {
         const env = getEnv();
         const prod = env.products.find(p => p.id === e.target.value);
@@ -9625,40 +9625,40 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         updateProposalPreview();
     });
-    document.getElementById("proposalFinalValue").addEventListener("input", updateProposalPreview);
-    document.getElementById("proposalRecurrence").addEventListener("change", updateProposalPreview);
+    const _el_proposalFinalValue = document.getElementById("proposalFinalValue"); if (_el_proposalFinalValue) _el_proposalFinalValue.addEventListener("input", updateProposalPreview);
+    const _el_proposalRecurrence = document.getElementById("proposalRecurrence"); if (_el_proposalRecurrence) _el_proposalRecurrence.addEventListener("change", updateProposalPreview);
 
     // Bind Contracts Actions
-    document.getElementById("btnBackToContractsList").onclick = () => {
+    const _el_btnBackToContractsList = document.getElementById("btnBackToContractsList"); if (_el_btnBackToContractsList) _el_btnBackToContractsList.onclick = () => {;
         document.getElementById("contractViewerWrapper").classList.add("hidden");
         document.getElementById("contractsListWrapper").classList.remove("hidden");
     };
-    document.getElementById("btnPrintContract").onclick = () => {
+    const _el_btnPrintContract = document.getElementById("btnPrintContract"); if (_el_btnPrintContract) _el_btnPrintContract.onclick = () => {;
         window.print();
     };
 
     // Bind Calendar Navigation
-    document.getElementById("btnPrevMonth").onclick = () => {
+    const _el_btnPrevMonth = document.getElementById("btnPrevMonth"); if (_el_btnPrevMonth) _el_btnPrevMonth.onclick = () => {;
         const d = state.calendarDate;
         state.calendarDate = new Date(d.getFullYear(), d.getMonth() - 1, 1);
         renderCalendar();
     };
-    document.getElementById("btnNextMonth").onclick = () => {
+    const _el_btnNextMonth = document.getElementById("btnNextMonth"); if (_el_btnNextMonth) _el_btnNextMonth.onclick = () => {;
         const d = state.calendarDate;
         state.calendarDate = new Date(d.getFullYear(), d.getMonth() + 1, 1);
         renderCalendar();
     };
 
     // Calendar Modal trigger & Save
-    document.getElementById("btnCreateEvent").onclick = () => {
+    const _el_btnCreateEvent = document.getElementById("btnCreateEvent"); if (_el_btnCreateEvent) _el_btnCreateEvent.onclick = () => {;
         document.getElementById("eventForm").reset();
         document.getElementById("eventDate").value = new Date().toISOString().split("T")[0];
         document.getElementById("eventModal").classList.add("active");
     };
-    document.getElementById("btnCloseEventModal").onclick = () => {
+    const _el_btnCloseEventModal = document.getElementById("btnCloseEventModal"); if (_el_btnCloseEventModal) _el_btnCloseEventModal.onclick = () => {;
         document.getElementById("eventModal").classList.remove("active");
     };
-    document.getElementById("btnCancelEventModal").onclick = () => {
+    const _el_btnCancelEventModal = document.getElementById("btnCancelEventModal"); if (_el_btnCancelEventModal) _el_btnCancelEventModal.onclick = () => {;
         document.getElementById("eventModal").classList.remove("active");
     };
 
@@ -9686,15 +9686,15 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     // Finance Modals Triggers
-    document.getElementById("btnCreateInvoice").onclick = () => {
+    const _el_btnCreateInvoice = document.getElementById("btnCreateInvoice"); if (_el_btnCreateInvoice) _el_btnCreateInvoice.onclick = () => {;
         document.getElementById("invoiceForm").reset();
         document.getElementById("invoiceDueDate").value = new Date().toISOString().split("T")[0];
         document.getElementById("invoiceModal").classList.add("active");
     };
-    document.getElementById("btnCloseInvoiceModal").onclick = () => {
+    const _el_btnCloseInvoiceModal = document.getElementById("btnCloseInvoiceModal"); if (_el_btnCloseInvoiceModal) _el_btnCloseInvoiceModal.onclick = () => {;
         document.getElementById("invoiceModal").classList.remove("active");
     };
-    document.getElementById("btnCancelInvoiceModal").onclick = () => {
+    const _el_btnCancelInvoiceModal = document.getElementById("btnCancelInvoiceModal"); if (_el_btnCancelInvoiceModal) _el_btnCancelInvoiceModal.onclick = () => {;
         document.getElementById("invoiceModal").classList.remove("active");
     };
 
@@ -9801,15 +9801,15 @@ window.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    document.getElementById("btnCreateExpense").onclick = () => {
+    const _el_btnCreateExpense = document.getElementById("btnCreateExpense"); if (_el_btnCreateExpense) _el_btnCreateExpense.onclick = () => {;
         document.getElementById("expenseForm").reset();
         document.getElementById("expenseDate").value = new Date().toISOString().split("T")[0];
         document.getElementById("expenseModal").classList.add("active");
     };
-    document.getElementById("btnCloseExpenseModal").onclick = () => {
+    const _el_btnCloseExpenseModal = document.getElementById("btnCloseExpenseModal"); if (_el_btnCloseExpenseModal) _el_btnCloseExpenseModal.onclick = () => {;
         document.getElementById("expenseModal").classList.remove("active");
     };
-    document.getElementById("btnCancelExpenseModal").onclick = () => {
+    const _el_btnCancelExpenseModal = document.getElementById("btnCancelExpenseModal"); if (_el_btnCancelExpenseModal) _el_btnCancelExpenseModal.onclick = () => {;
         document.getElementById("expenseModal").classList.remove("active");
     };
 
@@ -9839,16 +9839,16 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     // Marketing Assets Modals Binds
-    document.getElementById("btnCreateMarketingAsset").onclick = () => {
+    const _el_btnCreateMarketingAsset = document.getElementById("btnCreateMarketingAsset"); if (_el_btnCreateMarketingAsset) _el_btnCreateMarketingAsset.onclick = () => {;
         document.getElementById("marketingAssetForm").reset();
         document.getElementById("marketingAssetId").value = "";
         document.getElementById("marketingAssetModalTitle").innerText = "Adicionar Ativo de Marketing";
         document.getElementById("marketingAssetModal").classList.add("active");
     };
-    document.getElementById("btnCloseMarketingAssetModal").onclick = () => {
+    const _el_btnCloseMarketingAssetModal = document.getElementById("btnCloseMarketingAssetModal"); if (_el_btnCloseMarketingAssetModal) _el_btnCloseMarketingAssetModal.onclick = () => {;
         document.getElementById("marketingAssetModal").classList.remove("active");
     };
-    document.getElementById("btnCancelMarketingAssetModal").onclick = () => {
+    const _el_btnCancelMarketingAssetModal = document.getElementById("btnCancelMarketingAssetModal"); if (_el_btnCancelMarketingAssetModal) _el_btnCancelMarketingAssetModal.onclick = () => {;
         document.getElementById("marketingAssetModal").classList.remove("active");
     };
 
@@ -9903,10 +9903,10 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     // Calendar Day Preview Modal Binds
-    document.getElementById("btnCloseDayPreviewModal").onclick = () => {
+    const _el_btnCloseDayPreviewModal = document.getElementById("btnCloseDayPreviewModal"); if (_el_btnCloseDayPreviewModal) _el_btnCloseDayPreviewModal.onclick = () => {;
         document.getElementById("dayPreviewModal").classList.remove("active");
     };
-    document.getElementById("btnCloseDayPreviewOk").onclick = () => {
+    const _el_btnCloseDayPreviewOk = document.getElementById("btnCloseDayPreviewOk"); if (_el_btnCloseDayPreviewOk) _el_btnCloseDayPreviewOk.onclick = () => {;
         document.getElementById("dayPreviewModal").classList.remove("active");
     };
 
@@ -10856,8 +10856,8 @@ function openServiceModal(id = null) {
     modal.classList.add('active');
 
     // Close handlers (re-bind each time)
-    document.getElementById('btnCloseServiceModal').onclick  = () => modal.classList.remove('active');
-    document.getElementById('btnCancelServiceModal').onclick = () => modal.classList.remove('active');
+    const _el_btnCloseServiceModal = document.getElementById("btnCloseServiceModal"); if (_el_btnCloseServiceModal) _el_btnCloseServiceModal.onclick = () => modal.classList.remove('active');;
+    const _el_btnCancelServiceModal = document.getElementById("btnCancelServiceModal"); if (_el_btnCancelServiceModal) _el_btnCancelServiceModal.onclick = () => modal.classList.remove('active');;
 
     const serviceForm = document.getElementById('serviceForm');
     serviceForm.onsubmit = (e) => {
@@ -11480,10 +11480,10 @@ function openSendTemplateModal(templateId = null, contactId = null) {
 
     // Wire buttons
     const closeSendModal = () => modal.classList.remove('active');
-    document.getElementById('btnCloseSendTemplateModal').onclick = closeSendModal;
-    document.getElementById('btnCancelSendTemplateModal').onclick = closeSendModal;
+    const _el_btnCloseSendTemplateModal = document.getElementById("btnCloseSendTemplateModal"); if (_el_btnCloseSendTemplateModal) _el_btnCloseSendTemplateModal.onclick = closeSendModal;;
+    const _el_btnCancelSendTemplateModal = document.getElementById("btnCancelSendTemplateModal"); if (_el_btnCancelSendTemplateModal) _el_btnCancelSendTemplateModal.onclick = closeSendModal;;
 
-    document.getElementById('btnSendTemplateEmail').onclick = () => {
+    const _el_btnSendTemplateEmail = document.getElementById("btnSendTemplateEmail"); if (_el_btnSendTemplateEmail) _el_btnSendTemplateEmail.onclick = () => {;
         const email = document.getElementById('sendTemplateRecipientEmail').value.trim();
         const subject = document.getElementById('sendTemplateSubject').value.trim();
         const body = document.getElementById('sendTemplateBody').value.trim();
@@ -11519,7 +11519,7 @@ function openSendTemplateModal(templateId = null, contactId = null) {
         closeSendModal();
     };
 
-    document.getElementById('btnSendTemplateWhatsapp').onclick = () => {
+    const _el_btnSendTemplateWhatsapp = document.getElementById("btnSendTemplateWhatsapp"); if (_el_btnSendTemplateWhatsapp) _el_btnSendTemplateWhatsapp.onclick = () => {;
         const phone = document.getElementById('sendTemplateRecipientPhone').value.trim();
         const body = document.getElementById('sendTemplateBody').value.trim();
         const selectedContactId = contactSelect.value;
@@ -11559,7 +11559,7 @@ function openSendTemplateModal(templateId = null, contactId = null) {
         closeSendModal();
     };
 
-    document.getElementById('btnCopySendTemplateText').onclick = () => {
+    const _el_btnCopySendTemplateText = document.getElementById("btnCopySendTemplateText"); if (_el_btnCopySendTemplateText) _el_btnCopySendTemplateText.onclick = () => {;
         const subject = document.getElementById('sendTemplateSubject').value.trim();
         const body = document.getElementById('sendTemplateBody').value.trim();
         const textToCopy = subject ? `Assunto: ${subject}\n\n${body}` : body;
@@ -11689,8 +11689,8 @@ async function openSmtpConfigModal() {
     }
 
     const closeModal = () => modal.classList.remove('active');
-    document.getElementById('btnCloseSmtpModal').onclick = closeModal;
-    document.getElementById('btnCancelSmtpModal').onclick = closeModal;
+    const _el_btnCloseSmtpModal = document.getElementById("btnCloseSmtpModal"); if (_el_btnCloseSmtpModal) _el_btnCloseSmtpModal.onclick = closeModal;;
+    const _el_btnCancelSmtpModal = document.getElementById("btnCancelSmtpModal"); if (_el_btnCancelSmtpModal) _el_btnCancelSmtpModal.onclick = closeModal;;
 
     const testBtn = document.getElementById('btnTestSmtpConfig');
     if (testBtn) {
@@ -12350,8 +12350,8 @@ function openDocumentModal(id = null) {
     }
 
     const close = () => document.getElementById('documentModal').classList.remove('active');
-    document.getElementById('btnCloseDocumentModal').onclick = close;
-    document.getElementById('btnCancelDocumentModal').onclick = close;
+    const _el_btnCloseDocumentModal = document.getElementById("btnCloseDocumentModal"); if (_el_btnCloseDocumentModal) _el_btnCloseDocumentModal.onclick = close;;
+    const _el_btnCancelDocumentModal = document.getElementById("btnCancelDocumentModal"); if (_el_btnCancelDocumentModal) _el_btnCancelDocumentModal.onclick = close;;
 
     document.getElementById('documentModal').classList.add('active');
 }
@@ -12417,8 +12417,8 @@ function previewDocument(doc) {
     }
 
     const close = () => modal.classList.remove('active');
-    document.getElementById('btnCloseDocPreviewModal').onclick = close;
-    document.getElementById('btnCloseDocPreviewModal2').onclick = close;
+    const _el_btnCloseDocPreviewModal = document.getElementById("btnCloseDocPreviewModal"); if (_el_btnCloseDocPreviewModal) _el_btnCloseDocPreviewModal.onclick = close;;
+    const _el_btnCloseDocPreviewModal2 = document.getElementById("btnCloseDocPreviewModal2"); if (_el_btnCloseDocPreviewModal2) _el_btnCloseDocPreviewModal2.onclick = close;;
 
     const btnEditFromPreview = document.getElementById('btnEditDocFromPreview');
     if (btnEditFromPreview) {
@@ -12430,12 +12430,12 @@ function previewDocument(doc) {
         };
     }
 
-    document.getElementById('btnCopyDocInfo').onclick = () => {
+    const _el_btnCopyDocInfo = document.getElementById("btnCopyDocInfo"); if (_el_btnCopyDocInfo) _el_btnCopyDocInfo.onclick = () => {;
         const text = `${doc.title}\n${doc.description ? doc.description + '\n' : ''}${doc.fileName ? 'Arquivo: ' + doc.fileName : ''}`;
         navigator.clipboard.writeText(text).then(() => showToast('✅ Informações copiadas!', 'success'));
     };
 
-    document.getElementById('btnDownloadDocFromPreview').onclick = () => {
+    const _el_btnDownloadDocFromPreview = document.getElementById("btnDownloadDocFromPreview"); if (_el_btnDownloadDocFromPreview) _el_btnDownloadDocFromPreview.onclick = () => {;
         downloadDocumentFile(doc);
     };
 
@@ -13125,8 +13125,8 @@ function openAffiliateModal(id = null, preSelectContactId = null) {
     document.getElementById('affiliateModalTitle').innerText = aff ? 'Editar Afiliado' : 'Novo Afiliado';
 
     const close = () => document.getElementById('affiliateModal').classList.remove('active');
-    document.getElementById('btnCloseAffiliateModal').onclick = close;
-    document.getElementById('btnCancelAffiliateModal').onclick = close;
+    const _el_btnCloseAffiliateModal = document.getElementById("btnCloseAffiliateModal"); if (_el_btnCloseAffiliateModal) _el_btnCloseAffiliateModal.onclick = close;;
+    const _el_btnCancelAffiliateModal = document.getElementById("btnCancelAffiliateModal"); if (_el_btnCancelAffiliateModal) _el_btnCancelAffiliateModal.onclick = close;;
 
     document.getElementById('affiliateModal').classList.add('active');
 }
@@ -13169,8 +13169,8 @@ function openAffiliatePayoutModal(id) {
     document.getElementById('payoutReceipt').value = '';
 
     const close = () => document.getElementById('affiliatePayoutModal').classList.remove('active');
-    document.getElementById('btnClosePayoutModal').onclick = close;
-    document.getElementById('btnCancelPayoutModal').onclick = close;
+    const _el_btnClosePayoutModal = document.getElementById("btnClosePayoutModal"); if (_el_btnClosePayoutModal) _el_btnClosePayoutModal.onclick = close;;
+    const _el_btnCancelPayoutModal = document.getElementById("btnCancelPayoutModal"); if (_el_btnCancelPayoutModal) _el_btnCancelPayoutModal.onclick = close;;
 
     document.getElementById('affiliatePayoutModal').classList.add('active');
 }
