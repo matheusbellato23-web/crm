@@ -4846,7 +4846,11 @@ function renderContacts() {
     const totalCount = allContacts.length;
     const graficaCount = allContacts.filter(c => (c.niche && c.niche.toLowerCase().includes('graf')) || (c.company && c.company.toLowerCase().includes('graf'))).length;
     const agentCount = allContacts.filter(c => c.source === 'Agente Comercial' || (c.id && c.id.includes('agente'))).length;
-    const pipelineValue = allContacts.reduce((acc, c) => acc + (Number(c.value) || 0), 0);
+    // ⚠️ CRITICAL: Pipeline value is ONLY active potential deals in negotiation/proposal/contacted/lead stages (excludes won and lost)
+    const activePipelineStatuses = ['lead', 'contacted', 'proposal', 'negotiating'];
+    const pipelineValue = allContacts
+        .filter(c => activePipelineStatuses.includes(c.status))
+        .reduce((acc, c) => acc + (Number(c.value) || 0), 0);
 
     const elTotal = document.getElementById("kpiTotalContactsCount");
     const elGrafica = document.getElementById("kpiGraficaContactsCount");
