@@ -4439,7 +4439,7 @@ function renderAll() {
 // 1. Dashboard Render
 // State for dashboard period filter
 let dashPeriod = 'month';
-let finPeriod = 'month';
+let finPeriod = 'all';
 let finInvoiceStatus = 'all';
 let finInvoiceSearch = '';
 let showFinCharts = true;

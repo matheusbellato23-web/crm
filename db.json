@@ -600,7 +600,36 @@
           "status": "open",
           "notes": "Site 100% concluído. Possibilidade de expansão para anúncios locais."
         }
+      ],
+      "expenses": [],
+      "products": [],
+      "tasks": [],
+      "templates": [],
+      "affiliates": [],
+      "fiscalNotes": [],
+      "importHistory": [],
+      "niches": [
+        "Negócio Local",
+        "E-commerce",
+        "Infoproduto / Lançamentos",
+        "SaaS / Startup",
+        "Serviços B2B",
+        "Turismo",
+        "Saúde / Estética",
+        "Gráfica",
+        "Outro"
+      ],
+      "balanceAdjustment": 0,
+      "users": [
+        {
+          "username": "Admin",
+          "password": "080125",
+          "name": "Admin",
+          "role": "Administrador"
+        }
       ]
     }
-  }
+  },
+  "currentEnv": "webco",
+  "privacyMode": false
 }
