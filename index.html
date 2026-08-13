@@ -1719,6 +1719,9 @@
                         <li class="active-tab-li" id="tabOverdue" style="padding:10px 18px; border-radius:var(--radius-sm) var(--radius-sm) 0 0; cursor:pointer; font-weight:600; font-size:12.5px; display:flex; align-items:center; gap:8px; border:1.5px solid transparent; border-bottom:none; margin-bottom:-1.5px; transition:all var(--transition-fast);">
                             <i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> <span>Inadimplência</span>
                         </li>
+                        <li class="active-tab-li" id="tabUpsells" style="padding:10px 18px; border-radius:var(--radius-sm) var(--radius-sm) 0 0; cursor:pointer; font-weight:600; font-size:12.5px; display:flex; align-items:center; gap:8px; border:1.5px solid transparent; border-bottom:none; margin-bottom:-1.5px; transition:all var(--transition-fast);">
+                            <i data-lucide="sparkles" style="width:14px;height:14px;color:#f59e0b;"></i> <span>💡 Oportunidades Futuras (Upsell)</span>
+                        </li>
                         <li class="active-tab-li" id="tabFiscalNotes" style="padding:10px 18px; border-radius:var(--radius-sm) var(--radius-sm) 0 0; cursor:pointer; font-weight:600; font-size:12.5px; display:flex; align-items:center; gap:8px; border:1.5px solid transparent; border-bottom:none; margin-bottom:-1.5px; transition:all var(--transition-fast);">
                             <i data-lucide="file-text" style="width:14px;height:14px;"></i> <span>Notas Fiscais</span>
                         </li>
@@ -1919,6 +1922,44 @@
                                         <!-- Dynamic notas fiscais -->
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+
+                        <!-- Upsells / Oportunidades Futuras Panel -->
+                        <div class="table-card hidden" id="panelUpsells">
+                            <div style="padding:16px 20px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <h3 style="font-size:15px; font-weight:700; margin:0; display:flex; align-items:center; gap:8px;">
+                                        <i data-lucide="sparkles" style="width:16px;height:16px;color:#f59e0b;"></i>
+                                        <span>Oportunidades Futuras & Serviços Abertos (Upsell)</span>
+                                    </h3>
+                                    <p style="font-size:12px; color:var(--text-secondary); margin:2px 0 0 0;">Controle serviços adicionais identificados (ex: Google Ads, SEO) que o cliente tem interesse/necessidade.</p>
+                                </div>
+                                <button class="btn btn-primary btn-sm" id="btnCreateUpsell" style="font-size:12px; padding:6px 12px; display:flex; align-items:center; gap:6px;">
+                                    <i data-lucide="plus" style="width:14px;height:14px;"></i> Nova Oportunidade
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table" id="upsellsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Empresa / Cliente</th>
+                                            <th>Serviço / Produto de Interesse</th>
+                                            <th>Valor Estimado</th>
+                                            <th>Observações / Necessidade Identificada</th>
+                                            <th>Status</th>
+                                            <th style="text-align: right;">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="upsellsTableBody">
+                                        <!-- Dynamic upsell rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="upsellsEmptyState" class="hidden" style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+                                <i data-lucide="sparkles" style="width:40px;height:40px;margin-bottom:12px;opacity:0.4;color:#f59e0b;"></i>
+                                <p style="font-size:14px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;">Nenhuma oportunidade futura registrada</p>
+                                <p style="font-size:12px;">Cadastre novas oportunidades de upsell para acompanhar clientes com interesse em serviços como Google Ads.</p>
                             </div>
                         </div>
                     </div>
