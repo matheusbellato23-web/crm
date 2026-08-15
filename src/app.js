@@ -3881,20 +3881,6 @@ const defaultMarketingAssets = [
         "url": "https://webcoagency.site",
         "metrics": "Frente Comercial Principal",
         "cost": "Hostinger VPS"
-    },
-    {
-        "id": "strat_site_2",
-        "platform": "Gráfica Ariana",
-        "channel": "Site Institucional Exclusivo",
-        "approach": "Venda Direta / Atendimento Rápido",
-        "format": "Site responsivo com botão de WhatsApp direto para orçamentos rápidos da gráfica.",
-        "strategy": "Desenvolvimento completo de site profissional com direcionamento para WhatsApp.",
-        "category": "sites",
-        "responsible": "Matheus Bellato",
-        "status": "active",
-        "url": "https://graficaariana.com.br",
-        "metrics": "Subindo na Hostinger (IP 2.24.117.26)",
-        "cost": "R$ 400,00 (50/50)"
     }
 ];
 
