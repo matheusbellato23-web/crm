@@ -1584,11 +1584,19 @@
                     </div>
                     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                         <!-- Period Filter Group for Finance -->
-                        <div class="period-filter-group" id="finPeriodFilterGroup">
-                            <button type="button" class="period-btn active" data-period="month">Este Mês</button>
-                            <button type="button" class="period-btn" data-period="quarter">Este Trimestre</button>
-                            <button type="button" class="period-btn" data-period="year">Este Ano</button>
-                            <button type="button" class="period-btn" data-period="all">Todo o Período</button>
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <div class="period-filter-group" id="finPeriodFilterGroup">
+                                <button type="button" class="period-btn" data-period="prev_month" title="Mês Anterior"><i data-lucide="chevron-left" style="width:12px;height:12px;"></i></button>
+                                <button type="button" class="period-btn active" data-period="month">Este Mês</button>
+                                <button type="button" class="period-btn" data-period="next_month">Próximo Mês</button>
+                                <button type="button" class="period-btn" data-period="quarter">Trimestre</button>
+                                <button type="button" class="period-btn" data-period="year">Ano</button>
+                                <button type="button" class="period-btn" data-period="all">Tudo</button>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:4px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px 8px; height:34px;">
+                                <i data-lucide="calendar" style="width:14px;height:14px;color:var(--text-muted);"></i>
+                                <input type="month" id="finSpecificMonth" class="form-control" style="border:none; background:transparent; padding:0 4px; font-size:12px; height:auto; color:var(--text-primary); cursor:pointer;" title="Selecionar Mês Específico">
+                            </div>
                         </div>
                         <button class="btn btn-secondary" id="btnToggleFinCharts" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); gap: 6px;">
                             <i data-lucide="eye-off"></i>

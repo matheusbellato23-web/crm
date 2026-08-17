@@ -4426,6 +4426,7 @@ function renderAll() {
 // State for dashboard period filter
 let dashPeriod = 'month';
 let finPeriod = 'all';
+let finSpecificMonthValue = '';
 let finInvoiceStatus = 'all';
 let finInvoiceSearch = '';
 let showFinCharts = true;
@@ -4454,7 +4455,27 @@ function getFinPeriodRange() {
         const qEnd = new Date(now.getFullYear(), q * 3 + 3, 0).toISOString().split('T')[0];
         return { start: qStart, end: qEnd };
     }
-    // month (default)
+    if (finPeriod === 'next_month') {
+        const nextM = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const mStart = `${nextM.getFullYear()}-${String(nextM.getMonth() + 1).padStart(2, '0')}-01`;
+        const mEnd = new Date(nextM.getFullYear(), nextM.getMonth() + 1, 0).toISOString().split('T')[0];
+        return { start: mStart, end: mEnd };
+    }
+    if (finPeriod === 'prev_month') {
+        const prevM = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const mStart = `${prevM.getFullYear()}-${String(prevM.getMonth() + 1).padStart(2, '0')}-01`;
+        const mEnd = new Date(prevM.getFullYear(), prevM.getMonth() + 1, 0).toISOString().split('T')[0];
+        return { start: mStart, end: mEnd };
+    }
+    if (finPeriod === 'specific' && finSpecificMonthValue) {
+        const [yearStr, monthStr] = finSpecificMonthValue.split('-');
+        const y = parseInt(yearStr, 10);
+        const m = parseInt(monthStr, 10);
+        const mStart = `${y}-${String(m).padStart(2, '0')}-01`;
+        const mEnd = new Date(y, m, 0).toISOString().split('T')[0];
+        return { start: mStart, end: mEnd };
+    }
+    // month (default current month)
     const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
     const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
     return { start: monthStart, end: monthEnd };
@@ -9040,8 +9061,33 @@ function renderFinance() {
     if (finFilterGroup) {
         finFilterGroup.querySelectorAll('.period-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.period === finPeriod);
-            btn.onclick = () => { finPeriod = btn.dataset.period; renderFinance(); };
+            btn.onclick = () => {
+                finPeriod = btn.dataset.period;
+                const specMonthInput = document.getElementById('finSpecificMonth');
+                if (specMonthInput && finPeriod !== 'specific') {
+                    specMonthInput.value = '';
+                }
+                renderFinance();
+            };
         });
+    }
+
+    // Wire specific month picker
+    const specMonthInput = document.getElementById('finSpecificMonth');
+    if (specMonthInput) {
+        if (finPeriod === 'specific' && finSpecificMonthValue) {
+            specMonthInput.value = finSpecificMonthValue;
+        }
+        specMonthInput.onchange = (e) => {
+            if (e.target.value) {
+                finPeriod = 'specific';
+                finSpecificMonthValue = e.target.value;
+                if (finFilterGroup) {
+                    finFilterGroup.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                }
+                renderFinance();
+            }
+        };
     }
 
     // Wire invoice status filter group
