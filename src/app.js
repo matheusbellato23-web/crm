@@ -13067,7 +13067,7 @@ function renderAffiliates() {
                 </div>
             </td>
             <td style="text-align:right;">
-                <div style="display:inline-flex; gap:4px;" onclick="event.stopPropagation();">
+                <div class="kanban-card-actions" style="display:inline-flex; gap:4px;" onclick="event.stopPropagation();">
                     <button class="btn-icon-only btn-payout-aff" data-id="${aff.id}" title="Lançar Pagamento Pix" style="color:#059669; background:rgba(5,150,105,0.1); border-radius:4px;"><i data-lucide="dollar-sign" style="width:14px;height:14px;"></i></button>
                     <button class="btn-icon-only btn-edit-aff" data-id="${aff.id}" title="Editar Afiliado"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
                     <button class="btn-icon-only btn-delete-aff" data-id="${aff.id}" title="Excluir Afiliado" style="color:var(--color-danger);"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
@@ -13075,11 +13075,125 @@ function renderAffiliates() {
             </td>
         `;
 
-        tr.querySelector('.btn-payout-aff').onclick = () => openAffiliatePayoutModal(aff.id);
-        tr.querySelector('.btn-edit-aff').onclick = () => openAffiliateModal(aff.id);
-        tr.querySelector('.btn-delete-aff').onclick = () => deleteAffiliate(aff.id);
+        // Detail sub-row (initially hidden)
+        const detailTr = document.createElement('tr');
+        detailTr.className = "affiliate-detail-row hidden";
+        detailTr.style.cssText = "background: var(--bg-card-hover); border-bottom: 1px solid var(--border-color); display: none;";
+
+        const affLink = `https://webcolabs.com.br/?ref=${aff.code}`;
+        const affLeads = contacts.filter(c => c.affiliateId === aff.id);
+        const affPayouts = aff.payouts || [];
+
+        detailTr.innerHTML = `
+            <td colspan="6" style="padding: 16px 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <!-- Info & Link Box -->
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 13px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="link" style="width: 14px; height: 14px; color: var(--color-primary);"></i>
+                            Link de Divulgação do Afiliado
+                        </h4>
+                        <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 10px;">
+                            <input type="text" readonly value="${affLink}" class="form-control" style="font-size: 12px; height: 32px; background: var(--bg-app); cursor: text;" id="link_input_${aff.id}">
+                            <button type="button" class="btn btn-secondary btn-copy-aff-link" data-link="${affLink}" style="padding: 0 10px; height: 32px; font-size: 11px; white-space: nowrap;">
+                                <i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copiar
+                            </button>
+                        </div>
+                        <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.6;">
+                            <div><strong>Código Cupom:</strong> <span style="font-family: monospace; color: var(--color-primary); font-weight: 700;">${aff.code}</span></div>
+                            <div><strong>Benefício do Cliente:</strong> ${aff.discountBenefit || '10% de desconto na hospedagem'}</div>
+                            <div><strong>Taxa de Comissão:</strong> ${aff.commissionRate}% por negócio fechado</div>
+                        </div>
+                    </div>
+
+                    <!-- Dados Bancários & Pix -->
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 13px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="credit-card" style="width: 14px; height: 14px; color: #059669;"></i>
+                            Dados para Pagamento de Comissões
+                        </h4>
+                        <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.6;">
+                            <div><strong>CPF / CNPJ:</strong> ${aff.document || 'Não informado'}</div>
+                            <div><strong>Chave Pix:</strong> <strong style="color: #059669;">${aff.pixKey || 'Não informada'}</strong></div>
+                            <div><strong>E-mail / Telefone:</strong> ${aff.email || '-'} | ${aff.phone || '-'}</div>
+                            <div><strong>Banco / Conta:</strong> ${aff.bankInfo || 'Não informado'}</div>
+                        </div>
+                    </div>
+
+                    <!-- Leads Indicados e Histórico de Pagamentos -->
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 13px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between;">
+                            <span style="display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="users" style="width: 14px; height: 14px; color: #06B6D4;"></i>
+                                Leads Indicados (${affLeads.length})
+                            </span>
+                            <span style="font-size: 10.5px; color: #059669; font-weight: 600;">${affPayouts.length} pagamentos realizados</span>
+                        </h4>
+                        ${affLeads.length === 0 ? `
+                            <p style="font-size: 11.5px; color: var(--text-muted); margin: 0;">Nenhum lead vinculado a este afiliado ainda.</p>
+                        ` : `
+                            <div style="max-height: 110px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                ${affLeads.map(l => `
+                                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; padding: 4px 6px; background: var(--bg-app); border-radius: 4px;">
+                                        <span><strong>${l.name}</strong> ${l.company ? `(${l.company})` : ''}</span>
+                                        <span class="badge-status ${l.status}" style="font-size: 9.5px; padding: 1px 6px;">${l.status}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            </td>
+        `;
+
+        // Toggle details click event
+        const toggleBtn = tr.querySelector('.btn-toggle-detail');
+        const toggleDetails = () => {
+            const isHidden = detailTr.style.display === 'none';
+            if (isHidden) {
+                detailTr.style.display = 'table-row';
+                toggleBtn.innerText = '▼';
+                toggleBtn.style.color = '#06B6D4';
+                tr.style.backgroundColor = 'var(--color-primary-glow)';
+            } else {
+                detailTr.style.display = 'none';
+                toggleBtn.innerText = '▶';
+                toggleBtn.style.color = 'var(--color-primary)';
+                tr.style.backgroundColor = '';
+            }
+            safeCreateIcons();
+        };
+
+        tr.onclick = (e) => {
+            // If click was inside actions buttons, do not toggle
+            if (e.target.closest('.kanban-card-actions')) return;
+            toggleDetails();
+        };
+        toggleBtn.onclick = (e) => {
+            e.stopPropagation();
+            toggleDetails();
+        };
+
+        // Copy affiliate link button
+        const copyBtn = detailTr.querySelector('.btn-copy-aff-link');
+        if (copyBtn) {
+            copyBtn.onclick = (e) => {
+                e.stopPropagation();
+                const link = copyBtn.dataset.link;
+                navigator.clipboard.writeText(link).then(() => {
+                    showToast('Link copiado para a área de transferência!', 'success');
+                }).catch(() => {
+                    prompt('Copie o link de afiliado:', link);
+                });
+            };
+        }
+
+        tr.querySelector('.btn-payout-aff').onclick = (e) => { e.stopPropagation(); openAffiliatePayoutModal(aff.id); };
+        tr.querySelector('.btn-edit-aff').onclick = (e) => { e.stopPropagation(); openAffiliateModal(aff.id); };
+        tr.querySelector('.btn-delete-aff').onclick = (e) => { e.stopPropagation(); deleteAffiliate(aff.id); };
 
         tbody.appendChild(tr);
+        tbody.appendChild(detailTr);
     });
 
     safeCreateIcons();
