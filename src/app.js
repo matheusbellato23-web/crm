@@ -4436,35 +4436,10 @@ window.switchView = function(viewId) {
 };
 
 window.editInvoiceById = function(id) {
-    const env = getEnv();
-    const inv = env.invoices.find(i => i.id === id);
-    if (!inv) return;
-    
     switchView('finance');
-    
-    const today = new Date().toISOString().split('T')[0];
-    const isOverdue = inv.status === 'overdue' || (inv.status === 'pending' && inv.dueDate && inv.dueDate < today);
-    
-    if (isOverdue) {
-        const tabOverdue = document.getElementById('tabOverdue');
-        if (tabOverdue) tabOverdue.click();
-    } else {
-        const tabInvoices = document.getElementById('tabInvoices');
-        if (tabInvoices) tabInvoices.click();
-    }
-
     setTimeout(() => {
-        const newVal = prompt('Editar valor da fatura (R$):', inv.value);
-        if (newVal === null) return;
-        const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
-        if (newDate === null) return;
-        inv.value = parseFloat(newVal) || inv.value;
-        inv.dueDate = newDate || inv.dueDate;
-        saveState();
-        renderFinance();
-        renderDashboard();
-        showToast('Fatura atualizada!', 'success');
-    }, 150);
+        openEditInvoiceModal(id);
+    }, 100);
 };
 
 function getFinPeriodRange() {
@@ -9195,25 +9170,16 @@ function renderFinance() {
                     showToast('✅ Recebimento confirmado! Saldo atualizado.', 'success');
                 };
             }
-            const editFn = () => {
-                const newVal = prompt('Editar valor da fatura (R$):', inv.value);
-                if (newVal === null) return;
-                const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
-                if (newDate === null) return;
-                inv.value = parseFloat(newVal) || inv.value;
-                inv.dueDate = newDate || inv.dueDate;
-                saveState();
-                renderFinance();
-                renderDashboard();
-                showToast('Fatura atualizada!', 'success');
+            const openEditInvFn = () => {
+                openEditInvoiceModal(inv.id);
             };
-            tr.querySelector('.btn-edit-invoice').onclick = editFn;
+            tr.querySelector('.btn-edit-invoice').onclick = openEditInvFn;
 
             // Make cells clickable to edit (excluding the actions td)
             const cells = tr.querySelectorAll('td');
             for (let i = 0; i < cells.length - 1; i++) {
                 cells[i].style.cursor = 'pointer';
-                cells[i].onclick = editFn;
+                cells[i].onclick = openEditInvFn;
             }
 
             tr.querySelector('.btn-delete-invoice').onclick = () => {
@@ -9257,26 +9223,17 @@ function renderFinance() {
                 </div>
             </td>`;
 
-        const editExpFn = () => {
-            const newDesc = prompt('Descrição da despesa:', exp.description);
-            if (newDesc === null) return;
-            const newVal = prompt('Valor (R$):', exp.value);
-            if (newVal === null) return;
-            exp.description = newDesc || exp.description;
-            exp.value = parseFloat(newVal) || exp.value;
-            saveState();
-            renderFinance();
-            renderDashboard();
-            showToast('Despesa atualizada!', 'success');
+        const openEditExpFn = () => {
+            openEditExpenseModal(exp.id);
         };
 
-        tr.querySelector(".btn-edit-expense").onclick = editExpFn;
+        tr.querySelector(".btn-edit-expense").onclick = openEditExpFn;
 
         // Make cells clickable to edit (excluding the actions td)
         const cells = tr.querySelectorAll('td');
         for (let i = 0; i < cells.length - 1; i++) {
             cells[i].style.cursor = 'pointer';
-            cells[i].onclick = editExpFn;
+            cells[i].onclick = openEditExpFn;
         }
 
         tr.querySelector(".btn-delete-expense").onclick = () => {
@@ -9678,39 +9635,116 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     // Finance Modals Triggers
-    const _el_btnCreateInvoice = document.getElementById("btnCreateInvoice"); if (_el_btnCreateInvoice) _el_btnCreateInvoice.onclick = () => {;
-        document.getElementById("invoiceForm").reset();
+    window.openAddInvoice = function() {
+        const form = document.getElementById("invoiceForm");
+        if (form) form.reset();
+        document.getElementById("invoiceEditId").value = "";
+        document.getElementById("invoiceModalTitle").innerText = "Lançar Receita / Fatura Avulsa";
         document.getElementById("invoiceDueDate").value = new Date().toISOString().split("T")[0];
+        document.getElementById("invoiceStatus").value = "pending";
         document.getElementById("invoiceModal").classList.add("active");
     };
-    const _el_btnCloseInvoiceModal = document.getElementById("btnCloseInvoiceModal"); if (_el_btnCloseInvoiceModal) _el_btnCloseInvoiceModal.onclick = () => {;
+
+    window.openEditInvoiceModal = function(id) {
+        const env = getEnv();
+        const inv = env.invoices.find(i => i.id === id);
+        if (!inv) return;
+
+        document.getElementById("invoiceEditId").value = inv.id;
+        document.getElementById("invoiceModalTitle").innerText = `Editar Receita / Fatura (${inv.id})`;
+        document.getElementById("invoiceCustomer").value = inv.customerName || "";
+        document.getElementById("invoiceCompany").value = inv.company || "";
+        document.getElementById("invoiceNiche").value = inv.niche || "Negócio Local";
+        document.getElementById("invoiceProduct").value = inv.productName || "";
+        document.getElementById("invoiceValue").value = inv.value || "";
+        document.getElementById("invoiceDueDate").value = inv.dueDate || "";
+        document.getElementById("invoiceStatus").value = inv.status || "pending";
+        document.getElementById("invoiceNotes").value = inv.notes || "";
+
+        document.getElementById("invoiceModal").classList.add("active");
+    };
+
+    window.openAddExpense = function() {
+        const form = document.getElementById("expenseForm");
+        if (form) form.reset();
+        document.getElementById("expenseEditId").value = "";
+        document.getElementById("expenseModalTitle").innerText = "Lançar Despesa";
+        document.getElementById("expenseDate").value = new Date().toISOString().split("T")[0];
+        document.getElementById("expenseStatus").value = "paid";
+        document.getElementById("expenseModal").classList.add("active");
+    };
+
+    window.openEditExpenseModal = function(id) {
+        const env = getEnv();
+        const exp = env.expenses.find(e => e.id === id);
+        if (!exp) return;
+
+        document.getElementById("expenseEditId").value = exp.id;
+        document.getElementById("expenseModalTitle").innerText = `Editar Despesa (${exp.description})`;
+        document.getElementById("expenseDescription").value = exp.description || "";
+        document.getElementById("expenseCategory").value = exp.category || "Outros";
+        document.getElementById("expenseSupplier").value = exp.supplier || "";
+        document.getElementById("expenseValue").value = exp.value || "";
+        document.getElementById("expenseRecurrence").value = exp.recurrence || "single";
+        document.getElementById("expenseDate").value = exp.date || "";
+        document.getElementById("expenseStatus").value = exp.status || "paid";
+
+        document.getElementById("expenseModal").classList.add("active");
+    };
+
+    const _el_btnCreateInvoice = document.getElementById("btnCreateInvoice");
+    if (_el_btnCreateInvoice) _el_btnCreateInvoice.onclick = () => openAddInvoice();
+    const _el_btnCloseInvoiceModal = document.getElementById("btnCloseInvoiceModal");
+    if (_el_btnCloseInvoiceModal) _el_btnCloseInvoiceModal.onclick = () => {
         document.getElementById("invoiceModal").classList.remove("active");
     };
-    const _el_btnCancelInvoiceModal = document.getElementById("btnCancelInvoiceModal"); if (_el_btnCancelInvoiceModal) _el_btnCancelInvoiceModal.onclick = () => {;
+    const _el_btnCancelInvoiceModal = document.getElementById("btnCancelInvoiceModal");
+    if (_el_btnCancelInvoiceModal) _el_btnCancelInvoiceModal.onclick = () => {
         document.getElementById("invoiceModal").classList.remove("active");
     };
 
     document.getElementById("invoiceForm").onsubmit = (e) => {
         e.preventDefault();
         const env = getEnv();
-        const customerName = document.getElementById("invoiceCustomer").value;
-        const company = document.getElementById("invoiceCompany").value || "-";
+        const editId = document.getElementById("invoiceEditId").value;
+        const customerName = document.getElementById("invoiceCustomer").value.trim();
+        const company = document.getElementById("invoiceCompany").value.trim() || "-";
         const niche = document.getElementById("invoiceNiche").value;
-        const productName = document.getElementById("invoiceProduct").value;
+        const productName = document.getElementById("invoiceProduct").value.trim();
         const value = parseFloat(document.getElementById("invoiceValue").value) || 0;
         const dueDate = document.getElementById("invoiceDueDate").value;
+        const status = document.getElementById("invoiceStatus").value;
+        const notes = document.getElementById("invoiceNotes").value.trim();
 
-        const newInv = {
-            id: "FAT-" + Date.now().toString().substring(8),
-            customerName,
-            company,
-            niche,
-            productName,
-            value,
-            dueDate,
-            status: "pending"
-        };
-        env.invoices.push(newInv);
+        if (editId) {
+            const inv = env.invoices.find(i => i.id === editId);
+            if (inv) {
+                inv.customerName = customerName;
+                inv.company = company;
+                inv.niche = niche;
+                inv.productName = productName;
+                inv.value = value;
+                inv.dueDate = dueDate;
+                inv.status = status;
+                inv.notes = notes;
+                showToast("Fatura atualizada com sucesso!", "success");
+            }
+        } else {
+            const newInv = {
+                id: "FAT-" + Date.now().toString().substring(8),
+                customerName,
+                company,
+                niche,
+                productName,
+                value,
+                dueDate,
+                status,
+                notes
+            };
+            env.invoices.push(newInv);
+            showToast("Receita lançada com sucesso!", "success");
+        }
+
         saveState();
         renderAll();
         document.getElementById("invoiceModal").classList.remove("active");
@@ -9793,38 +9827,56 @@ window.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    const _el_btnCreateExpense = document.getElementById("btnCreateExpense"); if (_el_btnCreateExpense) _el_btnCreateExpense.onclick = () => {;
-        document.getElementById("expenseForm").reset();
-        document.getElementById("expenseDate").value = new Date().toISOString().split("T")[0];
-        document.getElementById("expenseModal").classList.add("active");
-    };
-    const _el_btnCloseExpenseModal = document.getElementById("btnCloseExpenseModal"); if (_el_btnCloseExpenseModal) _el_btnCloseExpenseModal.onclick = () => {;
+    const _el_btnCreateExpense = document.getElementById("btnCreateExpense");
+    if (_el_btnCreateExpense) _el_btnCreateExpense.onclick = () => openAddExpense();
+    const _el_btnCloseExpenseModal = document.getElementById("btnCloseExpenseModal");
+    if (_el_btnCloseExpenseModal) _el_btnCloseExpenseModal.onclick = () => {
         document.getElementById("expenseModal").classList.remove("active");
     };
-    const _el_btnCancelExpenseModal = document.getElementById("btnCancelExpenseModal"); if (_el_btnCancelExpenseModal) _el_btnCancelExpenseModal.onclick = () => {;
+    const _el_btnCancelExpenseModal = document.getElementById("btnCancelExpenseModal");
+    if (_el_btnCancelExpenseModal) _el_btnCancelExpenseModal.onclick = () => {
         document.getElementById("expenseModal").classList.remove("active");
     };
 
     document.getElementById("expenseForm").onsubmit = (e) => {
         e.preventDefault();
         const env = getEnv();
-        const description = document.getElementById("expenseDescription").value;
+        const editId = document.getElementById("expenseEditId").value;
+        const description = document.getElementById("expenseDescription").value.trim();
         const category = document.getElementById("expenseCategory").value;
-        const supplier = document.getElementById("expenseSupplier")?.value || "";
+        const supplier = document.getElementById("expenseSupplier")?.value.trim() || "";
         const recurrence = document.getElementById("expenseRecurrence")?.value || "single";
         const value = parseFloat(document.getElementById("expenseValue").value) || 0;
         const date = document.getElementById("expenseDate").value;
+        const status = document.getElementById("expenseStatus")?.value || "paid";
 
-        const newExp = {
-            id: "exp_" + Date.now(),
-            description,
-            category,
-            supplier,
-            recurrence,
-            value,
-            date
-        };
-        env.expenses.push(newExp);
+        if (editId) {
+            const exp = env.expenses.find(e => e.id === editId);
+            if (exp) {
+                exp.description = description;
+                exp.category = category;
+                exp.supplier = supplier;
+                exp.recurrence = recurrence;
+                exp.value = value;
+                exp.date = date;
+                exp.status = status;
+                showToast("Despesa atualizada com sucesso!", "success");
+            }
+        } else {
+            const newExp = {
+                id: "exp_" + Date.now(),
+                description,
+                category,
+                supplier,
+                recurrence,
+                value,
+                date,
+                status
+            };
+            env.expenses.push(newExp);
+            showToast("Despesa lançada com sucesso!", "success");
+        }
+
         saveState();
         renderAll();
         document.getElementById("expenseModal").classList.remove("active");
@@ -10700,29 +10752,19 @@ function renderOverdue(env) {
             renderOverdue(env);
             renderFinance();
             renderDashboard();
-            showToast('✅ Fatura marcada como recebida! Saldo atualizado.', 'success');
-        };
-        const editOverdueFn = () => {
-            const newVal = prompt('Editar valor da fatura (R$):', inv.value);
-            if (newVal === null) return;
-            const newDate = prompt('Editar data de vencimento (AAAA-MM-DD):', inv.dueDate || '');
-            if (newDate === null) return;
-            inv.value = parseFloat(newVal) || inv.value;
-            inv.dueDate = newDate || inv.dueDate;
-            saveState();
-            renderOverdue(env);
-            renderFinance();
-            renderDashboard();
-            showToast('Fatura atualizada!', 'success');
         };
 
-        tr.querySelector('.btn-edit-overdue').onclick = editOverdueFn;
+        const openEditOverdueFn = () => {
+            openEditInvoiceModal(inv.id);
+        };
+
+        tr.querySelector('.btn-edit-overdue').onclick = openEditOverdueFn;
 
         // Make cells clickable to edit (excluding the actions td)
         const cells = tr.querySelectorAll('td');
         for (let i = 0; i < cells.length - 1; i++) {
             cells[i].style.cursor = 'pointer';
-            cells[i].onclick = editOverdueFn;
+            cells[i].onclick = openEditOverdueFn;
         }
 
         tr.querySelector('.btn-delete-overdue').onclick = () => {

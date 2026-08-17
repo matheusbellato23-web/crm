@@ -2382,23 +2382,24 @@
         </main>
     </div>
 
-    <!-- MODAL: ADD INVOICE (RECEITA) -->
+    <!-- MODAL: ADD / EDIT INVOICE (RECEITA) -->
     <div class="modal" id="invoiceModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Lançar Receita / Fatura Avulsa</h3>
+                <h3 id="invoiceModalTitle">Lançar Receita / Fatura Avulsa</h3>
                 <button class="btn-close" id="btnCloseInvoiceModal"><i data-lucide="x"></i></button>
             </div>
             <form id="invoiceForm">
+                <input type="hidden" id="invoiceEditId">
                 <div class="modal-body">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="invoiceCustomer">Nome do Cliente *</label>
-                            <input type="text" id="invoiceCustomer" class="form-control" placeholder="Ex: Maria Santos" required>
+                            <input type="text" id="invoiceCustomer" class="form-control" placeholder="Ex: Ana - The Aurea Concept" required>
                         </div>
                         <div class="form-group">
-                            <label for="invoiceCompany">Empresa</label>
-                            <input type="text" id="invoiceCompany" class="form-control" placeholder="Ex: Santos Digital">
+                            <label for="invoiceCompany">Empresa / Negócio *</label>
+                            <input type="text" id="invoiceCompany" class="form-control" placeholder="Ex: Story Lens" required>
                         </div>
                     </div>
                     <div class="form-row">
@@ -2406,50 +2407,68 @@
                             <label for="invoiceNiche">Nicho do Cliente *</label>
                             <select id="invoiceNiche" class="form-control" required>
                                 <option value="Negócio Local">Negócio Local</option>
+                                <option value="Gráfica">Gráfica</option>
+                                <option value="Serviços B2B">Serviços B2B</option>
                                 <option value="E-commerce">E-commerce</option>
                                 <option value="Infoproduto / Lançamentos">Infoproduto / Lançamentos</option>
                                 <option value="SaaS / Startup">SaaS / Startup</option>
-                                <option value="Serviços B2B">Serviços B2B</option>
                                 <option value="Turismo">Turismo</option>
+                                <option value="Saúde / Estética">Saúde / Estética</option>
                                 <option value="Outro">Outro</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="invoiceProduct">Produto/Serviço *</label>
-                            <input type="text" id="invoiceProduct" class="form-control" placeholder="Ex: Site Institucional" required>
+                            <input type="text" id="invoiceProduct" class="form-control" placeholder="Ex: Criação de Site Institucional" required>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="invoiceValue">Valor Faturado (R$) *</label>
-                            <input type="number" id="invoiceValue" class="form-control" min="0" step="0.01" placeholder="3500.00" required>
+                            <input type="number" id="invoiceValue" class="form-control" min="0" step="0.01" placeholder="400.00" required>
                         </div>
                         <div class="form-group">
                             <label for="invoiceDueDate">Data de Vencimento *</label>
                             <input type="date" id="invoiceDueDate" class="form-control" required>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceStatus">Status do Pagamento *</label>
+                            <select id="invoiceStatus" class="form-control" required>
+                                <option value="paid">✅ Recebido (Pago)</option>
+                                <option value="pending" selected>⏳ Pendente</option>
+                                <option value="pending_delivery">📦 A Receber na Entrega</option>
+                                <option value="overdue">⚠️ Vencido (Inadimplente)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceNotes">Observações / Detalhes</label>
+                            <input type="text" id="invoiceNotes" class="form-control" placeholder="Ex: 50% entrada pago via Pix">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="btnCancelInvoiceModal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Lançar Fatura</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitInvoiceModal">Salvar Fatura</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: ADD EXPENSE (DESPESA) -->
+    <!-- MODAL: ADD / EDIT EXPENSE (DESPESA) -->
     <div class="modal" id="expenseModal">
-        <div class="modal-content" style="max-width:520px;">
+        <div class="modal-content" style="max-width:540px;">
             <div class="modal-header">
-                <h3>Lançar Despesa</h3>
+                <h3 id="expenseModalTitle">Lançar Despesa</h3>
                 <button class="btn-close" id="btnCloseExpenseModal"><i data-lucide="x"></i></button>
             </div>
             <form id="expenseForm">
+                <input type="hidden" id="expenseEditId">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="expenseDescription">Descrição *</label>
-                        <input type="text" id="expenseDescription" class="form-control" placeholder="Ex: Google Ads, AWS, Aluguel" required>
+                        <input type="text" id="expenseDescription" class="form-control" placeholder="Ex: Google Ads, Hostinger VPS, Aluguel" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -2467,7 +2486,7 @@
                         </div>
                         <div class="form-group">
                             <label for="expenseSupplier">Fornecedor</label>
-                            <input type="text" id="expenseSupplier" class="form-control" placeholder="Ex: Google, Amazon">
+                            <input type="text" id="expenseSupplier" class="form-control" placeholder="Ex: Google, Hostinger, AWS">
                         </div>
                     </div>
                     <div class="form-row">
@@ -2485,14 +2504,23 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="expenseDate">Data de Pagamento *</label>
-                        <input type="date" id="expenseDate" class="form-control" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expenseDate">Data de Pagamento *</label>
+                            <input type="date" id="expenseDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseStatus">Status do Pagamento *</label>
+                            <select id="expenseStatus" class="form-control" required>
+                                <option value="paid" selected>✅ Já Pago (Debitado)</option>
+                                <option value="pending">⏳ A Pagar (Agendado)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="btnCancelExpenseModal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Lançar Despesa</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitExpenseModal">Salvar Despesa</button>
                 </div>
             </form>
         </div>
