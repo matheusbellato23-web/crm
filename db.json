@@ -88,7 +88,7 @@
           "phone": "(11) 97111-2222",
           "niche": "Gráfica",
           "status": "proposal",
-          "value": 0,
+          "value": 400,
           "notes": "Pediu para entrar em contato após o dia 15 sobre proposta de site.",
           "source": "Agente Comercial",
           "createdAt": "2026-08-01T10:00:00.000Z"
@@ -101,7 +101,7 @@
           "phone": "(11) 97222-3333",
           "niche": "Gráfica",
           "status": "negotiating",
-          "value": 0,
+          "value": 400,
           "notes": "Proposta repassada para diretoria interna analisar.",
           "source": "Agente Comercial",
           "createdAt": "2026-08-03T10:00:00.000Z"

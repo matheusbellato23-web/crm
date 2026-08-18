@@ -237,7 +237,17 @@ app.post(['/api/sync-atendente-comercial', '/crm/api/sync-atendente-comercial'],
 // API Webhook: Receive leads directly from Agente Comercial AI
 app.post(['/api/webhook/agente-comercial', '/api/agente-webhook', '/api/webhook-agente'], (req, res) => {
     try {
-        let leads = Array.isArray(req.body) ? req.body : [req.body];
+        // Support both single lead object (or webhook format { lead: { ... } }) and arrays
+        let rawBody = req.body;
+        let leads = [];
+        if (Array.isArray(rawBody)) {
+            leads = rawBody;
+        } else if (rawBody && rawBody.lead) {
+            leads = [rawBody.lead];
+        } else if (rawBody && typeof rawBody === 'object') {
+            leads = [rawBody];
+        }
+
         if (!leads || leads.length === 0) {
             return res.status(400).json({ error: "Nenhum lead fornecido no payload." });
         }
@@ -258,36 +268,60 @@ app.post(['/api/webhook/agente-comercial', '/api/agente-webhook', '/api/webhook-
         leads.forEach(lead => {
             const email = (lead.email || lead.e_mail || '').trim().toLowerCase();
             const phone = (lead.phone || lead.telefone || lead.whatsapp || '').trim();
-            const company = (lead.company || lead.empresa || '').trim();
+            const phoneDigits = phone.replace(/\D/g, '');
+            const company = (lead.company || lead.empresa || lead.fullName || '').trim();
             const name = (lead.name || lead.nome || lead.contato || company || 'Lead Agente').trim();
 
             let existing = null;
             if (email) existing = contacts.find(c => (c.email || '').toLowerCase() === email);
-            if (!existing && phone) existing = contacts.find(c => (c.phone || '').replace(/\D/g, '') === phone.replace(/\D/g, '') && phone.length > 5);
+            if (!existing && phoneDigits.length >= 8) existing = contacts.find(c => (c.phone || '').replace(/\D/g, '') === phoneDigits);
+            if (!existing && company && company !== 'Lead Agente') existing = contacts.find(c => (c.company || '').toLowerCase() === company.toLowerCase());
 
             const statusMap = {
+                'lead': 'lead',
+                'novo': 'lead',
                 'contacted': 'contacted',
                 'contatado': 'contacted',
-                'lead': 'lead',
-                'respondeu': 'proposal',
+                'aguardando': 'contacted',
+                'aguardando resposta': 'contacted',
+                'conversando': 'negotiating',
+                'interessado': 'proposal',
+                'interessado_previa': 'proposal',
+                'aceite_previa': 'proposal',
+                'pergunta_preco': 'proposal',
+                'proposta enviada': 'proposal',
                 'proposal': 'proposal',
                 'proposta': 'proposal',
+                'qualificado': 'proposal',
                 'negotiating': 'negotiating',
+                'em negociacao': 'negotiating',
+                'quer_fechar': 'negotiating',
+                'fechado': 'won',
                 'won': 'won',
-                'ganho': 'won'
+                'ganho': 'won',
+                'perdido': 'lost',
+                'rejeicao': 'lost',
+                'lost': 'lost',
+                'falhou': 'lost'
             };
 
-            const targetStatus = statusMap[(lead.status || '').toLowerCase()] || 'contacted';
+            const rawStatus = (lead.status || '').toLowerCase().trim();
+            const targetStatus = statusMap[rawStatus] || 'proposal';
+            const leadValue = Number(lead.value || lead.valor) || 400.00;
 
             if (existing) {
                 if (email && !existing.email) existing.email = email;
                 if (phone && !existing.phone) existing.phone = phone;
+                if (company && (!existing.company || existing.company === 'Lead Agente')) existing.company = company;
+                if (name && (!existing.name || existing.name === 'Lead Agente')) existing.name = name;
+                existing.status = targetStatus;
+                if (!existing.value || existing.value === 0) existing.value = leadValue;
                 existing.source = 'Agente Comercial';
                 if (!existing.timeline) existing.timeline = [];
                 existing.timeline.push({
                     id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
                     type: 'note',
-                    description: `🤖 Atualização Agente Comercial: Lead abordado/qualificado (${lead.notes || lead.observacoes || 'Contato realizado'})`,
+                    description: `🤖 Atualização Agente Comercial: Status alterado para [${targetStatus}] (${lead.notes || lead.observacoes || 'Interação no WhatsApp'})`,
                     timestamp: new Date().toISOString()
                 });
                 updatedCount++;
@@ -297,18 +331,18 @@ app.post(['/api/webhook/agente-comercial', '/api/agente-webhook', '/api/webhook-
                     name: name,
                     company: company || name,
                     email: email,
-                    phone: phone,
-                    niche: lead.niche || lead.ramo || lead.nicho || 'Serviços B2B',
+                    phone: phone ? (phone.startsWith('55') ? phone.replace(/^55/, '') : phone) : '',
+                    niche: lead.niche || lead.ramo || lead.nicho || 'Gráfica',
                     status: targetStatus,
-                    value: Number(lead.value || lead.valor) || 2500.00,
-                    notes: lead.notes || lead.observacoes || 'Contatado e qualificado pelo Agente Comercial AI',
+                    value: leadValue,
+                    notes: lead.notes || lead.observacoes || lead.gatilho || 'Interessado no WhatsApp (Agente Comercial AI)',
                     source: 'Agente Comercial',
                     createdAt: new Date().toISOString(),
                     timeline: [
                         {
                             id: 'act_init_' + Date.now(),
                             type: 'note',
-                            description: '🤖 Lead cadastrado e contatado pelo Agente Comercial AI.',
+                            description: `🤖 Lead importado do Agente Comercial AI (${targetStatus}) - Projeção de ${leadValue}.`,
                             timestamp: new Date().toISOString()
                         }
                     ]
