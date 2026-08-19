@@ -107,6 +107,27 @@
           "createdAt": "2026-08-03T10:00:00.000Z"
         },
         {
+          "id": "c_formula_k",
+          "name": "Fórmula K",
+          "company": "Fórmula K",
+          "email": "contato@formulak.com.br",
+          "phone": "(11) 97088-2203",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Cliente quente via WhatsApp. Praticamente fechado o desenvolvimento do site institucional (R$ 400).",
+          "source": "WhatsApp / Agente Comercial",
+          "createdAt": "2026-08-18T20:00:00.000Z",
+          "timeline": [
+            {
+              "id": "act_fk_init",
+              "type": "note",
+              "description": "Lead qualificado via WhatsApp. Demonstrou forte interesse e alinhou fechamento do site por R$ 400.",
+              "timestamp": "2026-08-18T20:00:00.000Z"
+            }
+          ]
+        },
+        {
           "id": "c_lead_3",
           "name": "Editora Alvorada",
           "company": "Editora Alvorada",
