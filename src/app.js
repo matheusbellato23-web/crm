@@ -4862,14 +4862,17 @@ function renderContacts() {
         const norm = (s) => (s || '').toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const query = norm(searchVal);
 
-        filtered = filtered.filter(c => 
-            norm(c.name).includes(query) ||
-            norm(c.company).includes(query) ||
-            norm(c.niche).includes(query) ||
-            norm(c.email).includes(query) ||
-            norm(c.phone).includes(query) ||
-            norm(c.notes).includes(query)
-        );
+        filtered = filtered.filter(c => {
+            const rawDigits = query.replace(/\D/g, '');
+            const phoneDigits = (c.phone || '').replace(/\D/g, '');
+            return norm(c.name).includes(query) ||
+                norm(c.company).includes(query) ||
+                norm(c.niche).includes(query) ||
+                norm(c.email).includes(query) ||
+                norm(c.phone).includes(query) ||
+                (rawDigits.length >= 4 && phoneDigits.includes(rawDigits)) ||
+                norm(c.notes).includes(query);
+        });
     }
 
     // Sorting
@@ -5206,9 +5209,15 @@ function renderKanban() {
     let filteredContacts = env.contacts.filter(c => {
         // Search filter
         if (searchVal) {
+            const rawDigits = searchVal.replace(/\D/g, '');
+            const phoneDigits = (c.phone || '').replace(/\D/g, '');
             const matchSearch = c.name.toLowerCase().includes(searchVal) || 
                                (c.company && c.company.toLowerCase().includes(searchVal)) ||
-                               (c.niche && c.niche.toLowerCase().includes(searchVal));
+                               (c.niche && c.niche.toLowerCase().includes(searchVal)) ||
+                               (c.email && c.email.toLowerCase().includes(searchVal)) ||
+                               (c.phone && c.phone.includes(searchVal)) ||
+                               (rawDigits.length >= 4 && phoneDigits.includes(rawDigits)) ||
+                               (c.notes && c.notes.toLowerCase().includes(searchVal));
             if (!matchSearch) return false;
         }
         // Niche filter
