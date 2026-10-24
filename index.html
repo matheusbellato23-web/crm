@@ -289,6 +289,15 @@
                     </li>
                 </ul>
 
+                <!-- Demonstrações & Projetos Section -->
+                <div class="nav-section-title">Demonstrações & Projetos</div>
+                <ul>
+                    <li class="nav-item" data-view="projects">
+                        <i data-lucide="globe"></i>
+                        <span>Projetos & Demos Online</span>
+                    </li>
+                </ul>
+
                 <!-- Configurações Section -->
                 <div class="nav-section-title">Ferramentas</div>
                 <ul>
@@ -2387,6 +2396,105 @@
                 </div>
             </div>
         </section>
+
+        <!-- VIEW: PROJETOS & DEMOS ONLINE -->
+        <section id="projectsView" class="view-section">
+            <div class="view-header flex-header" style="display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:18px;">
+                <div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <h1 class="view-title" style="margin:0;">Projetos &amp; Demos Online</h1>
+                        <span class="badge" style="background:var(--color-primary-glow); color:var(--color-primary); border:1px solid rgba(79,70,229,0.2); font-weight:700; font-size:11px; padding:3px 10px; border-radius:999px;">
+                            🌐 Ecossistema WEBCO
+                        </span>
+                    </div>
+                    <p class="view-subtitle" style="margin:4px 0 0;">Catálogo de soluções em produção com link oficial e pré-visualização interativa para apresentação a clientes.</p>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" id="btnOpenGlobalStudio" style="display:flex; align-items:center; gap:6px;">
+                        <i data-lucide="monitor" style="width:14px;height:14px;"></i>
+                        <span>Abrir Estúdio Interativo</span>
+                    </button>
+                    <button class="btn btn-primary" id="btnAddProject" style="display:flex; align-items:center; gap:6px; background:linear-gradient(135deg, #4F46E5, #06B6D4);">
+                        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i>
+                        <span>Novo Projeto / Link</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Metrics Overview Banner -->
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:14px; margin-bottom:20px;">
+                <div class="kpi-card" style="padding:16px;">
+                    <div class="kpi-card-header" style="margin-bottom:8px;">
+                        <div class="kpi-icon-wrapper sales" style="width:36px;height:36px;"><i data-lucide="layers" style="width:18px;height:18px;"></i></div>
+                        <span class="kpi-badge positive"><i data-lucide="check"></i> 100% Online</span>
+                    </div>
+                    <div class="kpi-data">
+                        <span class="kpi-title" style="font-size:11px;">Soluções Cadastradas</span>
+                        <span class="kpi-value" id="kpiTotalProjectsCount" style="font-size:22px;">4 Projetos</span>
+                    </div>
+                </div>
+                <div class="kpi-card" style="padding:16px;">
+                    <div class="kpi-card-header" style="margin-bottom:8px;">
+                        <div class="kpi-icon-wrapper pipeline" style="width:36px;height:36px;"><i data-lucide="play" style="width:18px;height:18px;"></i></div>
+                        <span class="kpi-badge info">Interativo</span>
+                    </div>
+                    <div class="kpi-data">
+                        <span class="kpi-title" style="font-size:11px;">Pré-Visualização ao Vivo</span>
+                        <span class="kpi-value" style="font-size:20px;">Desktop &amp; Mobile</span>
+                    </div>
+                </div>
+                <div class="kpi-card" style="padding:16px;">
+                    <div class="kpi-card-header" style="margin-bottom:8px;">
+                        <div class="kpi-icon-wrapper conversion" style="width:36px;height:36px;"><i data-lucide="bot" style="width:18px;height:18px;"></i></div>
+                        <span class="kpi-badge positive">WhatsApp AI</span>
+                    </div>
+                    <div class="kpi-data">
+                        <span class="kpi-title" style="font-size:11px;">Agente Comercial</span>
+                        <span class="kpi-value" style="font-size:20px; color:#059669;">24/7 Ativo</span>
+                    </div>
+                </div>
+                <div class="kpi-card" style="padding:16px;">
+                    <div class="kpi-card-header" style="margin-bottom:8px;">
+                        <div class="kpi-icon-wrapper tasks" style="width:36px;height:36px;"><i data-lucide="globe" style="width:18px;height:18px;"></i></div>
+                        <span class="kpi-badge positive">Cloud SSL</span>
+                    </div>
+                    <div class="kpi-data">
+                        <span class="kpi-title" style="font-size:11px;">Domínio Central</span>
+                        <span class="kpi-value" style="font-size:17px; font-weight:600;">webcolabs.com.br</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Category Navigation -->
+            <div class="header-filters" style="margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                <ul class="tasks-filters" id="projectCategoryFilters" style="list-style:none; padding:0; display:flex; gap:6px; margin:0; flex-wrap:wrap;">
+                    <li class="active" data-project-filter="all"><span>Todos os Projetos</span></li>
+                    <li data-project-filter="saas"><span>📦 Sistemas SaaS &amp; Gestão</span></li>
+                    <li data-project-filter="ai"><span>🤖 Inteligência Artificial</span></li>
+                    <li data-project-filter="booking"><span>🗓️ Agendamento &amp; Serviços</span></li>
+                    <li data-project-filter="web"><span>🖥️ Sites &amp; Landing Pages</span></li>
+                </ul>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="header-search" style="max-width: 220px; height: 34px;">
+                        <i data-lucide="search" class="search-icon" style="width: 14px; height: 14px;"></i>
+                        <input type="text" placeholder="Filtrar projetos..." id="projectSearchInput" style="height: 32px; font-size: 12px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Container for Project Cards -->
+            <div id="projectsGrid" class="projects-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap:20px;">
+                <!-- Cards will be dynamically injected here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="projectsEmptyState" class="table-empty-state hidden" style="padding: 50px 20px; text-align: center;">
+                <i data-lucide="folder-search" style="width: 48px; height: 48px; color: var(--text-muted); opacity: 0.5; margin-bottom: 12px;"></i>
+                <h3>Nenhum projeto encontrado</h3>
+                <p>Nenhum item corresponde ao filtro ou busca selecionada.</p>
+            </div>
+        </section>
         </main>
     </div>
 
@@ -4215,6 +4323,229 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PROJECT LIVE PREVIEW STUDIO -->
+    <div class="modal" id="projectPreviewModal">
+        <div class="modal-content" style="max-width: 95vw; width: 1320px; height: 92vh; max-height: 94vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
+            <!-- Studio Header Toolbar -->
+            <div class="preview-studio-header" style="padding: 12px 18px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-shrink: 0; flex-wrap: wrap;">
+                <!-- Left: Project Selection -->
+                <div style="display: flex; align-items: center; gap: 10px; min-width: 260px;">
+                    <div id="previewProjectIconBadge" style="width: 32px; height: 32px; border-radius: 8px; background: var(--color-primary-glow); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i data-lucide="layers" style="width: 18px; height: 18px;"></i>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <select id="previewProjectSelect" class="form-control" style="font-size: 13px; font-weight: 700; height: 34px; padding: 4px 10px; cursor: pointer; min-width: 220px; background: var(--bg-input);">
+                            <!-- Injected options -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Center: Device Viewport Switcher -->
+                <div class="preview-device-switcher" style="display: inline-flex; background: var(--bg-app); border: 1px solid var(--border-color); padding: 3px; border-radius: 8px; gap: 2px;">
+                    <button type="button" class="btn-device-toggle active" data-device="desktop" title="Visualização Desktop (100%)" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: var(--color-primary); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        <i data-lucide="monitor" style="width: 14px; height: 14px;"></i>
+                        <span>Desktop</span>
+                    </button>
+                    <button type="button" class="btn-device-toggle" data-device="tablet" title="Visualização Tablet (768px)" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        <i data-lucide="tablet" style="width: 14px; height: 14px;"></i>
+                        <span>Tablet (768px)</span>
+                    </button>
+                    <button type="button" class="btn-device-toggle" data-device="mobile" title="Visualização Celular iPhone (375px)" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        <i data-lucide="smartphone" style="width: 14px; height: 14px;"></i>
+                        <span>Mobile (375px)</span>
+                    </button>
+                </div>
+
+                <!-- Right: URL info & Quick actions -->
+                <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                    <div class="preview-url-bar" style="display: flex; align-items: center; gap: 6px; background: var(--bg-app); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 10px; max-width: 320px; font-family: monospace; font-size: 11.5px; color: var(--text-secondary);">
+                        <i data-lucide="lock" style="width: 12px; height: 12px; color: #10b981; flex-shrink: 0;"></i>
+                        <span id="previewUrlDisplay" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;">https://...</span>
+                        <button type="button" id="btnCopyPreviewUrl" title="Copiar Link" style="background: none; border: none; padding: 0; cursor: pointer; color: var(--text-muted); display: flex; align-items: center;">
+                            <i data-lucide="copy" style="width: 13px; height: 13px;"></i>
+                        </button>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary btn-sm" id="btnReloadPreview" title="Recarregar Pré-visualização" style="height: 32px; padding: 0 10px;">
+                        <i data-lucide="rotate-cw" style="width: 13px; height: 13px;"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btnOpenPreviewExternal" title="Abrir em Nova Aba" style="height: 32px; padding: 0 10px;">
+                        <i data-lucide="external-link" style="width: 13px; height: 13px;"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm" id="btnSharePreviewWhatsApp" title="Enviar Apresentação no WhatsApp" style="height: 32px; padding: 0 12px; background: #25d366; color: #fff; border: none; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="send" style="width: 12px; height: 12px;"></i>
+                        <span>WhatsApp</span>
+                    </button>
+                    <button type="button" class="btn-close" id="btnCloseProjectPreviewModal" style="margin-left: 6px; font-size: 20px; line-height: 1;">&times;</button>
+                </div>
+            </div>
+
+            <!-- Studio Canvas / Viewport Area -->
+            <div class="preview-canvas-wrapper" style="flex: 1; min-height: 0; background: #0f172a; position: relative; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <!-- Loading Spinner Indicator -->
+                <div id="previewLoadingSpinner" class="hidden" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; color: #fff; gap: 10px;">
+                    <div style="width: 38px; height: 38px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #38bdf8; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                    <span style="font-size: 13px; font-weight: 600;">Carregando solução ao vivo...</span>
+                </div>
+
+                <!-- Viewport Container (Desktop / Tablet / Mobile) -->
+                <div id="previewViewportContainer" class="preview-viewport desktop" style="width: 100%; height: 100%; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; justify-content: center; align-items: center;">
+                    <!-- Iframe for Web / SaaS Solutions -->
+                    <iframe id="previewIframe" src="about:blank" style="width: 100%; height: 100%; border: none; border-radius: 6px; background: #ffffff; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4);" allow="fullscreen; clipboard-read; clipboard-write"></iframe>
+
+                    <!-- Interactive Simulator for Agente Comercial WhatsApp -->
+                    <div id="previewAgentSimulator" class="hidden" style="width: 100%; max-width: 880px; height: 100%; background: #ffffff; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+                        <!-- Agent Header -->
+                        <div style="background: #075e54; color: #ffffff; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 42px; height: 42px; border-radius: 50%; background: #128c7e; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                    🤖
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 15px;">Agente Comercial AI • Web Co Agency</div>
+                                    <div style="font-size: 11.5px; opacity: 0.85; display: flex; align-items: center; gap: 5px;">
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #25d366; display: inline-block;"></span>
+                                        Online • Gemini AI Autônomo • R$ 400 por Lead
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" id="btnAgentSimReset" class="btn btn-xs" style="background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11.5px; cursor: pointer;">
+                                    Reiniciar Simulação
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages Screen -->
+                        <div id="agentSimChatMessages" style="flex: 1; padding: 18px; overflow-y: auto; background: #e5ddd5; display: flex; flex-direction: column; gap: 10px; font-size: 13.5px;">
+                            <!-- Injected simulator bubbles -->
+                        </div>
+
+                        <!-- Quick Prompts / Customer Action Chips -->
+                        <div style="padding: 8px 14px; background: #f0f2f5; border-top: 1px solid #e0e0e0; display: flex; gap: 8px; overflow-x: auto;">
+                            <button type="button" class="btn-agent-prompt-chip" data-prompt="Olá! Quanto custa para fazer um site institucional?">
+                                💬 "Quanto custa o site?"
+                            </button>
+                            <button type="button" class="btn-agent-prompt-chip" data-prompt="Poderia me mandar o portfólio de vocês?">
+                                🌐 "Quero ver o portfólio"
+                            </button>
+                            <button type="button" class="btn-agent-prompt-chip" data-prompt="Gostei muito da proposta de R$ 400! Quero fechar agora.">
+                                🚀 "Quero fechar!"
+                            </button>
+                            <button type="button" class="btn-agent-prompt-chip" data-prompt="Vocês configuram o Google Meu Negócio também?">
+                                📍 "Tem Google Meu Negócio?"
+                            </button>
+                        </div>
+
+                        <!-- Chat Input Simulator -->
+                        <form id="agentSimForm" style="padding: 10px 14px; background: #f0f2f5; border-top: 1px solid #d1d7db; display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="agentSimInput" class="form-control" placeholder="Digite uma mensagem como cliente para testar a IA..." style="flex: 1; height: 40px; font-size: 13px; border-radius: 20px; padding: 0 16px;">
+                            <button type="submit" class="btn btn-primary" style="height: 40px; width: 40px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; background: #128c7e; border: none;">
+                                <i data-lucide="send" style="width: 16px; height: 16px; color: #fff;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Studio Footer Info -->
+            <div class="preview-studio-footer" style="padding: 10px 18px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary); flex-shrink: 0; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                    <span id="previewFooterDesc" style="font-weight: 500;"></span>
+                    <div id="previewFooterCredentials" class="hidden" style="display: flex; align-items: center; gap: 6px; background: var(--bg-app); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 4px; font-family: monospace;">
+                        <span>🔐 Demo:</span>
+                        <strong id="previewFooterCredsText">admin / 080125</strong>
+                        <button type="button" id="btnCopyPreviewCreds" title="Copiar credenciais" style="background: none; border: none; cursor: pointer; color: var(--color-primary); padding: 0 2px;">
+                            <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 11px; color: var(--text-muted);">Dica: Use no celular ou tablet para apresentar em reuniões com clientes.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT ONLINE PROJECT -->
+    <div class="modal" id="projectFormModal">
+        <div class="modal-content" style="max-width: 600px; width: 100%;">
+            <div class="modal-header">
+                <h3 id="projectModalTitle">Cadastrar Solução / Demonstração</h3>
+                <button class="btn-close" id="btnCloseProjectFormModal">&times;</button>
+            </div>
+            <form id="projectForm">
+                <input type="hidden" id="projectEditId">
+                <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectFormName">Nome Completo do Projeto *</label>
+                            <input type="text" id="projectFormName" class="form-control" placeholder="Ex: Sistema de Estoque Inteligente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectFormShortName">Nome Curto / Marca *</label>
+                            <input type="text" id="projectFormShortName" class="form-control" placeholder="Ex: StockEngine" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectFormCategory">Categoria *</label>
+                            <select id="projectFormCategory" class="form-control" required>
+                                <option value="SaaS Logística & Gestão">SaaS Logística &amp; Gestão</option>
+                                <option value="IA Generativa & Vendas">IA Generativa &amp; Vendas</option>
+                                <option value="SaaS Serviços & Saúde">SaaS Serviços &amp; Saúde</option>
+                                <option value="Web & Google Ads">Web &amp; Google Ads</option>
+                                <option value="Outro / Customizado">Outro / Customizado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectFormIcon">Ícone Representativo</label>
+                            <select id="projectFormIcon" class="form-control">
+                                <option value="boxes">📦 boxes (Estoque/Logística)</option>
+                                <option value="bot">🤖 bot (Inteligência Artificial)</option>
+                                <option value="calendar">🗓️ calendar (Agendamento)</option>
+                                <option value="layout">🖥️ layout (Site / Landing Page)</option>
+                                <option value="globe">🌐 globe (Plataforma Web)</option>
+                                <option value="zap">⚡ zap (Automação)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectFormUrl">URL Oficial da Aplicação / Demonstração *</label>
+                        <input type="url" id="projectFormUrl" class="form-control" placeholder="https://webcolabs.com.br/app/..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectFormDescription">Descrição Comercial da Solução *</label>
+                        <textarea id="projectFormDescription" class="form-control" rows="3" placeholder="Descreva os principais benefícios, funcionalidades e valor agregado da ferramenta..." required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectFormTags">Tags / Diferenciais (separadas por vírgula)</label>
+                            <input type="text" id="projectFormTags" class="form-control" placeholder="Ex: IA Semântica, Mobile First, Pix Integrado">
+                        </div>
+                        <div class="form-group">
+                            <label for="projectFormCredentials">Credenciais Demo (opcional)</label>
+                            <input type="text" id="projectFormCredentials" class="form-control" placeholder="Ex: admin / 080125">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectFormSalesPitch">Argumento de Venda Rápido (Pitch Comercial)</label>
+                        <input type="text" id="projectFormSalesPitch" class="form-control" placeholder="Ex: Ideal para quem quer automatizar processos e eliminar gargalos operacionais.">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelProjectFormModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitProjectForm">Salvar Projeto</button>
+                </div>
+            </form>
         </div>
     </div>
 

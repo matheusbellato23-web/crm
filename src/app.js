@@ -4407,6 +4407,7 @@ function renderAll() {
     safeRun("renderCalendar", renderCalendar);
     safeRun("renderFinance", renderFinance);
     safeRun("renderMarketingAssets", renderMarketingAssets);
+    safeRun("renderProjects", renderProjects);
     safeRun("populateContactDropdowns", populateContactDropdowns);
     safeRun("populateConversionProductsDropdown", populateConversionProductsDropdown);
     safeRun("populateEventContactsDropdown", populateEventContactsDropdown);
@@ -7934,6 +7935,7 @@ searchInput.addEventListener("input", () => {
     else if (activeTab === "contracts") renderContracts();
     else if (activeTab === "finance") renderFinance();
     else if (activeTab === "marketing") renderMarketingAssets();
+    else if (activeTab === "projects") renderProjects();
 });
 
 // Modals Trigger Handlers
@@ -13608,3 +13610,761 @@ if (_el_btnCreateUpsell) {
         showToast('Nova oportunidade futura cadastrada!', 'success');
     };
 }
+
+
+// ==========================================================================
+// ONLINE PROJECTS & DEMOS SHOWCASE MODULE
+// ==========================================================================
+
+const defaultOnlineProjectsList = [
+    {
+        "id": "proj_estoque",
+        "name": "Sistema de Estoque Inteligente & MDM",
+        "shortName": "StockEngine",
+        "category": "saas",
+        "categoryLabel": "SaaS Logística & Gestão",
+        "status": "online",
+        "statusLabel": "🟢 Online em Produção",
+        "url": "https://webcolabs.com.br/app/estoque/",
+        "demoCredentials": "Login: admin | Senha: 080125",
+        "icon": "boxes",
+        "color": "#4F46E5",
+        "gradient": "linear-gradient(135deg, #4F46E5, #06B6D4)",
+        "description": "Sistema corporativo de controle de estoque inteligente com saneamento de cadastros, auditoria de duplicidades semânticas ('Dinheiro Ocioso'), simulador de crise What-If e rastreamento de expedição.",
+        "tags": [
+            "IA Semântica",
+            "Simulador What-If",
+            "Auditoria de Duplicidades",
+            "Gestão de Compras",
+            "Multi-Usuário"
+        ],
+        "salesPitch": "Identifica duplicidades em cadastros e libera capital de giro parado em estoque, simulando rupturas de suprimentos em tempo real.",
+        "canIframe": true,
+        "previewType": "iframe"
+    },
+    {
+        "id": "proj_agente",
+        "name": "Agente Comercial AI (Atendente WhatsApp 24/7)",
+        "shortName": "Agente Comercial",
+        "category": "ai",
+        "categoryLabel": "IA Generativa & Vendas",
+        "status": "online",
+        "statusLabel": "🟢 24/7 Ativo & Integrado",
+        "url": "https://webcolabs.com.br/crm/api/webhook/agente-comercial",
+        "secondaryUrl": "http://localhost:3000",
+        "demoCredentials": null,
+        "icon": "bot",
+        "color": "#059669",
+        "gradient": "linear-gradient(135deg, #059669, #10B981)",
+        "description": "Robô de prospecção autônoma via WhatsApp com inteligência artificial Gemini. Aborda empresas B2B, qualifica o lead, apresenta propostas de sites (R$ 400) e sincroniza oportunidades direto no CRM com suporte a intervenção humana.",
+        "tags": [
+            "WhatsApp Baileys",
+            "IA Gemini",
+            "Prospecção Ativa",
+            "SDR Autônomo",
+            "Human Takeover",
+            "Sincronização CRM"
+        ],
+        "salesPitch": "Gera oportunidades comerciais e orçamentos automaticamente no WhatsApp sem equipe manual, alimentando o funil do CRM 24 horas por dia.",
+        "canIframe": false,
+        "previewType": "agent_simulator"
+    },
+    {
+        "id": "proj_agendamento",
+        "name": "Sistema de Agendamento Online",
+        "shortName": "AgendaFlow",
+        "category": "booking",
+        "categoryLabel": "SaaS Serviços & Saúde",
+        "status": "online",
+        "statusLabel": "🟢 Modelo Disponível",
+        "url": "https://webcolabs.com.br/sistema-agendamento",
+        "demoCredentials": null,
+        "icon": "calendar",
+        "color": "#0284c7",
+        "gradient": "linear-gradient(135deg, #0284c7, #38bdf8)",
+        "description": "Plataforma de auto-agendamento em 3 etapas para celulares. Reduz o absenteísmo (no-show) em até 85% com cobrança de sinal antecipado via Pix e disparos de lembretes automáticos no WhatsApp.",
+        "tags": [
+            "Zero Faltas (-85%)",
+            "Cobrança Pix",
+            "Lembretes WhatsApp",
+            "Sincronização Google",
+            "Checkout Mobile"
+        ],
+        "salesPitch": "Elimina a perda de tempo marcando horários manualmente e garante que o cliente compareça cobrando sinal prévio no Pix.",
+        "canIframe": true,
+        "previewType": "iframe"
+    },
+    {
+        "id": "proj_site_generico",
+        "name": "Site Genérico & Portfólio Institucional",
+        "shortName": "Modelo Site R$ 400",
+        "category": "web",
+        "categoryLabel": "Web & Google Ads",
+        "status": "online",
+        "statusLabel": "🟢 Em Produção (R$ 400)",
+        "url": "https://webcolabs.com.br/pagina/grafica/",
+        "secondaryUrl": "https://webcoagency.site/",
+        "demoCredentials": null,
+        "icon": "layout",
+        "color": "#d97706",
+        "gradient": "linear-gradient(135deg, #d97706, #f59e0b)",
+        "description": "Modelo de site institucional de alta conversão para gráficas rápidas, empresas locais e prestadores de serviço. Otimizado para campanhas de Google Ads, mobile-first e chamada imediata no WhatsApp.",
+        "tags": [
+            "Ticket R$ 400",
+            "Google Ads Ready",
+            "Alta Conversão",
+            "Mobile First",
+            "Botão WhatsApp Direto",
+            "SEO Local"
+        ],
+        "salesPitch": "Site profissional completo entregue em tempo recorde por R$ 400, preparado para colocar a empresa no topo do Google e gerar leads diariamente.",
+        "canIframe": true,
+        "previewType": "iframe"
+    }
+];
+
+let currentProjectCategoryFilter = 'all';
+let currentActivePreviewProjectId = 'proj_estoque';
+let currentPreviewDeviceMode = 'desktop';
+
+function getOnlineProjects() {
+    const env = getEnv();
+    if (!env.onlineProjects || env.onlineProjects.length === 0) {
+        env.onlineProjects = JSON.parse(JSON.stringify(defaultOnlineProjectsList));
+        saveState();
+    }
+    return env.onlineProjects;
+}
+
+window.renderProjects = function() {
+    const env = getEnv();
+    const projects = getOnlineProjects();
+    const grid = document.getElementById("projectsGrid");
+    const emptyState = document.getElementById("projectsEmptyState");
+    const searchVal = (document.getElementById("projectSearchInput")?.value || document.getElementById("globalSearch")?.value || "").toLowerCase().trim();
+
+    if (!grid) return;
+
+    // Filter projects
+    const filtered = projects.filter(p => {
+        // Category filter
+        if (currentProjectCategoryFilter !== 'all' && p.category !== currentProjectCategoryFilter) {
+            return false;
+        }
+        // Search filter
+        if (searchVal) {
+            const matchName = (p.name || '').toLowerCase().includes(searchVal);
+            const matchShort = (p.shortName || '').toLowerCase().includes(searchVal);
+            const matchDesc = (p.description || '').toLowerCase().includes(searchVal);
+            const matchCat = (p.categoryLabel || '').toLowerCase().includes(searchVal);
+            const matchTags = (p.tags || []).some(t => t.toLowerCase().includes(searchVal));
+            const matchUrl = (p.url || '').toLowerCase().includes(searchVal);
+            if (!matchName && !matchShort && !matchDesc && !matchCat && !matchTags && !matchUrl) {
+                return false;
+            }
+        }
+        return true;
+    });
+
+    // Update KPIs
+    const totalCountEl = document.getElementById("kpiTotalProjectsCount");
+    if (totalCountEl) totalCountEl.innerText = `${projects.length} Soluções`;
+
+    if (filtered.length === 0) {
+        grid.innerHTML = "";
+        if (emptyState) emptyState.classList.remove("hidden");
+        return;
+    }
+
+    if (emptyState) emptyState.classList.add("hidden");
+
+    grid.innerHTML = filtered.map(p => {
+        const iconName = p.icon || 'globe';
+        const tagsHtml = (p.tags || []).slice(0, 4).map(t => `<span class="project-tag-pill">${t}</span>`).join('');
+        const credsHtml = p.demoCredentials ? `
+            <div class="project-creds-box">
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <i data-lucide="key" style="width:13px;height:13px;flex-shrink:0;"></i>
+                    <span><strong>Acesso Demo:</strong> ${p.demoCredentials}</span>
+                </div>
+                <button type="button" class="btn-copy-creds" data-creds="${p.demoCredentials.replace(/.*:\s*/, '')}" title="Copiar credenciais" style="background:none;border:none;cursor:pointer;color:inherit;padding:2px;">
+                    <i data-lucide="copy" style="width:12px;height:12px;"></i>
+                </button>
+            </div>
+        ` : '';
+
+        return `
+            <div class="project-card" data-project-id="${p.id}">
+                <!-- Topbar with Icon, Brand, Category & Status -->
+                <div class="project-card-topbar">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div class="project-card-icon" style="background: ${p.gradient || 'var(--color-primary-glow)'}; color: #ffffff;">
+                            <i data-lucide="${iconName}" style="width:22px;height:22px;"></i>
+                        </div>
+                        <div>
+                            <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">${p.categoryLabel || p.category}</span>
+                            <h3 class="project-card-title">${p.name}</h3>
+                        </div>
+                    </div>
+                    <span class="project-card-badge" style="background:rgba(16, 185, 129, 0.12); color:#059669; border:1px solid rgba(16, 185, 129, 0.25);">
+                        <span style="width:6px; height:6px; border-radius:50%; background:#10b981; display:inline-block;"></span>
+                        Online
+                    </span>
+                </div>
+
+                <!-- Body with Description, Link, Tags -->
+                <div class="project-card-body">
+                    <p class="project-card-desc">${p.description}</p>
+
+                    <!-- Pitch box -->
+                    ${p.salesPitch ? `
+                        <div style="padding:10px 12px; background:var(--bg-app); border-left:3px solid var(--color-primary); border-radius:0 var(--radius-sm) var(--radius-sm) 0; font-size:12px; color:var(--text-primary); line-height:1.45;">
+                            💡 <strong>Pitch Comercial:</strong> ${p.salesPitch}
+                        </div>
+                    ` : ''}
+
+                    <!-- Official Direct Link with 1-Click Copy -->
+                    <div class="project-link-box">
+                        <i data-lucide="link" style="width:13px;height:13px;flex-shrink:0;"></i>
+                        <a href="${p.url}" target="_blank" title="Abrir ${p.url}">${p.url}</a>
+                        <button type="button" class="btn-copy-project-link" data-url="${p.url}" data-name="${p.shortName || p.name}" title="Copiar link" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:2px;display:flex;align-items:center;">
+                            <i data-lucide="copy" style="width:13px;height:13px;"></i>
+                        </button>
+                    </div>
+
+                    <!-- Demo Credentials if any -->
+                    ${credsHtml}
+
+                    <!-- Tags -->
+                    <div class="project-tags-list">
+                        ${tagsHtml}
+                    </div>
+                </div>
+
+                <!-- Footer with Action Buttons -->
+                <div class="project-card-footer">
+                    <button type="button" class="btn btn-primary btn-sm btn-preview-project" data-project-id="${p.id}" style="display:flex; align-items:center; gap:6px; flex:1; justify-content:center; background: ${p.gradient || 'var(--color-primary)'}; border:none; box-shadow:0 2px 6px rgba(0,0,0,0.12);">
+                        <i data-lucide="play" style="width:13px;height:13px;"></i>
+                        <span>Pré-visualizar</span>
+                    </button>
+                    <a href="${p.url}" target="_blank" class="btn btn-secondary btn-sm" title="Abrir em Nova Aba" style="display:flex; align-items:center; gap:4px; padding:0 10px;">
+                        <i data-lucide="external-link" style="width:13px;height:13px;"></i>
+                    </a>
+                    <button type="button" class="btn btn-secondary btn-sm btn-share-wa-project" data-project-id="${p.id}" title="Compartilhar no WhatsApp" style="display:flex; align-items:center; gap:4px; padding:0 10px; color:#16a34a;">
+                        <i data-lucide="send" style="width:13px;height:13px;"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm btn-edit-project" data-project-id="${p.id}" title="Editar Informações" style="display:flex; align-items:center; padding:0 8px;">
+                        <i data-lucide="settings" style="width:13px;height:13px;"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Attach card event listeners
+    grid.querySelectorAll(".btn-preview-project").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-project-id");
+            openProjectPreview(id);
+        });
+    });
+
+    grid.querySelectorAll(".btn-copy-project-link").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const url = btn.getAttribute("data-url");
+            const name = btn.getAttribute("data-name");
+            copyProjectLink(url, name);
+        });
+    });
+
+    grid.querySelectorAll(".btn-copy-creds").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const creds = btn.getAttribute("data-creds");
+            navigator.clipboard.writeText(creds);
+            showToast("Credenciais copiadas!", "success");
+        });
+    });
+
+    grid.querySelectorAll(".btn-share-wa-project").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const id = btn.getAttribute("data-project-id");
+            shareProjectOnWhatsApp(id);
+        });
+    });
+
+    grid.querySelectorAll(".btn-edit-project").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const id = btn.getAttribute("data-project-id");
+            openEditProjectModal(id);
+        });
+    });
+
+    safeCreateIcons();
+};
+
+window.copyProjectLink = function(url, name) {
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => {
+        showToast(`Link de "${name || 'Demonstração'}" copiado para a área de transferência!`, "success");
+    }).catch(() => {
+        prompt("Copie o link abaixo:", url);
+    });
+};
+
+window.shareProjectOnWhatsApp = function(projectId) {
+    const projects = getOnlineProjects();
+    const proj = projects.find(p => p.id === projectId);
+    if (!proj) return;
+
+    let text = `Olá! Conforme combinamos, segue a demonstração da nossa solução da WEBCO:\n\n`;
+    text += `🚀 *${proj.name}*\n`;
+    text += `${proj.description}\n\n`;
+    text += `🔗 *Acesse e teste ao vivo:* ${proj.url}\n`;
+    if (proj.demoCredentials) {
+        text += `🔐 *Credenciais de Teste:* ${proj.demoCredentials}\n`;
+    }
+    text += `\nFico à disposição para tirar qualquer dúvida ou agendarmos uma apresentação!`;
+
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, '_blank');
+};
+
+// ==========================================================================
+// LIVE PREVIEW STUDIO (IFRAME + RESPONSIVE VIEWPORT + AGENT SIMULATOR)
+// ==========================================================================
+
+window.openProjectPreview = function(projectId, deviceMode = 'desktop') {
+    const projects = getOnlineProjects();
+    const proj = projects.find(p => p.id === projectId) || projects[0];
+    if (!proj) return;
+
+    currentActivePreviewProjectId = proj.id;
+    currentPreviewDeviceMode = deviceMode;
+
+    const modal = document.getElementById("projectPreviewModal");
+    const select = document.getElementById("previewProjectSelect");
+    const urlDisplay = document.getElementById("previewUrlDisplay");
+    const iframe = document.getElementById("previewIframe");
+    const agentSim = document.getElementById("previewAgentSimulator");
+    const viewportContainer = document.getElementById("previewViewportContainer");
+    const spinner = document.getElementById("previewLoadingSpinner");
+    const footerDesc = document.getElementById("previewFooterDesc");
+    const footerCreds = document.getElementById("previewFooterCredentials");
+    const footerCredsText = document.getElementById("previewFooterCredsText");
+    const iconBadge = document.getElementById("previewProjectIconBadge");
+
+    if (!modal) return;
+
+    // Populate project select dropdown
+    if (select) {
+        select.innerHTML = projects.map(p => `
+            <option value="${p.id}" ${p.id === proj.id ? 'selected' : ''}>${p.name}</option>
+        `).join('');
+    }
+
+    // Set URL and Badge
+    if (urlDisplay) urlDisplay.innerText = proj.url;
+    if (footerDesc) footerDesc.innerText = `${proj.name} — ${proj.salesPitch || proj.description}`;
+    if (iconBadge) {
+        iconBadge.style.background = proj.gradient || 'var(--color-primary-glow)';
+        iconBadge.innerHTML = `<i data-lucide="${proj.icon || 'globe'}" style="width:18px;height:18px;color:#fff;"></i>`;
+    }
+
+    if (proj.demoCredentials && footerCreds && footerCredsText) {
+        footerCredsText.innerText = proj.demoCredentials;
+        footerCreds.classList.remove("hidden");
+    } else if (footerCreds) {
+        footerCreds.classList.add("hidden");
+    }
+
+    // Update Device Viewport Class
+    setPreviewDeviceMode(currentPreviewDeviceMode);
+
+    // Load content
+    if (proj.previewType === 'agent_simulator') {
+        if (iframe) iframe.classList.add("hidden");
+        if (agentSim) agentSim.classList.remove("hidden");
+        if (spinner) spinner.classList.add("hidden");
+        initAgentSimulator();
+    } else {
+        if (agentSim) agentSim.classList.add("hidden");
+        if (iframe) {
+            iframe.classList.remove("hidden");
+            if (spinner) spinner.classList.remove("hidden");
+            iframe.src = proj.url;
+            iframe.onload = () => {
+                if (spinner) spinner.classList.add("hidden");
+            };
+        }
+    }
+
+    modal.classList.add("active");
+    safeCreateIcons();
+};
+
+window.setPreviewDeviceMode = function(mode) {
+    currentPreviewDeviceMode = mode;
+    const container = document.getElementById("previewViewportContainer");
+    if (container) {
+        container.className = `preview-viewport ${mode}`;
+    }
+
+    document.querySelectorAll(".btn-device-toggle").forEach(btn => {
+        const btnDevice = btn.getAttribute("data-device");
+        if (btnDevice === mode) {
+            btn.classList.add("active");
+            btn.style.background = "var(--color-primary)";
+            btn.style.color = "#ffffff";
+        } else {
+            btn.classList.remove("active");
+            btn.style.background = "transparent";
+            btn.style.color = "var(--text-secondary)";
+        }
+    });
+};
+
+// Interactive Simulator for Agente Comercial AI
+let agentSimConversation = [];
+
+window.initAgentSimulator = function() {
+    agentSimConversation = [
+        {
+            sender: 'agent',
+            text: 'Olá! Sou a assistente inteligente da Web Co Agency. Ajudamos gráficas, empresas locais e prestadores de serviço a conquistarem clientes todos os dias através de sites profissionais e Google Ads.',
+            time: '10:30'
+        },
+        {
+            sender: 'agent',
+            text: 'Vi que seu negócio atende na região. Gostaria de ver como estruturamos um site institucional de alta conversão por apenas R$ 400 entregue pronto?',
+            time: '10:31'
+        }
+    ];
+    renderAgentSimChat();
+};
+
+function renderAgentSimChat() {
+    const container = document.getElementById("agentSimChatMessages");
+    if (!container) return;
+
+    container.innerHTML = agentSimConversation.map(msg => `
+        <div class="agent-bubble ${msg.sender === 'agent' ? 'incoming' : 'outgoing'}">
+            <div>${msg.text.replace(/\n/g, '<br>')}</div>
+            <div class="agent-bubble-time">${msg.time || 'Agora'} ${msg.sender === 'agent' ? '' : '✓✓'}</div>
+        </div>
+    `).join('');
+
+    container.scrollTop = container.scrollHeight;
+}
+
+window.sendAgentSimMessage = function(userText) {
+    if (!userText || !userText.trim()) return;
+
+    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // User message
+    agentSimConversation.push({
+        sender: 'user',
+        text: userText.trim(),
+        time: timeNow
+    });
+    renderAgentSimChat();
+
+    // Generate intelligent AI response based on Web Co script
+    const lower = userText.toLowerCase();
+    let reply = "";
+
+    if (lower.includes("preço") || lower.includes("quanto custa") || lower.includes("valor")) {
+        reply = "Nosso desenvolvimento completo de site institucional é de apenas R$ 400 (podendo ser 50% de entrada e 50% após entrega e aprovação). O site já vem com layout premium, botão WhatsApp direto, formulário de orçamento e otimização para celular e Google Ads!";
+    } else if (lower.includes("portfólio") || lower.includes("modelos") || lower.includes("exemplo") || lower.includes("ver")) {
+        reply = "Com certeza! Você pode navegar pelo nosso modelo ao vivo acessando https://webcolabs.com.br/pagina/grafica/ ou https://webcoagency.site/ . Desenvolvemos com foco em carregamento instantâneo no celular para não perder nenhum clique!";
+    } else if (lower.includes("fechar") || lower.includes("quero") || lower.includes("contratar")) {
+        reply = "Excelente decisão! Já registrei seu interesse no nosso CRM na etapa de Negociação Ativa (projeção R$ 400). Nosso especialista humano entrará em contato em instantes para alinhar o logotipo e as informações da sua empresa!";
+    } else if (lower.includes("google") || lower.includes("ads") || lower.includes("anúncio")) {
+        reply = "Sim! Além da criação do site, fazemos a otimização para o Google Meu Negócio e campanhas de Google Ads para fazer seu telefone tocar todos os dias com orçamentos de clientes prontos para comprar.";
+    } else {
+        reply = "Perfeito! Nossos sites são desenvolvidos sob medida para o seu nicho com garantia total de funcionamento e indexação rápida no Google. Gostaria que eu te apresente uma prévia personalizada para a sua empresa?";
+    }
+
+    setTimeout(() => {
+        agentSimConversation.push({
+            sender: 'agent',
+            text: reply,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        renderAgentSimChat();
+    }, 600);
+};
+
+// Add / Edit Project Modals
+window.openAddProjectModal = function() {
+    const modal = document.getElementById("projectFormModal");
+    const form = document.getElementById("projectForm");
+    if (!modal || !form) return;
+
+    form.reset();
+    document.getElementById("projectEditId").value = "";
+    document.getElementById("projectModalTitle").innerText = "Cadastrar Nova Solução / Demonstração";
+    modal.classList.add("active");
+};
+
+window.openEditProjectModal = function(projectId) {
+    const projects = getOnlineProjects();
+    const proj = projects.find(p => p.id === projectId);
+    if (!proj) return;
+
+    document.getElementById("projectEditId").value = proj.id;
+    document.getElementById("projectFormName").value = proj.name || "";
+    document.getElementById("projectFormShortName").value = proj.shortName || "";
+    document.getElementById("projectFormCategory").value = proj.categoryLabel || proj.category || "SaaS Logística & Gestão";
+    document.getElementById("projectFormIcon").value = proj.icon || "globe";
+    document.getElementById("projectFormUrl").value = proj.url || "";
+    document.getElementById("projectFormDescription").value = proj.description || "";
+    document.getElementById("projectFormTags").value = (proj.tags || []).join(", ");
+    document.getElementById("projectFormCredentials").value = proj.demoCredentials || "";
+    document.getElementById("projectFormSalesPitch").value = proj.salesPitch || "";
+
+    document.getElementById("projectModalTitle").innerText = "Editar Solução / Demonstração";
+    document.getElementById("projectFormModal").classList.add("active");
+};
+
+// Initialize Event Listeners for Projects Module
+function setupProjectsEventListeners() {
+    // Category tabs filter
+    const catFilters = document.querySelectorAll("#projectCategoryFilters li");
+    catFilters.forEach(tab => {
+        tab.addEventListener("click", () => {
+            catFilters.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            currentProjectCategoryFilter = tab.getAttribute("data-project-filter") || "all";
+            renderProjects();
+        });
+    });
+
+    // Search filter input
+    const pSearch = document.getElementById("projectSearchInput");
+    if (pSearch) {
+        pSearch.addEventListener("input", () => renderProjects());
+    }
+
+    // Global Top Buttons
+    const btnStudio = document.getElementById("btnOpenGlobalStudio");
+    if (btnStudio) {
+        btnStudio.addEventListener("click", () => openProjectPreview('proj_estoque'));
+    }
+
+    const btnAddProj = document.getElementById("btnAddProject");
+    if (btnAddProj) {
+        btnAddProj.addEventListener("click", openAddProjectModal);
+    }
+
+    const btnAddCustom = document.getElementById("btnAddCustomProject");
+    if (btnAddCustom) {
+        btnAddCustom.addEventListener("click", openAddProjectModal);
+    }
+
+    // Device Viewport Toggles in Studio
+    document.querySelectorAll(".btn-device-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const dev = btn.getAttribute("data-device");
+            setPreviewDeviceMode(dev);
+        });
+    });
+
+    // Project selection in Studio header
+    const pSelect = document.getElementById("previewProjectSelect");
+    if (pSelect) {
+        pSelect.addEventListener("change", (e) => {
+            openProjectPreview(e.target.value, currentPreviewDeviceMode);
+        });
+    }
+
+    // Reload preview iframe
+    const btnReload = document.getElementById("btnReloadPreview");
+    if (btnReload) {
+        btnReload.addEventListener("click", () => {
+            const iframe = document.getElementById("previewIframe");
+            if (iframe && !iframe.classList.contains("hidden")) {
+                const spinner = document.getElementById("previewLoadingSpinner");
+                if (spinner) spinner.classList.remove("hidden");
+                iframe.src = iframe.src;
+            } else {
+                initAgentSimulator();
+            }
+        });
+    }
+
+    // Open External in Studio
+    const btnExt = document.getElementById("btnOpenPreviewExternal");
+    if (btnExt) {
+        btnExt.addEventListener("click", () => {
+            const projects = getOnlineProjects();
+            const proj = projects.find(p => p.id === currentActivePreviewProjectId);
+            if (proj && proj.url) window.open(proj.url, '_blank');
+        });
+    }
+
+    // Copy URL in Studio
+    const btnCopyUrl = document.getElementById("btnCopyPreviewUrl");
+    if (btnCopyUrl) {
+        btnCopyUrl.addEventListener("click", () => {
+            const projects = getOnlineProjects();
+            const proj = projects.find(p => p.id === currentActivePreviewProjectId);
+            if (proj) copyProjectLink(proj.url, proj.name);
+        });
+    }
+
+    // Share on WhatsApp in Studio
+    const btnShareWa = document.getElementById("btnSharePreviewWhatsApp");
+    if (btnShareWa) {
+        btnShareWa.addEventListener("click", () => {
+            shareProjectOnWhatsApp(currentActivePreviewProjectId);
+        });
+    }
+
+    // Copy credentials in Studio footer
+    const btnCopyCreds = document.getElementById("btnCopyPreviewCreds");
+    if (btnCopyCreds) {
+        btnCopyCreds.addEventListener("click", () => {
+            const text = document.getElementById("previewFooterCredsText")?.innerText;
+            if (text) {
+                navigator.clipboard.writeText(text);
+                showToast("Credenciais copiadas!", "success");
+            }
+        });
+    }
+
+    // Close Preview Studio
+    const btnClosePreview = document.getElementById("btnCloseProjectPreviewModal");
+    if (btnClosePreview) {
+        btnClosePreview.addEventListener("click", () => {
+            const modal = document.getElementById("projectPreviewModal");
+            const iframe = document.getElementById("previewIframe");
+            if (modal) modal.classList.remove("active");
+            if (iframe) iframe.src = "about:blank"; // stop background processes
+        });
+    }
+
+    // Agent Simulator Prompt Chips
+    document.querySelectorAll(".btn-agent-prompt-chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+            const promptText = chip.getAttribute("data-prompt");
+            sendAgentSimMessage(promptText);
+        });
+    });
+
+    // Agent Simulator Reset
+    const btnSimReset = document.getElementById("btnAgentSimReset");
+    if (btnSimReset) {
+        btnSimReset.addEventListener("click", () => initAgentSimulator());
+    }
+
+    // Agent Simulator Form
+    const simForm = document.getElementById("agentSimForm");
+    if (simForm) {
+        simForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const input = document.getElementById("agentSimInput");
+            if (input && input.value.trim()) {
+                sendAgentSimMessage(input.value.trim());
+                input.value = "";
+            }
+        });
+    }
+
+    // Project Form Modal Close
+    const btnCloseForm = document.getElementById("btnCloseProjectFormModal");
+    if (btnCloseForm) {
+        btnCloseForm.addEventListener("click", () => {
+            document.getElementById("projectFormModal")?.classList.remove("active");
+        });
+    }
+
+    const btnCancelForm = document.getElementById("btnCancelProjectFormModal");
+    if (btnCancelForm) {
+        btnCancelForm.addEventListener("click", () => {
+            document.getElementById("projectFormModal")?.classList.remove("active");
+        });
+    }
+
+    // Project Form Submit (Save / Edit)
+    const pForm = document.getElementById("projectForm");
+    if (pForm) {
+        pForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const env = getEnv();
+            if (!env.onlineProjects) env.onlineProjects = [];
+
+            const editId = document.getElementById("projectEditId")?.value;
+            const name = document.getElementById("projectFormName")?.value.trim();
+            const shortName = document.getElementById("projectFormShortName")?.value.trim() || name;
+            const categoryLabel = document.getElementById("projectFormCategory")?.value;
+            const icon = document.getElementById("projectFormIcon")?.value || "globe";
+            const url = document.getElementById("projectFormUrl")?.value.trim();
+            const description = document.getElementById("projectFormDescription")?.value.trim();
+            const tagsRaw = document.getElementById("projectFormTags")?.value.trim() || "";
+            const demoCredentials = document.getElementById("projectFormCredentials")?.value.trim() || null;
+            const salesPitch = document.getElementById("projectFormSalesPitch")?.value.trim() || "";
+
+            const tags = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
+
+            let catKey = "saas";
+            if (categoryLabel.includes("IA") || categoryLabel.includes("Artificial")) catKey = "ai";
+            else if (categoryLabel.includes("Agendamento") || categoryLabel.includes("Serviços")) catKey = "booking";
+            else if (categoryLabel.includes("Web") || categoryLabel.includes("Sites")) catKey = "web";
+
+            if (editId) {
+                const proj = env.onlineProjects.find(p => p.id === editId);
+                if (proj) {
+                    proj.name = name;
+                    proj.shortName = shortName;
+                    proj.category = catKey;
+                    proj.categoryLabel = categoryLabel;
+                    proj.icon = icon;
+                    proj.url = url;
+                    proj.description = description;
+                    proj.tags = tags;
+                    proj.demoCredentials = demoCredentials;
+                    proj.salesPitch = salesPitch;
+                }
+                showToast(`Solução "${name}" atualizada com sucesso!`, "success");
+            } else {
+                const newProj = {
+                    id: "proj_" + Date.now(),
+                    name,
+                    shortName,
+                    category: catKey,
+                    categoryLabel,
+                    status: "online",
+                    statusLabel: "🟢 Online em Produção",
+                    url,
+                    demoCredentials,
+                    icon,
+                    gradient: "linear-gradient(135deg, #4F46E5, #06B6D4)",
+                    description,
+                    tags,
+                    salesPitch,
+                    canIframe: true,
+                    previewType: "iframe"
+                };
+                env.onlineProjects.push(newProj);
+                showToast(`Nova solução "${name}" cadastrada no catálogo!`, "success");
+            }
+
+            saveState();
+            document.getElementById("projectFormModal")?.classList.remove("active");
+            renderProjects();
+        });
+    }
+}
+
+// Ensure event listeners are attached once DOM is ready
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupProjectsEventListeners);
+} else {
+    setupProjectsEventListeners();
+}
+

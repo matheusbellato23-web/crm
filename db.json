@@ -608,6 +608,112 @@
           "name": "Admin",
           "role": "Administrador"
         }
+      ],
+      "onlineProjects": [
+        {
+          "id": "proj_estoque",
+          "name": "Sistema de Estoque Inteligente & MDM",
+          "shortName": "StockEngine",
+          "category": "saas",
+          "categoryLabel": "SaaS Logística & Gestão",
+          "status": "online",
+          "statusLabel": "🟢 Online em Produção",
+          "url": "https://webcolabs.com.br/app/estoque/",
+          "demoCredentials": "Login: admin | Senha: 080125",
+          "icon": "boxes",
+          "color": "#4F46E5",
+          "gradient": "linear-gradient(135deg, #4F46E5, #06B6D4)",
+          "description": "Sistema corporativo de controle de estoque inteligente com saneamento de cadastros, auditoria de duplicidades semânticas ('Dinheiro Ocioso'), simulador de crise What-If e rastreamento de expedição.",
+          "tags": [
+            "IA Semântica",
+            "Simulador What-If",
+            "Auditoria de Duplicidades",
+            "Gestão de Compras",
+            "Multi-Usuário"
+          ],
+          "salesPitch": "Identifica duplicidades em cadastros e libera capital de giro parado em estoque, simulando rupturas de suprimentos em tempo real.",
+          "canIframe": true,
+          "previewType": "iframe"
+        },
+        {
+          "id": "proj_agente",
+          "name": "Agente Comercial AI (Atendente WhatsApp 24/7)",
+          "shortName": "Agente Comercial",
+          "category": "ai",
+          "categoryLabel": "IA Generativa & Vendas",
+          "status": "online",
+          "statusLabel": "🟢 24/7 Ativo & Integrado",
+          "url": "https://webcolabs.com.br/crm/api/webhook/agente-comercial",
+          "secondaryUrl": "http://localhost:3000",
+          "demoCredentials": null,
+          "icon": "bot",
+          "color": "#059669",
+          "gradient": "linear-gradient(135deg, #059669, #10B981)",
+          "description": "Robô de prospecção autônoma via WhatsApp com inteligência artificial Gemini. Aborda empresas B2B, qualifica o lead, apresenta propostas de sites (R$ 400) e sincroniza oportunidades direto no CRM com suporte a intervenção humana.",
+          "tags": [
+            "WhatsApp Baileys",
+            "IA Gemini",
+            "Prospecção Ativa",
+            "SDR Autônomo",
+            "Human Takeover",
+            "Sincronização CRM"
+          ],
+          "salesPitch": "Gera oportunidades comerciais e orçamentos automaticamente no WhatsApp sem equipe manual, alimentando o funil do CRM 24 horas por dia.",
+          "canIframe": false,
+          "previewType": "agent_simulator"
+        },
+        {
+          "id": "proj_agendamento",
+          "name": "Sistema de Agendamento Online",
+          "shortName": "AgendaFlow",
+          "category": "booking",
+          "categoryLabel": "SaaS Serviços & Saúde",
+          "status": "online",
+          "statusLabel": "🟢 Modelo Disponível",
+          "url": "https://webcolabs.com.br/sistema-agendamento",
+          "demoCredentials": null,
+          "icon": "calendar",
+          "color": "#0284c7",
+          "gradient": "linear-gradient(135deg, #0284c7, #38bdf8)",
+          "description": "Plataforma de auto-agendamento em 3 etapas para celulares. Reduz o absenteísmo (no-show) em até 85% com cobrança de sinal antecipado via Pix e disparos de lembretes automáticos no WhatsApp.",
+          "tags": [
+            "Zero Faltas (-85%)",
+            "Cobrança Pix",
+            "Lembretes WhatsApp",
+            "Sincronização Google",
+            "Checkout Mobile"
+          ],
+          "salesPitch": "Elimina a perda de tempo marcando horários manualmente e garante que o cliente compareça cobrando sinal prévio no Pix.",
+          "canIframe": true,
+          "previewType": "iframe"
+        },
+        {
+          "id": "proj_site_generico",
+          "name": "Site Genérico & Portfólio Institucional",
+          "shortName": "Modelo Site R$ 400",
+          "category": "web",
+          "categoryLabel": "Web & Google Ads",
+          "status": "online",
+          "statusLabel": "🟢 Em Produção (R$ 400)",
+          "url": "https://webcolabs.com.br/pagina/grafica/",
+          "secondaryUrl": "https://webcoagency.site/",
+          "demoCredentials": null,
+          "icon": "layout",
+          "color": "#d97706",
+          "gradient": "linear-gradient(135deg, #d97706, #f59e0b)",
+          "description": "Modelo de site institucional de alta conversão para gráficas rápidas, empresas locais e prestadores de serviço. Otimizado para campanhas de Google Ads, mobile-first e chamada imediata no WhatsApp.",
+          "tags": [
+            "Ticket R$ 400",
+            "Google Ads Ready",
+            "Alta Conversão",
+            "Mobile First",
+            "Botão WhatsApp Direto",
+            "SEO Local"
+          ],
+          "salesPitch": "Site profissional completo entregue em tempo recorde por R$ 400, preparado para colocar a empresa no topo do Google e gerar leads diariamente.",
+          "canIframe": true,
+          "previewType": "iframe"
+        }
       ]
     }
   },
