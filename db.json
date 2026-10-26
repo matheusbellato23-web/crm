@@ -139,6 +139,3702 @@
           "notes": "Optou por manter sistema antigo no momento.",
           "source": "Agente Comercial",
           "createdAt": "2026-07-20T10:00:00.000Z"
+        },
+        {
+          "id": "c_agente_1793048223571_dnk",
+          "name": "Gráfica Rápida Profissional Copacabana Zona Sul Barata Ribeiro",
+          "company": "Gráfica Rápida Profissional Copacabana Zona Sul Barata Ribeiro",
+          "email": "",
+          "phone": "(21) 2549-2815",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.571Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223576",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.576Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223576_f8e",
+          "name": "TAG • GRÁFICA RÁPIDA Copacabana",
+          "company": "TAG • GRÁFICA RÁPIDA Copacabana",
+          "email": "",
+          "phone": "(21) 2227-1216",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.576Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223576",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.576Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223576_knx",
+          "name": "Grafica Tietê Express 24 hs Impressão e Comunicação visual",
+          "company": "Grafica Tietê Express 24 hs Impressão e Comunicação visual",
+          "email": "",
+          "phone": "(11) 96502-6636",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.576Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223576",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.576Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223576_293",
+          "name": "D'print Gráfica",
+          "company": "D'print Gráfica",
+          "email": "",
+          "phone": "(11) 2858-8080",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.576Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223576",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.576Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223576_il8",
+          "name": "Vallilo Gráfica e Editora",
+          "company": "Vallilo Gráfica e Editora",
+          "email": "",
+          "phone": "(11) 3208-5284",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.576Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223576",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.576Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223576_m5l",
+          "name": "Grafica Bras",
+          "company": "Grafica Bras",
+          "email": "",
+          "phone": "(11) 94728-9661",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_zvu",
+          "name": "Kairós Gráfica e brindes",
+          "company": "Kairós Gráfica e brindes",
+          "email": "",
+          "phone": "(11) 95201-4503",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_onj",
+          "name": "Gráfica Americana e Comercio",
+          "company": "Gráfica Americana e Comercio",
+          "email": "",
+          "phone": "(11) 2081-3390",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_y68",
+          "name": "Kontato Gráfica",
+          "company": "Kontato Gráfica",
+          "email": "",
+          "phone": "(11) 2694-2836",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_52f",
+          "name": "Bis Gráfica",
+          "company": "Bis Gráfica",
+          "email": "",
+          "phone": "(11) 2976-3068",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_n5q",
+          "name": "Gráfica Fine Transfer",
+          "company": "Gráfica Fine Transfer",
+          "email": "",
+          "phone": "(11) 94076-1188",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_6ji",
+          "name": "Gráfica Sacoma",
+          "company": "Gráfica Sacoma",
+          "email": "",
+          "phone": "(11) 2694-6612",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_xzd",
+          "name": "Gráfica ServPrint Barra Funda",
+          "company": "Gráfica ServPrint Barra Funda",
+          "email": "",
+          "phone": "(11) 98783-9772",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site cadastrado no Maps está fora do ar (HTTP 400)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_4kk",
+          "name": "Gráfica Ghds",
+          "company": "Gráfica Ghds",
+          "email": "",
+          "phone": "(11) 99431-0120",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223577_60b",
+          "name": "GráFica Em Osasco 24 Horas",
+          "company": "GráFica Em Osasco 24 Horas",
+          "email": "",
+          "phone": "(11) 96292-0303",
+          "niche": "Gráfica",
+          "status": "proposal",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.577Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223577",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Interessado). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.577Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_txa",
+          "name": "Teck Prints",
+          "company": "Teck Prints",
+          "email": "",
+          "phone": "(11) 3688-1122",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_in7",
+          "name": "CardPress Barra Funda",
+          "company": "CardPress Barra Funda",
+          "email": "",
+          "phone": "(11) 2626-1369",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_2d7",
+          "name": "Gráfica Rápida Aquarela",
+          "company": "Gráfica Rápida Aquarela",
+          "email": "",
+          "phone": "(11) 3681-1402",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_xyv",
+          "name": "Leograf Gráfica Editora",
+          "company": "Leograf Gráfica Editora",
+          "email": "",
+          "phone": "(11) 3658-5000",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Copyright antigo (2020))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_bes",
+          "name": "Click Cópias e Serviços",
+          "company": "Click Cópias e Serviços",
+          "email": "",
+          "phone": "(11) 3683-6191",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_6r7",
+          "name": "Copiadora Charlie Osasco",
+          "company": "Copiadora Charlie Osasco",
+          "email": "",
+          "phone": "(11) 3684-0333",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_zbl",
+          "name": "HL Acabamentos Gráficos",
+          "company": "HL Acabamentos Gráficos",
+          "email": "",
+          "phone": "(11) 4346-2000",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_xi2",
+          "name": "Fusão Impressão Digital",
+          "company": "Fusão Impressão Digital",
+          "email": "",
+          "phone": "(11) 3616-2000",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_t86",
+          "name": "Central de Cópias do Brasil",
+          "company": "Central de Cópias do Brasil",
+          "email": "",
+          "phone": "(11) 97392-7162",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223578_a16",
+          "name": "DJP Gráfica e Sublimação",
+          "company": "DJP Gráfica e Sublimação",
+          "email": "",
+          "phone": "(11) 97724-8068",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.578Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223578",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.578Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223579_xkj",
+          "name": "Shigueko Gráfica Adesivos e Carimbos",
+          "company": "Shigueko Gráfica Adesivos e Carimbos",
+          "email": "",
+          "phone": "(11) 95425-1176",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.579Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223579",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.579Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223579_sr3",
+          "name": "Copyfast",
+          "company": "Copyfast",
+          "email": "",
+          "phone": "(11) 4624-0030",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.579Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223579",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.579Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223579_ykh",
+          "name": "Braspor Gráfica Editora",
+          "company": "Braspor Gráfica Editora",
+          "email": "",
+          "phone": "(11) 3601-2226",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.579Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223579",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.579Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223579_f9c",
+          "name": "Grafix",
+          "company": "Grafix",
+          "email": "",
+          "phone": "(11) 97787-3991",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.579Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223579",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.579Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223579_f7g",
+          "name": "Ideal SoluçõEs Digitais",
+          "company": "Ideal SoluçõEs Digitais",
+          "email": "",
+          "phone": "(11) 97641-6641",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.579Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223579",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.579Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223580_gqt",
+          "name": "GVH Gráfica Online",
+          "company": "GVH Gráfica Online",
+          "email": "",
+          "phone": "(11) 98456-6956",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.580Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223580",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.580Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_aod",
+          "name": "Rei dos Panfletos",
+          "company": "Rei dos Panfletos",
+          "email": "",
+          "phone": "(11) 3683-5127",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_cmk",
+          "name": "Dinu's Artes Gráficas",
+          "company": "Dinu's Artes Gráficas",
+          "email": "",
+          "phone": "(11) 3683-4488",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_3bx",
+          "name": "Grafica Osasco Colors",
+          "company": "Grafica Osasco Colors",
+          "email": "",
+          "phone": "(11) 95283-3700",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_yyv",
+          "name": "Gráfica JF Impressão Digital (em Osasco",
+          "company": "Gráfica JF Impressão Digital (em Osasco",
+          "email": "",
+          "phone": "(11) 98119-2357",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_s3k",
+          "name": "MB Gráfica",
+          "company": "MB Gráfica",
+          "email": "",
+          "phone": "(11) 3685-4951",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_7wy",
+          "name": "Gráfica Artself",
+          "company": "Gráfica Artself",
+          "email": "",
+          "phone": "(11) 98868-8050",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_5k9",
+          "name": "ENLUMOS fotografia e presentes",
+          "company": "ENLUMOS fotografia e presentes",
+          "email": "",
+          "phone": "(11) 97708-1715",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_i75",
+          "name": "Gráfica FuturaIM (Unidade Osasco)",
+          "company": "Gráfica FuturaIM (Unidade Osasco)",
+          "email": "",
+          "phone": "(11) 3654-1571",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_r8y",
+          "name": "Gráfica Yara",
+          "company": "Gráfica Yara",
+          "email": "",
+          "phone": "(11) 3681-6590",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_a7t",
+          "name": "Gráfica Jatobá",
+          "company": "Gráfica Jatobá",
+          "email": "",
+          "phone": "(11) 3682-3287",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_069",
+          "name": "Artes Graficas Freire",
+          "company": "Artes Graficas Freire",
+          "email": "",
+          "phone": "(11) 3699-1112",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_k4s",
+          "name": "Gráfica Pinheiros Visual Pro Experience",
+          "company": "Gráfica Pinheiros Visual Pro Experience",
+          "email": "",
+          "phone": "(11) 96188-1742",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_tei",
+          "name": "Gráficas Mazal",
+          "company": "Gráficas Mazal",
+          "email": "",
+          "phone": "(11) 99764-9852",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_bo6",
+          "name": "Suba Print",
+          "company": "Suba Print",
+          "email": "",
+          "phone": "(11) 94535-5555",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Proposta enviada). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_liv",
+          "name": "Gráfica Luma",
+          "company": "Gráfica Luma",
+          "email": "",
+          "phone": "(11) 3672-5077",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_e6l",
+          "name": "Olhartístico Digital",
+          "company": "Olhartístico Digital",
+          "email": "",
+          "phone": "(11) 93335-1194",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_jn7",
+          "name": "Color Digital Gráfica",
+          "company": "Color Digital Gráfica",
+          "email": "",
+          "phone": "(11) 2779-5041",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Copyright antigo (2020))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_hyy",
+          "name": "impressão de apostilas",
+          "company": "impressão de apostilas",
+          "email": "",
+          "phone": "(11) 96787-5519",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_308",
+          "name": "Gráfica Critério",
+          "company": "Gráfica Critério",
+          "email": "",
+          "phone": "(11) 3064-3992",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223581_7vh",
+          "name": "Postnet Perdizes",
+          "company": "Postnet Perdizes",
+          "email": "",
+          "phone": "(11) 2506-7888",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.581Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223581",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.581Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_xe7",
+          "name": "Impressão e encadernação",
+          "company": "Impressão e encadernação",
+          "email": "",
+          "phone": "(11) 3807-7562",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_q4d",
+          "name": "Datanew",
+          "company": "Datanew",
+          "email": "",
+          "phone": "(11) 3871-0227",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_1r6",
+          "name": "Best Design Gráfica Digital",
+          "company": "Best Design Gráfica Digital",
+          "email": "",
+          "phone": "(11) 96609-4310",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_7t7",
+          "name": "GR Soluções Gráficas",
+          "company": "GR Soluções Gráficas",
+          "email": "",
+          "phone": "(11) 3675-3948",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_028",
+          "name": "Imax Digital Gráfica Rápida e Com. Visual",
+          "company": "Imax Digital Gráfica Rápida e Com. Visual",
+          "email": "",
+          "phone": "(11) 98275-9009",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_281",
+          "name": "Copy Set Gráfica e Copiadora",
+          "company": "Copy Set Gráfica e Copiadora",
+          "email": "",
+          "phone": "(11) 3812-5058",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site cadastrado no Maps está fora do ar (HTTP 400)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_86v",
+          "name": "Forte Papelaria e Copiadora",
+          "company": "Forte Papelaria e Copiadora",
+          "email": "",
+          "phone": "(11) 95453-1456",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_8v1",
+          "name": "CartõEs De Natal",
+          "company": "CartõEs De Natal",
+          "email": "",
+          "phone": "(11) 98180-9901",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_agd",
+          "name": "Futaba Impressão Digital",
+          "company": "Futaba Impressão Digital",
+          "email": "",
+          "phone": "(11) 97305-3032",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_9jr",
+          "name": "Cópias e Serviços Pinheiros",
+          "company": "Cópias e Serviços Pinheiros",
+          "email": "",
+          "phone": "(11) 3814-0010",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_nk2",
+          "name": "Print Tech Impressões Técnicas",
+          "company": "Print Tech Impressões Técnicas",
+          "email": "",
+          "phone": "(11) 3872-2118",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_fi5",
+          "name": "Papiro Gráfica Rápida e Papelaria",
+          "company": "Papiro Gráfica Rápida e Papelaria",
+          "email": "",
+          "phone": "(11) 3673-2868",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_j93",
+          "name": "AroPrint",
+          "company": "AroPrint",
+          "email": "",
+          "phone": "(11) 3816-0459",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_3iq",
+          "name": "Ggraf",
+          "company": "Ggraf",
+          "email": "",
+          "phone": "(11) 3062-4251",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_g0t",
+          "name": "Fortrox Copiadora & Gráfica Digital",
+          "company": "Fortrox Copiadora & Gráfica Digital",
+          "email": "",
+          "phone": "(11) 3062-2814",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_n47",
+          "name": "Imprimix Pinheiros",
+          "company": "Imprimix Pinheiros",
+          "email": "",
+          "phone": "(11) 99943-4554",
+          "niche": "Gráfica",
+          "status": "proposal",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Interessado). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223582_fl9",
+          "name": "Think About",
+          "company": "Think About",
+          "email": "",
+          "phone": "(11) 3675-6477",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.582Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223582",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.582Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223583_5qt",
+          "name": "Gráfica Primeira",
+          "company": "Gráfica Primeira",
+          "email": "",
+          "phone": "(11) 3863-2082",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.583Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223583",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.583Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223583_2q1",
+          "name": "Digital Brigido",
+          "company": "Digital Brigido",
+          "email": "",
+          "phone": "(11) 3032-1124",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.583Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223583",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.583Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223583_22r",
+          "name": "West Copy",
+          "company": "West Copy",
+          "email": "",
+          "phone": "(11) 3676-1401",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.583Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223583",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.583Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223583_kty",
+          "name": "Comprint Máquinas e Materiais Gráficos",
+          "company": "Comprint Máquinas e Materiais Gráficos",
+          "email": "",
+          "phone": "(11) 3371-3371",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_hb5",
+          "name": "Grafiset Cópias",
+          "company": "Grafiset Cópias",
+          "email": "",
+          "phone": "(11) 3085-1666",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_mgv",
+          "name": "Starting Copias Express",
+          "company": "Starting Copias Express",
+          "email": "",
+          "phone": "(11) 95351-9669",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_1ok",
+          "name": "Color Art",
+          "company": "Color Art",
+          "email": "",
+          "phone": "(11) 3801-2421",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_50k",
+          "name": "LCM Indústria e Comércio",
+          "company": "LCM Indústria e Comércio",
+          "email": "",
+          "phone": "(19) 97405-9945",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_nqs",
+          "name": "Gráfica HDprint (Gráfica Rápida",
+          "company": "Gráfica HDprint (Gráfica Rápida",
+          "email": "",
+          "phone": "(11) 2892-2327",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_rvm",
+          "name": "Print Copy",
+          "company": "Print Copy",
+          "email": "",
+          "phone": "(11) 3031-0922",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_mm4",
+          "name": "Novimaq Conveniência Gráfica",
+          "company": "Novimaq Conveniência Gráfica",
+          "email": "",
+          "phone": "(11) 3862-1541",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_v71",
+          "name": "Idéia Ação Comércio e Serviços",
+          "company": "Idéia Ação Comércio e Serviços",
+          "email": "",
+          "phone": "(11) 3873-2164",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_p7q",
+          "name": "AlphaGraphics Pinheiros",
+          "company": "AlphaGraphics Pinheiros",
+          "email": "",
+          "phone": "(11) 3035-3700",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_eho",
+          "name": "Symposion Gráfica e Encadernadora",
+          "company": "Symposion Gráfica e Encadernadora",
+          "email": "",
+          "phone": "(11) 3672-2804",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_gap",
+          "name": "Cyan Artes Gráficas",
+          "company": "Cyan Artes Gráficas",
+          "email": "",
+          "phone": "(11) 97336-3008",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_yhi",
+          "name": "Visual Print",
+          "company": "Visual Print",
+          "email": "",
+          "phone": "(11) 3031-3985",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_qtk",
+          "name": "Uniplotagem e Cópias",
+          "company": "Uniplotagem e Cópias",
+          "email": "",
+          "phone": "(11) 2628-1944",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_7hj",
+          "name": "Planet Cop",
+          "company": "Planet Cop",
+          "email": "",
+          "phone": "(11) 2872-9531",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_fie",
+          "name": "Four Cópias Plotagens",
+          "company": "Four Cópias Plotagens",
+          "email": "",
+          "phone": "(11) 3816-1122",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_wja",
+          "name": "Master Copy",
+          "company": "Master Copy",
+          "email": "",
+          "phone": "(11) 94226-3400",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_4ta",
+          "name": "Lazuli Editora",
+          "company": "Lazuli Editora",
+          "email": "",
+          "phone": "(11) 3729-6077",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_x62",
+          "name": "InPrima Soluções Gráficas",
+          "company": "InPrima Soluções Gráficas",
+          "email": "",
+          "phone": "(11) 4858-3180",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_uuv",
+          "name": "CPVisual",
+          "company": "CPVisual",
+          "email": "",
+          "phone": "(11) 3061-3760",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223584_ad5",
+          "name": "Banner Adesivo Placas Faixas Serviços gráficos Ponto7 SP",
+          "company": "Banner Adesivo Placas Faixas Serviços gráficos Ponto7 SP",
+          "email": "",
+          "phone": "(11) 3037-7196",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.584Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223584",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.584Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_iaj",
+          "name": "Diana Cecchini Vendas Gráfica",
+          "company": "Diana Cecchini Vendas Gráfica",
+          "email": "",
+          "phone": "(11) 98539-4863",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_672",
+          "name": "Copy House",
+          "company": "Copy House",
+          "email": "",
+          "phone": "(21) 2508-6000",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_a3r",
+          "name": "PGW Gráfica",
+          "company": "PGW Gráfica",
+          "email": "",
+          "phone": "(11) 95370-9104",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_06u",
+          "name": "AcriMundi Cortes e Gravações a Laser",
+          "company": "AcriMundi Cortes e Gravações a Laser",
+          "email": "",
+          "phone": "(11) 98912-3375",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_12a",
+          "name": "SCP Papelaria",
+          "company": "SCP Papelaria",
+          "email": "",
+          "phone": "(11) 98631-9362",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_6b3",
+          "name": "Copiadora Engecopy Comécio",
+          "company": "Copiadora Engecopy Comécio",
+          "email": "",
+          "phone": "(11) 3097-0107",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_8mw",
+          "name": "Escripel Papelaria e Informática",
+          "company": "Escripel Papelaria e Informática",
+          "email": "",
+          "phone": "(11) 2359-2501",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_vm0",
+          "name": "RA Paper",
+          "company": "RA Paper",
+          "email": "",
+          "phone": "(11) 93224-6287",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Proposta enviada). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_z0k",
+          "name": "Carimbo Letterpress",
+          "company": "Carimbo Letterpress",
+          "email": "",
+          "phone": "(11) 3494-6788",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_yhx",
+          "name": "Artur Cópias",
+          "company": "Artur Cópias",
+          "email": "",
+          "phone": "(11) 3032-0677",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_lkb",
+          "name": "Prata Design Gráfico",
+          "company": "Prata Design Gráfico",
+          "email": "",
+          "phone": "(11) 3023-1569",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_pui",
+          "name": "Comunika Visual",
+          "company": "Comunika Visual",
+          "email": "",
+          "phone": "(11) 98198-8580",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223585_qwi",
+          "name": "Gráfica Rápida Jundiaí",
+          "company": "Gráfica Rápida Jundiaí",
+          "email": "",
+          "phone": "(11) 97305-9611",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.585Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223585",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.585Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_fpc",
+          "name": "Gráfica Jundiaí",
+          "company": "Gráfica Jundiaí",
+          "email": "",
+          "phone": "(11) 4817-7382",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_hjc",
+          "name": "Gráfica PoliSet",
+          "company": "Gráfica PoliSet",
+          "email": "",
+          "phone": "(11) 3379-2430",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_n98",
+          "name": "Gráfica Rápida Max",
+          "company": "Gráfica Rápida Max",
+          "email": "",
+          "phone": "(11) 95426-1143",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_y8q",
+          "name": "Maltoni",
+          "company": "Maltoni",
+          "email": "",
+          "phone": "(11) 4521-4573",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_pq5",
+          "name": "Gráfica Imprima 1000",
+          "company": "Gráfica Imprima 1000",
+          "email": "",
+          "phone": "(11) 91720-8873",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_92e",
+          "name": "JundGraph",
+          "company": "JundGraph",
+          "email": "",
+          "phone": "(11) 4586-9756",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_yir",
+          "name": "Mettagraf",
+          "company": "Mettagraf",
+          "email": "",
+          "phone": "(11) 4584-0894",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_0ry",
+          "name": "Gráfica Art Cartões",
+          "company": "Gráfica Art Cartões",
+          "email": "",
+          "phone": "(11) 96393-9769",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Copyright antigo (2021))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_akv",
+          "name": "Firstweb Gráfica e Brindes",
+          "company": "Firstweb Gráfica e Brindes",
+          "email": "",
+          "phone": "(11) 3379-7848",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_x0u",
+          "name": "Copiadora Jundiaí",
+          "company": "Copiadora Jundiaí",
+          "email": "",
+          "phone": "(11) 99486-7491",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_vpr",
+          "name": "Impressos Jundiaí",
+          "company": "Impressos Jundiaí",
+          "email": "",
+          "phone": "(11) 97465-5557",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site cadastrado no Maps está fora do ar (HTTP 403)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223586_5hr",
+          "name": "ChromoArte Gráfica & Comunicação Visual",
+          "company": "ChromoArte Gráfica & Comunicação Visual",
+          "email": "",
+          "phone": "(11) 4582-0886",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.586Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223586",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.586Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_vil",
+          "name": "Gráfica Visão",
+          "company": "Gráfica Visão",
+          "email": "",
+          "phone": "(11) 97144-0298",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_0lh",
+          "name": "Razor Digital Gráfica Rápida",
+          "company": "Razor Digital Gráfica Rápida",
+          "email": "",
+          "phone": "(11) 98904-8308",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site desatualizado ou não responsivo (Copyright antigo (2022))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_8qz",
+          "name": "Jet Printer Jundiaí",
+          "company": "Jet Printer Jundiaí",
+          "email": "",
+          "phone": "(11) 95411-2646",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_cn6",
+          "name": "Gráfica Setembro",
+          "company": "Gráfica Setembro",
+          "email": "",
+          "phone": "(11) 99415-4366",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site desatualizado ou não responsivo (Copyright antigo (2022))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_0rb",
+          "name": "Gráfica L'Two *",
+          "company": "Gráfica L'Two *",
+          "email": "",
+          "phone": "(11) 97338-9143",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_kzy",
+          "name": "Seleto Print",
+          "company": "Seleto Print",
+          "email": "",
+          "phone": "(11) 94555-4700",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_wmn",
+          "name": "Litografia Bandeirantes",
+          "company": "Litografia Bandeirantes",
+          "email": "",
+          "phone": "(11) 4585-5252",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_pzi",
+          "name": "Gráfica Apollo",
+          "company": "Gráfica Apollo",
+          "email": "",
+          "phone": "(11) 4587-5248",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_rrg",
+          "name": "Giton ComunicaçãO",
+          "company": "Giton ComunicaçãO",
+          "email": "",
+          "phone": "(11) 97510-2321",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_gb1",
+          "name": "Dani Artes",
+          "company": "Dani Artes",
+          "email": "",
+          "phone": "(11) 97143-2657",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_k6t",
+          "name": "Gráfica RCA",
+          "company": "Gráfica RCA",
+          "email": "",
+          "phone": "(11) 97225-6537",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223587_9w3",
+          "name": "Grafica Mil Coisas Personalizadas",
+          "company": "Grafica Mil Coisas Personalizadas",
+          "email": "",
+          "phone": "(11) 94736-5488",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.587Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223587",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.587Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223588_ecq",
+          "name": "Luma Sign",
+          "company": "Luma Sign",
+          "email": "",
+          "phone": "(11) 4582-1623",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.588Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223588",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.588Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223588_8sd",
+          "name": "Pixel Gráfica e Personalizados",
+          "company": "Pixel Gráfica e Personalizados",
+          "email": "",
+          "phone": "(11) 97472-5593",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.588Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223588",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.588Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223588_fra",
+          "name": "Gráfica Blooprint",
+          "company": "Gráfica Blooprint",
+          "email": "",
+          "phone": "(11) 97559-2299",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.588Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223588",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.588Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223588_bf2",
+          "name": "Formatho Gráfica & Comunicação Visual",
+          "company": "Formatho Gráfica & Comunicação Visual",
+          "email": "",
+          "phone": "(11) 4816-6003",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.588Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223588",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.588Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223588_o94",
+          "name": "Gráfica Armi",
+          "company": "Gráfica Armi",
+          "email": "",
+          "phone": "(11) 98700-2745",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.588Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223588",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.588Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223588_ex1",
+          "name": "Gráfica Abreu",
+          "company": "Gráfica Abreu",
+          "email": "",
+          "phone": "(11) 4587-9051",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.588Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223588",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.588Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223588_akm",
+          "name": "Gráfica Cartão Ouro",
+          "company": "Gráfica Cartão Ouro",
+          "email": "",
+          "phone": "(11) 4521-5217",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.588Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223588",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.588Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223588_5ag",
+          "name": "Cartão Express",
+          "company": "Cartão Express",
+          "email": "",
+          "phone": "(11) 97760-6300",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.588Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223588",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.588Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223589_dp4",
+          "name": "Libergraf Composições Gráficas",
+          "company": "Libergraf Composições Gráficas",
+          "email": "",
+          "phone": "(11) 4587-0753",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.589Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223589",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.589Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223589_8yu",
+          "name": "CSR Digital Print",
+          "company": "CSR Digital Print",
+          "email": "",
+          "phone": "(11) 93907-2928",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.589Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223589",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.589Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223589_74g",
+          "name": "Sua Gráfica Express",
+          "company": "Sua Gráfica Express",
+          "email": "",
+          "phone": "(11) 98271-2857",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.589Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223589",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.589Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223589_7vv",
+          "name": "Genius Print",
+          "company": "Genius Print",
+          "email": "",
+          "phone": "(11) 99918-6837",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.589Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223589",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.589Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223589_elj",
+          "name": "Gráfica Imprimax Jundiaí",
+          "company": "Gráfica Imprimax Jundiaí",
+          "email": "",
+          "phone": "(11) 98784-7224",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.589Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223589",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.589Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_jub",
+          "name": "Gráfica Leonel",
+          "company": "Gráfica Leonel",
+          "email": "",
+          "phone": "(11) 4521-7653",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_7od",
+          "name": "Volken",
+          "company": "Volken",
+          "email": "",
+          "phone": "(11) 4587-8900",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_nxb",
+          "name": "Beviarte",
+          "company": "Beviarte",
+          "email": "",
+          "phone": "(11) 4607-9801",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_nye",
+          "name": "JunTor Gráfica",
+          "company": "JunTor Gráfica",
+          "email": "",
+          "phone": "(11) 4587-8047",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_ecv",
+          "name": "Gráfica Rápida Precisão",
+          "company": "Gráfica Rápida Precisão",
+          "email": "",
+          "phone": "(11) 97709-4310",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_qyj",
+          "name": "Sonvia",
+          "company": "Sonvia",
+          "email": "",
+          "phone": "(11) 92135-9988",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Proposta enviada). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_v2o",
+          "name": "ImpressoMix Serviços de Impressão",
+          "company": "ImpressoMix Serviços de Impressão",
+          "email": "",
+          "phone": "(11) 3963-5530",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_mp0",
+          "name": "Jet Printer Maxi Shopping",
+          "company": "Jet Printer Maxi Shopping",
+          "email": "",
+          "phone": "(11) 91448-9817",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Proposta enviada). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_wuu",
+          "name": "Digibanners Várzea Paulista",
+          "company": "Digibanners Várzea Paulista",
+          "email": "",
+          "phone": "(11) 97194-4923",
+          "niche": "Gráfica",
+          "status": "negotiating",
+          "value": 400,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_kuq",
+          "name": "Digital Gráfica",
+          "company": "Digital Gráfica",
+          "email": "",
+          "phone": "(11) 97056-9181",
+          "niche": "Gráfica",
+          "status": "contacted",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Aguardando resposta). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_bgy",
+          "name": "Digibanners Comunicação Visual",
+          "company": "Digibanners Comunicação Visual",
+          "email": "",
+          "phone": "(11) 96848-1695",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Perdido). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_ff1",
+          "name": "DS Soluções Gráficas e Digitais",
+          "company": "DS Soluções Gráficas e Digitais",
+          "email": "",
+          "phone": "(11) 91833-1122",
+          "niche": "Gráfica",
+          "status": "proposal",
+          "value": 400,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Interessado). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223590_7g5",
+          "name": "Nova Era Comunicação Visual",
+          "company": "Nova Era Comunicação Visual",
+          "email": "",
+          "phone": "(11) 4584-4543",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.590Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223590",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.590Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223591_tm6",
+          "name": "vitoria grafica e artes digitais",
+          "company": "vitoria grafica e artes digitais",
+          "email": "",
+          "phone": "(11) 96310-9868",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.591Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223591",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.591Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223591_lz0",
+          "name": "Papyrus",
+          "company": "Papyrus",
+          "email": "",
+          "phone": "(11) 4587-7014",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.591Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223591",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.591Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223591_ccz",
+          "name": "Printer Soluções e Plotagens",
+          "company": "Printer Soluções e Plotagens",
+          "email": "",
+          "phone": "(11) 4805-1220",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.591Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223591",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.591Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223591_op9",
+          "name": "Postnet",
+          "company": "Postnet",
+          "email": "",
+          "phone": "(11) 3963-8023",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.591Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223591",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.591Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223591_a8v",
+          "name": "Gráfica C.R.M",
+          "company": "Gráfica C.R.M",
+          "email": "",
+          "phone": "(11) 4526-4851",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.591Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223591",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.591Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223591_74y",
+          "name": "Gráfica Blantes",
+          "company": "Gráfica Blantes",
+          "email": "",
+          "phone": "(11) 99825-1369",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site desatualizado ou não responsivo (Não responsivo (sem viewport))",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.591Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223591",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.591Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223591_apm",
+          "name": "PÉROLA Impressões e Cópias",
+          "company": "PÉROLA Impressões e Cópias",
+          "email": "",
+          "phone": "(11) 97573-5602",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.591Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223591",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.591Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223591_jmg",
+          "name": "Art Brasil",
+          "company": "Art Brasil",
+          "email": "",
+          "phone": "(11) 4586-0624",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.591Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223591",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.591Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_7ew",
+          "name": "Bellartes Gráfica",
+          "company": "Bellartes Gráfica",
+          "email": "",
+          "phone": "(11) 4497-0556",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_ktk",
+          "name": "Gráfica Aliança",
+          "company": "Gráfica Aliança",
+          "email": "",
+          "phone": "(11) 94434-4549",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_hot",
+          "name": "Grafica Fagian",
+          "company": "Grafica Fagian",
+          "email": "",
+          "phone": "(11) 4587-6208",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_onz",
+          "name": "Viz Print Gráfica Rápida e Personalizados",
+          "company": "Viz Print Gráfica Rápida e Personalizados",
+          "email": "",
+          "phone": "(11) 99572-1162",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_lb6",
+          "name": "Gráfica 011",
+          "company": "Gráfica 011",
+          "email": "",
+          "phone": "(11) 94150-2557",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site cadastrado no Maps está fora do ar (HTTP 400)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_33h",
+          "name": "Copiadora Rosário",
+          "company": "Copiadora Rosário",
+          "email": "",
+          "phone": "(11) 4522-2364",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_v4d",
+          "name": "Rsc Impressão Digital",
+          "company": "Rsc Impressão Digital",
+          "email": "",
+          "phone": "(11) 4607-4275",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site cadastrado no Maps está fora do ar (Instável/Fora do ar)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_692",
+          "name": "DSJ Comunicação Visual",
+          "company": "DSJ Comunicação Visual",
+          "email": "",
+          "phone": "(11) 98570-5322",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_lbi",
+          "name": "Grafor",
+          "company": "Grafor",
+          "email": "",
+          "phone": "(11) 4533-1092",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Sem site no Google Maps",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_cnk",
+          "name": "Lenx Designer",
+          "company": "Lenx Designer",
+          "email": "",
+          "phone": "(11) 96603-2754",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_owh",
+          "name": "Intensa Arte",
+          "company": "Intensa Arte",
+          "email": "",
+          "phone": "(11) 95555-7940",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_sy9",
+          "name": "Rm ComunicaçãO Visual",
+          "company": "Rm ComunicaçãO Visual",
+          "email": "",
+          "phone": "(11) 4607-0252",
+          "niche": "Gráfica",
+          "status": "lost",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223592",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (FALHOU). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.592Z"
+            }
+          ]
+        },
+        {
+          "id": "c_agente_1793048223592_lo9",
+          "name": "Adesivos Pozzani",
+          "company": "Adesivos Pozzani",
+          "email": "",
+          "phone": "(11) 94695-9990",
+          "niche": "Gráfica",
+          "status": "lead",
+          "value": 0,
+          "notes": "Site existente (avaliar qualidade)",
+          "source": "Agente Comercial",
+          "createdAt": "2026-10-26T20:57:03.592Z",
+          "timeline": [
+            {
+              "id": "act_init_1793048223593",
+              "type": "note",
+              "description": "🤖 Lead importado do Agente Comercial AI (Novo). Projeção R$ 400.",
+              "timestamp": "2026-10-26T20:57:03.593Z"
+            }
+          ]
         }
       ],
       "documents": [
@@ -218,24 +3914,158 @@
       ],
       "marketingAssets": [
         {
-          "id": "ma_strat_5",
-          "title": "Site Principal & Landing Pages - WEBCO Agency",
-          "category": "sites",
+          "id": "strat_meta_1",
+          "platform": "Instagram / Facebook",
+          "channel": "Meta Ads (Anúncios Pagos)",
+          "approach": "Direct / Tráfego Pago",
+          "format": "Anúncios em Vídeo ou Carrossel ofertando diagnóstico ou orçamento.\n🟢 Criar publicações e carrosséis com apoio da IA - LUCAS",
+          "strategy": "Direcionar para formulário nativo do Facebook/Instagram ou diretamente para o WhatsApp.\n🟢 Usar uma isca para vender produto gratuito para receber dados de leads via formulário.\n• PRODUTO: Lucas\n• ISCA E FORMULÁRIO: Matheus",
+          "category": "meta",
+          "responsible": "Lucas & Matheus",
           "status": "active",
-          "url": "https://webcoagency.site",
-          "metrics": "2.4k visitas/mês | Hostinger VPS",
-          "cost": "R$ 45,00/mês",
-          "notes": "Site institucional e landing pages de conversão de clientes."
+          "url": "https://facebook.com/adsmanager",
+          "metrics": "Formulário Nativo + WhatsApp Direct",
+          "cost": "Orçamento Flexível"
         },
         {
-          "id": "ma_strat_6",
-          "title": "Campanha Google Ads - WEBCO Agency (Criação de Sites)",
-          "category": "ads",
+          "id": "strat_meta_2",
+          "platform": "Instagram / Facebook",
+          "channel": "Feed & Stories (Orgânico)",
+          "approach": "Atração Visual & Prova Social",
+          "format": "Bastidores, cases de sucesso, demonstrações e antes/depois.\n🟢 Criar links de demonstração - MATHEUS\n🟢 Criar CTAs e cases de sucesso do antes e depois - LUCAS",
+          "strategy": "CTAs claras nas legendas e Stories ('Comente X para receber o link' ou 'Clique na bio').\n🟢 Utilizar os Ads no sistema - Matheus",
+          "category": "meta",
+          "responsible": "Lucas & Matheus",
           "status": "active",
-          "url": "https://ads.google.com",
-          "metrics": "120 leads/mês | CTR 4.8%",
-          "cost": "R$ 1.500,00/mês",
-          "notes": "Campanha nacional de atração de PMEs para criação de sites e tráfego pago."
+          "url": "https://instagram.com/webcoagency.site",
+          "metrics": "Prova Social & Engagement",
+          "cost": "Orgânico"
+        },
+        {
+          "id": "strat_meta_3",
+          "platform": "Instagram / Facebook",
+          "channel": "Direct & Automação",
+          "approach": "Resposta Rápida e Qualificação",
+          "format": "Mensagens automáticas (ex: via ManyChat) ao receber comentários.\n🟢 Criar agente de WhatsApp para responder e exibir menus para realizar pedidos ou conversar com atendente (nós)",
+          "strategy": "Resposta imediata 24/7 com envio do link de atendimento ou formulário de qualificação.",
+          "category": "social",
+          "responsible": "Matheus & Lucas",
+          "status": "active",
+          "url": "https://manychat.com",
+          "metrics": "Automação 24/7",
+          "cost": "Ferramenta SaaS"
+        },
+        {
+          "id": "strat_fb_1",
+          "platform": "Facebook",
+          "channel": "Marketplace",
+          "approach": "Venda Direta / Oferta Local",
+          "format": "Anúncios dos sites.\n🟢 Criar diferentes tipos de anúncios e testar cada um deles - LUCAS E MATHEUS",
+          "strategy": "Responder rapidamente mensagens no Messenger e conduzir a negociação para o WhatsApp.",
+          "category": "meta",
+          "responsible": "Lucas & Matheus",
+          "status": "active",
+          "url": "https://facebook.com/marketplace",
+          "metrics": "Venda Direta Local",
+          "cost": "Grátis"
+        },
+        {
+          "id": "strat_fb_2",
+          "platform": "Facebook",
+          "channel": "Grupos Temáticos & Página Pessoal",
+          "approach": "Autoridade & Conteúdo de Valor",
+          "format": "Publicações com cases de estudo, dicas técnicas e solução de problemas.\n🟢 CRIAR PUBLICAÇÕES COM LINK DO SITE E OUTRAS COISAS - LUCAS",
+          "strategy": "Gerar curiosidade com posts informativos e convidar para conversar via Direct ('Me chame no privado').",
+          "category": "meta",
+          "responsible": "Lucas",
+          "status": "active",
+          "url": "https://facebook.com/groups",
+          "metrics": "Geração de Autoridade",
+          "cost": "Grátis"
+        },
+        {
+          "id": "strat_li_1",
+          "platform": "LinkedIn",
+          "channel": "Social Selling (Prospecção Ativa)",
+          "approach": "B2B / Conexão Direta",
+          "format": "Mensagens personalizadas para tomadores de decisão (Diretores, Gerentes).\n🟢 PROCURAR PEQUENAS EMPRESAS - LUCAS E MATHEUS",
+          "strategy": "Mapear o perfil ideal e iniciar diálogo focado nas dores do setor.\n🟢 PREPARAR AMBIENTES DE TESTES DAS FERRAMENTAS - MATHEUS",
+          "category": "linkedin",
+          "responsible": "Lucas & Matheus",
+          "status": "active",
+          "url": "https://linkedin.com",
+          "metrics": "Prospecção Ativa B2B",
+          "cost": "Grátis / Sales Navigator"
+        },
+        {
+          "id": "strat_li_2",
+          "platform": "LinkedIn",
+          "channel": "LinkedIn Ads & InMail",
+          "approach": "B2B / Tráfego Segmentado",
+          "format": "Anúncios patrocinados e mensagens diretas via caixa de entrada.\n🟡 PARA O FUTURO",
+          "strategy": "Formulários nativos do LinkedIn para download de e-books, whitepapers ou pedido de demonstração.\n🟢 PRESENTES: PENSAR EM CRIAÇÃO DE EBOOKS ASSOCIADOS A SITES E OUTRAS FUNÇÕES - LUCAS",
+          "category": "linkedin",
+          "responsible": "Lucas",
+          "status": "planning",
+          "url": "https://linkedin.com/campaignmanager",
+          "metrics": "E-books & InMail",
+          "cost": "Em Planejamento"
+        },
+        {
+          "id": "strat_li_3",
+          "platform": "LinkedIn",
+          "channel": "Publicações / Artigos",
+          "approach": "Autoridade Corporativa",
+          "format": "Artigos técnicos, posicionamento de mercado e atualizações da empresa.\n🟢 CRIAÇÃO DE ARTIGOS TÉCNICOS PARA POPULAÇÃO DE PÁGINA DO LINKEDIN - LUCAS",
+          "strategy": "Incluir links ao final dos artigos para agendamento de reuniões ou formulários de contato.",
+          "category": "linkedin",
+          "responsible": "Lucas",
+          "status": "active",
+          "url": "https://linkedin.com",
+          "metrics": "Autoridade B2B",
+          "cost": "Grátis"
+        },
+        {
+          "id": "strat_yt_1",
+          "platform": "YouTube",
+          "channel": "Vídeos Longos (Tutoriais/Aulas)",
+          "approach": "Educacional / Topo de Funil",
+          "format": "Vídeos explicativos tirando dúvidas frequentes do setor ou demonstrando processos.\n🟡 PARA O FUTURO",
+          "strategy": "Inserir link do WhatsApp ou da landing page no topo da descrição e no comentário fixado.",
+          "category": "video",
+          "responsible": "Matheus & Lucas",
+          "status": "planning",
+          "url": "https://youtube.com",
+          "metrics": "Vídeos Educacionais",
+          "cost": "Em Planejamento"
+        },
+        {
+          "id": "strat_yt_2",
+          "platform": "YouTube / TikTok",
+          "channel": "Vídeos Curtos (Shorts/Reels/TikTok)",
+          "approach": "Viralização / Conscientização",
+          "format": "Vídeos rápidos (até 60s) focados em dicas pontuais e curiosidades.\n🟡 PARA O FUTURO",
+          "strategy": "Fazer chamadas no áudio/vídeo apontando para o link do perfil (bio) ou comentário fixado.",
+          "category": "video",
+          "responsible": "Matheus & Lucas",
+          "status": "planning",
+          "url": "https://tiktok.com",
+          "metrics": "Shorts & Reels",
+          "cost": "Em Planejamento"
+        },
+        {
+          "id": "strat_site_1",
+          "platform": "WEBCO Agency",
+          "channel": "Site Oficial WEBCO Agency",
+          "approach": "Conversão Comercial & Vendas B2B",
+          "format": "Site Institucional e Landing Pages de alta conversão para Clientes B2B.\n🟢 Matheus Bellato - Hostinger VPS",
+          "strategy": "Apresentação dos serviços de Criação de Sites, Tráfego Pago e automações com integração de formulário e WhatsApp.",
+          "category": "sites",
+          "responsible": "Matheus Bellato",
+          "status": "active",
+          "url": "https://webcoagency.site",
+          "metrics": "Frente Comercial Principal",
+          "cost": "Hostinger VPS"
         }
       ],
       "customers": [
@@ -459,7 +4289,7 @@
           "productName": "Criação de Site (Entrega 50%)",
           "value": 200,
           "dueDate": "2026-08-30",
-          "status": "pending",
+          "status": "overdue",
           "notes": "A receber este mês"
         },
         {
@@ -481,7 +4311,7 @@
           "productName": "Criação de Site (Entrega 50%)",
           "value": 200,
           "dueDate": "2026-08-25",
-          "status": "pending",
+          "status": "overdue",
           "notes": "A receber este mês"
         },
         {
@@ -558,8 +4388,41 @@
           "productName": "Criação de Site Institucional (Entrega 50%)",
           "value": 200,
           "dueDate": "2026-08-15",
-          "status": "pending",
+          "status": "overdue",
           "notes": "A receber na entrega"
+        },
+        {
+          "id": "FAT-FK-01",
+          "customerName": "Fórmula K",
+          "company": "Fórmula K",
+          "niche": "Gráfica",
+          "productName": "Criação de Site Promocional (Agente AI)",
+          "value": 400,
+          "dueDate": "2026-11-05",
+          "status": "pending",
+          "notes": "Fechamento agendado via WhatsApp"
+        },
+        {
+          "id": "FAT-GIGA-NOV",
+          "customerName": "Maria Oliveira",
+          "company": "Giga Corp",
+          "niche": "E-commerce",
+          "productName": "Gestão de Google Ads",
+          "value": 1200,
+          "dueDate": "2026-11-10",
+          "status": "pending",
+          "notes": "Mensalidade recorrente"
+        },
+        {
+          "id": "FAT-PARANA-NOV",
+          "customerName": "Marcio",
+          "company": "Paraná Ecoturismo",
+          "niche": "Turismo",
+          "productName": "Gestão de Google Ads",
+          "value": 400,
+          "dueDate": "2026-11-15",
+          "status": "pending",
+          "notes": "Mensalidade tráfego"
         }
       ],
       "upsellOpportunities": [
@@ -582,11 +4445,318 @@
           "notes": "Site 100% concluído. Possibilidade de expansão para anúncios locais."
         }
       ],
-      "expenses": [],
-      "products": [],
-      "tasks": [],
-      "templates": [],
-      "affiliates": [],
+      "expenses": [
+        {
+          "id": "exp1",
+          "description": "Hospedagem VPS Cloud Dedicated & CDN",
+          "category": "Infraestrutura",
+          "supplier": "Cloud VPS",
+          "recurrence": "monthly",
+          "value": 250,
+          "date": "2026-10-05"
+        },
+        {
+          "id": "exp2",
+          "description": "Campanhas Google Ads & Tráfego Pago",
+          "category": "Marketing",
+          "supplier": "Google Ads",
+          "recurrence": "monthly",
+          "value": 1200,
+          "date": "2026-10-08"
+        },
+        {
+          "id": "exp3",
+          "description": "Assinatura Figma & Ferramentas SaaS",
+          "category": "Ferramentas",
+          "supplier": "Figma / SaaS",
+          "recurrence": "monthly",
+          "value": 180,
+          "date": "2026-10-10"
+        },
+        {
+          "id": "exp4",
+          "description": "Taxa de Renovação de Domínios Registro.br",
+          "category": "Infraestrutura",
+          "supplier": "Registro.br",
+          "recurrence": "single",
+          "value": 80,
+          "date": "2026-11-05"
+        }
+      ],
+      "products": [
+        {
+          "id": "p1",
+          "name": "Criação de Site Profissional",
+          "description": "Landing page ou site institucional de alto desempenho, responsivo e otimizado para SEO.",
+          "price": 3500,
+          "cost": 250,
+          "type": "single",
+          "suggestedAddons": [
+            "p5",
+            "p6",
+            "p8"
+          ],
+          "isCore": true
+        },
+        {
+          "id": "p2",
+          "name": "Desenvolvimento E-commerce",
+          "description": "Loja virtual completa com meios de pagamento integrados e gerenciador de estoque.",
+          "price": 7500,
+          "cost": 500,
+          "type": "single",
+          "suggestedAddons": [
+            "p3",
+            "p5",
+            "p6",
+            "p8"
+          ],
+          "isCore": true
+        },
+        {
+          "id": "p3",
+          "name": "Gestão de Google Ads",
+          "description": "Campanhas otimizadas de tráfego pago no Google para captação diária de leads qualificados.",
+          "price": 1200,
+          "cost": 100,
+          "type": "monthly",
+          "suggestedAddons": [],
+          "isCore": false
+        },
+        {
+          "id": "p4",
+          "name": "Otimização de Velocidade & SEO",
+          "description": "Otimização técnica para carregar em <1s e subir no ranking de buscas do Google.",
+          "price": 1800,
+          "cost": 150,
+          "type": "single",
+          "suggestedAddons": [],
+          "isCore": true
+        },
+        {
+          "id": "p5",
+          "name": "Suporte & Manutenção Mensal",
+          "description": "Backups semanais, atualizações de segurança e suporte para alterações no site.",
+          "price": 350,
+          "cost": 50,
+          "type": "monthly",
+          "suggestedAddons": [],
+          "isCore": false
+        },
+        {
+          "id": "p6",
+          "name": "Hospedagem Cloud Pro",
+          "description": "Servidor cloud VPS dedicado de alto desempenho com CDN Cloudflare ativa.",
+          "price": 90,
+          "cost": 35,
+          "type": "monthly",
+          "suggestedAddons": [],
+          "isCore": false
+        },
+        {
+          "id": "p7",
+          "name": "Hospedagem Cloud Basic",
+          "description": "Servidor compartilhado padrão para sites de baixo tráfego.",
+          "price": 49,
+          "cost": 15,
+          "type": "monthly",
+          "suggestedAddons": [],
+          "isCore": true
+        },
+        {
+          "id": "p8",
+          "name": "Registro & Renovação de Domínio",
+          "description": "Registro e renovação anual de domínio (.com.br / .com). Custo Registro.br: R$ 40,00 | Cobrado: R$ 50,00 (Lucro R$ 10,00/ano).",
+          "price": 50,
+          "cost": 40,
+          "type": "yearly",
+          "suggestedAddons": [],
+          "isCore": false
+        },
+        {
+          "id": "p9",
+          "name": "Criação de Site Promocional (Agente AI)",
+          "description": "Site institucional rápido para negócios locais e gráficas.",
+          "price": 400,
+          "cost": 30,
+          "type": "single",
+          "suggestedAddons": [
+            "p5",
+            "p6",
+            "p8"
+          ],
+          "isCore": true
+        }
+      ],
+      "tasks": [
+        {
+          "id": "t1",
+          "title": "Enviar demonstração do site para Fórmula K",
+          "contactId": "c_formula_k",
+          "dueDate": "2026-10-28",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "id": "t2",
+          "title": "Follow-up do briefing com Gráfica São José",
+          "contactId": "c_agente_1",
+          "dueDate": "2026-10-29",
+          "priority": "medium",
+          "completed": false
+        },
+        {
+          "id": "t3",
+          "title": "Revisar relatório de tráfego Google Ads de Maria Oliveira",
+          "contactId": "c2",
+          "dueDate": "2026-10-31",
+          "priority": "low",
+          "completed": true
+        }
+      ],
+      "templates": [
+        {
+          "id": "tmpl_wa_oferta_site_400",
+          "name": "WhatsApp - Oferta Criação de Site R$ 400 (Gráficas & Negócios)",
+          "channel": "whatsapp",
+          "category": "prospecting",
+          "subject": "Proposta de Criação de Site Profissional - WEBCO Agency",
+          "body": "Olá, tudo bem? Aqui é o Matheus da WEBCO Agency. \n\nEstive analisando o perfil da sua empresa e notei que um site institucional moderno e veloz pode dobrar os pedidos diretos pelo seu WhatsApp.\n\nEstamos com uma condição exclusiva de desenvolvimento completo por apenas R$ 400,00 (sem mensalidades abusivas), com entrega em 5 dias e 100% otimizado para celulares.\n\nPosso te enviar uma prévia de demonstração sem compromisso?",
+          "tags": [
+            "whatsapp",
+            "site",
+            "grafica",
+            "400",
+            "prospeccao"
+          ],
+          "createdAt": "2026-08-01T10:00:00.000Z"
+        },
+        {
+          "id": "tmpl_wa_followup_proposta",
+          "name": "WhatsApp - Follow-up após Envio de Proposta",
+          "channel": "whatsapp",
+          "category": "followup",
+          "subject": "Acompanhamento da Proposta Comercial",
+          "body": "Olá, {name}! Passando para saber se conseguiu dar uma olhada no projeto e na demonstração que te enviei.\n\nFicou com alguma dúvida sobre a estrutura ou formas de pagamento? \n\nPodemos fechar essa semana para garantir a vaga na nossa fila de desenvolvimento?",
+          "tags": [
+            "whatsapp",
+            "followup",
+            "fechamento"
+          ],
+          "createdAt": "2026-08-01T10:15:00.000Z"
+        },
+        {
+          "id": "tmpl_wa_cobranca_amigavel",
+          "name": "WhatsApp - Lembrete Amigável de Vencimento / PIX",
+          "channel": "whatsapp",
+          "category": "finance",
+          "subject": "Lembrete de Vencimento de Fatura",
+          "body": "Olá, {name}! Tudo bem?\n\nPassando apenas para lembrar que a fatura referente ao serviço de desenvolvimento/hospedagem da {company} tem vencimento próximo.\n\nCaso já tenha realizado o pagamento via Pix, favor desconsiderar. Se precisar de uma nova chave ou comprovante, estou à total disposição!",
+          "tags": [
+            "whatsapp",
+            "cobranca",
+            "pix",
+            "financeiro"
+          ],
+          "createdAt": "2026-08-01T10:30:00.000Z"
+        },
+        {
+          "id": "tmpl_email_proposta_oficial",
+          "name": "E-mail - Proposta Comercial Oficial de Site",
+          "channel": "email",
+          "category": "proposal",
+          "subject": "Proposta Comercial para Desenvolvimento Web - WEBCO Agency",
+          "body": "Prezado(a) {name},\n\nÉ um prazer apresentar a proposta comercial para criação e estruturação do novo site da {company}.\n\nO projeto contempla:\n• Layout personalizado de alto impacto e responsivo;\n• Otimização para mecanismos de busca (SEO Local);\n• Botão flutuante de atendimento direto via WhatsApp;\n• Integração com domínio próprio e certificado SSL;\n• Entrega em até 5 dias úteis.\n\nInvestimento especial: R$ 400,00 à vista no Pix ou parcelado.\n\nFicamos à disposição para darmos início imediato ao briefing.\n\nAtenciosamente,\nMatheus Bellato | WEBCO Agency\nWhatsApp: (11) 91814-7277",
+          "tags": [
+            "email",
+            "proposta",
+            "site",
+            "webco"
+          ],
+          "createdAt": "2026-08-01T11:00:00.000Z"
+        },
+        {
+          "id": "tmpl_email_briefing_boasvindas",
+          "name": "E-mail - Boas-Vindas & Envio de Briefing",
+          "channel": "email",
+          "category": "onboarding",
+          "subject": "Boas-vindas à WEBCO! Vamos iniciar o seu novo site",
+          "body": "Olá, {name}!\n\nSeja muito bem-vindo(a) à WEBCO Agency! Estamos empolgados em construir a presença digital da {company}.\n\nPara iniciarmos o desenvolvimento, segue em anexo o nosso Formulário de Briefing rápido para coletarmos:\n1. Logotipo em alta resolução (PNG ou vetor);\n2. Paleta de cores ou referências de sites que você gosta;\n3. Lista dos principais serviços e fotos da empresa;\n4. WhatsApp e redes sociais para os botões de contato.\n\nQualquer dúvida, conte com nosso suporte direto.\n\nAbraços,\nEquipe WEBCO Agency",
+          "tags": [
+            "email",
+            "briefing",
+            "boas-vindas",
+            "onboarding"
+          ],
+          "createdAt": "2026-08-01T11:30:00.000Z"
+        },
+        {
+          "id": "tmpl_wa_convite_afiliado",
+          "name": "WhatsApp - Convite para Programa de Afiliados (3% Comissão)",
+          "channel": "whatsapp",
+          "category": "affiliate",
+          "subject": "Convite para Parceria de Afiliados WEBCO",
+          "body": "Fala, parceiro! Tudo bem?\n\nEstamos expandindo nossa rede de parceiros digitais e gostaria de te convidar para o nosso Programa de Afiliados.\n\nVocê ganha comissão de 3% sobre cada cliente que fechar criação de sites, lojas virtuais ou gestão de tráfego conosco. Acompanhamento 100% transparente com painel próprio e pagamentos rápidos via Pix.\n\nPosso gerar o seu link exclusivo agora?",
+          "tags": [
+            "whatsapp",
+            "afiliado",
+            "comissao",
+            "parceria"
+          ],
+          "createdAt": "2026-08-01T12:00:00.000Z"
+        }
+      ],
+      "affiliates": [
+        {
+          "id": "aff_default_1",
+          "name": "Carlos Oliveira Marketing",
+          "code": "CARLOS10",
+          "email": "carlos.oliveira@marketingdigital.com",
+          "phone": "(11) 98777-6655",
+          "document": "342.189.908-12",
+          "commissionRate": 3,
+          "pixKey": "carlos.oliveira@marketingdigital.com",
+          "bankInfo": "Banco Itaú - Ag 0451 C/C 23890-1",
+          "discountBenefit": "10% de desconto na hospedagem ou 1º mês grátis",
+          "status": "active",
+          "createdAt": "2026-07-15T10:00:00.000Z",
+          "payouts": [
+            {
+              "id": "pay_1",
+              "amount": 150,
+              "date": "2026-07-28T14:30:00.000Z",
+              "receipt": "PIX-E3429012"
+            }
+          ],
+          "_revenue": 0,
+          "_earned": 0,
+          "_paid": 150,
+          "_pending": 0,
+          "_leadCount": 0,
+          "_wonCount": 0
+        },
+        {
+          "id": "aff_default_2",
+          "name": "Fernanda Lima Consultoria",
+          "code": "FERNANDA2026",
+          "email": "fernanda@limaconsultoria.com.br",
+          "phone": "(11) 97111-2233",
+          "document": "28.912.456/0001-99",
+          "commissionRate": 2.5,
+          "pixKey": "28.912.456/0001-99",
+          "bankInfo": "Banco Bradesco - Ag 1204 C/C 8901-2",
+          "discountBenefit": "1º mês de manutenção grátis",
+          "status": "active",
+          "createdAt": "2026-07-20T11:20:00.000Z",
+          "payouts": [],
+          "_revenue": 0,
+          "_earned": 0,
+          "_paid": 0,
+          "_pending": 0,
+          "_leadCount": 0,
+          "_wonCount": 0
+        }
+      ],
       "fiscalNotes": [],
       "importHistory": [],
       "niches": [
@@ -714,9 +4884,28 @@
           "canIframe": true,
           "previewType": "iframe"
         }
+      ],
+      "events": [
+        {
+          "id": "evt1",
+          "title": "Reunião de Escopo - João Silva",
+          "contactId": "c1",
+          "date": "2026-07-13",
+          "time": "14:00",
+          "description": "Alinhamento do briefing de criação do site profissional."
+        },
+        {
+          "id": "evt2",
+          "title": "Apresentação da Proposta - Carlos Souza",
+          "contactId": "c3",
+          "date": "2026-07-15",
+          "time": "16:30",
+          "description": "Demonstração e negociação de Google Ads."
+        }
       ]
     }
   },
   "currentEnv": "webco",
-  "privacyMode": false
+  "privacyMode": false,
+  "calendarDate": "2026-07-12T00:00:00.000Z"
 }

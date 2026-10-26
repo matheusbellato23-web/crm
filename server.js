@@ -60,173 +60,216 @@ app.post('/api/state', (req, res) => {
 });
 
 // API: Pull all 100+ leads directly from Atendente Comercial local database
+// Helper to normalize Brazilian phone numbers (removes +55 / 55 prefix if present)
+function normalizePhone(p) {
+    if (!p) return '';
+    let digits = String(p).replace(/\D/g, '');
+    if (digits.startsWith('55') && digits.length >= 12) {
+        digits = digits.substring(2);
+    }
+    return digits;
+}
+
+function formatPhoneBR(p) {
+    const digits = normalizePhone(p);
+    if (!digits) return p || '';
+    if (digits.length === 11) {
+        return `(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7)}`;
+    }
+    if (digits.length === 10) {
+        return `(${digits.substring(0, 2)}) ${digits.substring(2, 6)}-${digits.substring(6)}`;
+    }
+    return p;
+}
+
+// Core lead synchronization engine between Atendente Comercial and Nexus CRM
+function syncAtendenteLeadsCore(db, extraLeads = []) {
+    const atendentePaths = [
+        'C:/Users/Kamino/Documents/atendente comercial/data/db.json',
+        'C:/Users/Kamino/Documents/atendente comercial/data/db_seed.json',
+        path.join(DATA_DIR, 'atendente_db.json')
+    ];
+
+    let rawLeads = [];
+    atendentePaths.forEach(p => {
+        if (fs.existsSync(p)) {
+            try {
+                const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+                if (parsed.leads && Array.isArray(parsed.leads)) {
+                    rawLeads.push(...parsed.leads);
+                }
+            } catch (e) {}
+        }
+    });
+
+    if (Array.isArray(extraLeads) && extraLeads.length > 0) {
+        rawLeads.push(...extraLeads);
+    }
+
+    if (!db.environments) db.environments = {};
+    if (!db.environments.webco) db.environments.webco = {};
+    if (!db.environments.webco.contacts) db.environments.webco.contacts = [];
+
+    const contacts = db.environments.webco.contacts;
+    let importedCount = 0;
+    let updatedCount = 0;
+
+    const statusMap = {
+        'conversando': 'negotiating',
+        'interessado': 'proposal',
+        'qualificado': 'proposal',
+        'proposta': 'proposal',
+        'ganho': 'won',
+        'fechado': 'won',
+        'perdido': 'lost',
+        'falhou': 'lost',
+        'novo': 'lead',
+        'aguardando': 'contacted'
+    };
+
+    rawLeads.forEach(lead => {
+        const rawPhone = (lead.phone || lead.telefone || lead.whatsapp || '').trim();
+        const normPhoneLead = normalizePhone(rawPhone);
+        const rawEmail = (lead.email || lead.e_mail || '').trim().toLowerCase();
+
+        // Extract Name & Company cleanly
+        let name = (lead.name || lead.company || lead.fullName || '').trim();
+        if (!name || name === 'Seu Nome' || name === 'Lead Agente') {
+            name = (lead.fullName || lead.company || 'Empresa Agente').split('|')[0].trim();
+        }
+        if (name.includes('|')) name = name.split('|')[0].trim();
+
+        let company = (lead.company || name).trim();
+        if (company === 'Seu Nome' || company === 'Lead Agente') company = name;
+        if (company.includes('|')) company = company.split('|')[0].trim();
+
+        // Extract Nicho
+        let nicho = (lead.nicho || lead.ramo || lead.categoria || '').trim();
+        if (!nicho || nicho === 'Todos' || nicho.toLowerCase().includes('graf') || nicho.toLowerCase().includes('gráf')) {
+            nicho = 'Gráfica';
+        }
+
+        const rawStatus = (lead.status || '').toLowerCase();
+        let targetStatus = statusMap[rawStatus] || 'contacted';
+        if (lead.humanTakeover) {
+            targetStatus = 'negotiating';
+        }
+
+        // Projection: leads in negotiation / interested / proposal have R$ 400 projection
+        const isHotOrInteresse = ['proposal', 'negotiating', 'won'].includes(targetStatus) ||
+                                rawStatus.includes('interessad') ||
+                                lead.humanTakeover;
+        const leadValue = isHotOrInteresse ? 400.00 : 0.00;
+
+        // Find existing contact by normalized phone, email or exact company name
+        let existing = null;
+        if (rawEmail) {
+            existing = contacts.find(c => (c.email || '').toLowerCase() === rawEmail);
+        }
+        if (!existing && normPhoneLead.length >= 8) {
+            existing = contacts.find(c => normalizePhone(c.phone) === normPhoneLead);
+        }
+        if (!existing && company && company !== 'Empresa Agente' && company !== 'Seu Nome') {
+            existing = contacts.find(c => (c.company || '').toLowerCase() === company.toLowerCase());
+        }
+
+        if (existing) {
+            let changed = false;
+            if (company && (!existing.company || existing.company === 'Lead Agente')) {
+                existing.company = company;
+                changed = true;
+            }
+            if (name && (!existing.name || existing.name === 'Lead Agente')) {
+                existing.name = name;
+                changed = true;
+            }
+            if (rawEmail && !existing.email) {
+                existing.email = rawEmail;
+                changed = true;
+            }
+            if (normPhoneLead && !existing.phone) {
+                existing.phone = formatPhoneBR(normPhoneLead);
+                changed = true;
+            }
+            // If lead advanced on WhatsApp (e.g. became Interested, Negotiating or Human Takeover), upgrade status
+            if (isHotOrInteresse && existing.status !== 'won') {
+                existing.status = targetStatus;
+                existing.value = 400.00;
+                changed = true;
+            }
+            if (existing.value === undefined || isNaN(existing.value) || existing.value > 1000000) {
+                existing.value = leadValue;
+                changed = true;
+            }
+
+            if (changed) {
+                if (!existing.timeline) existing.timeline = [];
+                existing.timeline.push({
+                    id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
+                    type: 'note',
+                    description: `🤖 Sincronização Agente Comercial: Lead atualizado via WhatsApp (${lead.status || 'Ativo'}). Projeção R$ 400.`,
+                    timestamp: new Date().toISOString()
+                });
+                updatedCount++;
+            }
+        } else {
+            // Do not import dummy placeholder 'Seu Nome' with test phone 5511999999999
+            if (name === 'Seu Nome' && normPhoneLead === '11999999999') {
+                return;
+            }
+
+            const newContact = {
+                id: 'c_agente_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+                name: name,
+                company: company,
+                email: rawEmail,
+                phone: formatPhoneBR(normPhoneLead),
+                niche: nicho,
+                status: targetStatus,
+                value: leadValue,
+                notes: lead.gatilho || lead.lossReason || (lead.logs && lead.logs[0]) || 'Lead importado do Agente Comercial AI',
+                source: 'Agente Comercial',
+                createdAt: lead.createdAt || new Date().toISOString(),
+                timeline: [
+                    {
+                        id: 'act_init_' + Date.now(),
+                        type: 'note',
+                        description: `🤖 Lead importado do Agente Comercial AI (${lead.status || 'Contatado'}). Projeção R$ 400.`,
+                        timestamp: new Date().toISOString()
+                    }
+                ]
+            };
+            contacts.push(newContact);
+            importedCount++;
+        }
+    });
+
+    // Sanitize any invalid lead values
+    contacts.forEach(c => {
+        c.value = sanitizeLeadValue(c.value);
+    });
+
+    return { importedCount, updatedCount, totalContacts: contacts.length };
+}
+
 app.post(['/api/sync-atendente-comercial', '/crm/api/sync-atendente-comercial'], (req, res) => {
     try {
-        const atendentePaths = [
-            'C:/Users/Kamino/Documents/atendente comercial/data/db.json',
-            'C:/Users/Kamino/Documents/atendente comercial/data/db_seed.json',
-            path.join(DATA_DIR, 'atendente_db.json')
-        ];
-
-        let rawLeads = [];
-        atendentePaths.forEach(p => {
-            if (fs.existsSync(p)) {
-                try {
-                    const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
-                    if (parsed.leads && Array.isArray(parsed.leads)) {
-                        rawLeads.push(...parsed.leads);
-                    }
-                } catch (e) {}
-            }
-        });
-
-        if (req.body && Array.isArray(req.body) && req.body.length > 0) {
-            rawLeads.push(...req.body);
-        }
-
-        if (rawLeads.length === 0) {
-            let loadedDb = null;
-            if (fs.existsSync(DB_PATH)) {
-                try { loadedDb = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch (e) {}
-            }
-            if (!loadedDb || !loadedDb.environments || !loadedDb.environments.webco || !loadedDb.environments.webco.contacts || loadedDb.environments.webco.contacts.length === 0) {
-                const localDbPath = path.join(__dirname, 'db.json');
-                if (fs.existsSync(localDbPath)) {
-                    try {
-                        loadedDb = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
-                        fs.writeFileSync(DB_PATH, JSON.stringify(loadedDb, null, 2), 'utf8');
-                    } catch (e) {}
-                }
-            }
-
-            if (loadedDb && loadedDb.environments && loadedDb.environments.webco && loadedDb.environments.webco.contacts && loadedDb.environments.webco.contacts.length > 0) {
-                const total = loadedDb.environments.webco.contacts.length;
-                if (!loadedDb.environments.webco.importHistory) loadedDb.environments.webco.importHistory = [];
-                loadedDb.environments.webco.importHistory.push({
-                    id: "imp_auto_" + Date.now(),
-                    date: new Date().toISOString(),
-                    fileName: "Sincronização Automática - Agente Comercial AI",
-                    successCount: total,
-                    failCount: 0,
-                    details: [`Sincronização com Agente Comercial realizada. ${total} leads ativados.`]
-                });
-                try { fs.writeFileSync(DB_PATH, JSON.stringify(loadedDb, null, 2), 'utf8'); } catch (e) {}
-
-                return res.json({
-                    success: true,
-                    message: `Busca no Agente Comercial concluída! ${total} leads das Gráficas sincronizados com sucesso.`,
-                    importedCount: total,
-                    updatedCount: 0,
-                    totalContacts: total
-                });
-            }
-            return res.status(400).json({ error: "Nenhum lead encontrado no banco de dados do Agente Comercial." });
-        }
-
         let db = { environments: { webco: { contacts: [] } } };
         if (fs.existsSync(DB_PATH)) {
             try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')) || db; } catch (e) {}
         }
 
-        if (!db.environments) db.environments = {};
-        if (!db.environments.webco) db.environments.webco = {};
-        if (!db.environments.webco.contacts) db.environments.webco.contacts = [];
-
-        const contacts = db.environments.webco.contacts;
-        let importedCount = 0;
-        let updatedCount = 0;
-
-        rawLeads.forEach(lead => {
-            const rawPhone = (lead.phone || lead.telefone || lead.whatsapp || '').trim();
-            const phoneDigits = rawPhone.replace(/\D/g, '');
-            const rawEmail = (lead.email || lead.e_mail || '').trim().toLowerCase();
-
-            // Extract Name & Company cleanly
-            let name = (lead.name || lead.company || lead.fullName || '').trim();
-            if (!name || name === 'Seu Nome' || name === 'Lead Agente') {
-                name = (lead.fullName || lead.company || 'Empresa Agente').split('|')[0].trim();
-            }
-            if (name.includes('|')) name = name.split('|')[0].trim();
-
-            let company = (lead.company || name).trim();
-            if (company === 'Seu Nome' || company === 'Lead Agente') company = name;
-            if (company.includes('|')) company = company.split('|')[0].trim();
-
-            // Extract Nicho
-            let nicho = (lead.nicho || lead.ramo || lead.categoria || '').trim();
-            if (!nicho || nicho === 'Todos' || nicho.toLowerCase().includes('graf') || nicho.toLowerCase().includes('gráf')) {
-                nicho = 'Gráfica';
-            }
-
-            // Status Map
-            const statusMap = {
-                'conversando': 'negotiating',
-                'interessado': 'proposal',
-                'qualificado': 'proposal',
-                'proposta': 'proposal',
-                'perdido': 'lost',
-                'falhou': 'lost',
-                'novo': 'lead',
-                'aguardando': 'contacted'
-            };
-            const targetStatus = statusMap[(lead.status || '').toLowerCase()] || 'contacted';
-
-            // Find existing contact
-            let existing = null;
-            if (rawEmail) existing = contacts.find(c => (c.email || '').toLowerCase() === rawEmail);
-            if (!existing && phoneDigits.length >= 8) existing = contacts.find(c => (c.phone || '').replace(/\D/g, '') === phoneDigits);
-            if (!existing && company && company !== 'Empresa Agente') existing = contacts.find(c => (c.company || '').toLowerCase() === company.toLowerCase());
-
-            if (existing) {
-                if (company && (!existing.company || existing.company === 'Lead Agente')) existing.company = company;
-                if (name && (!existing.name || existing.name === 'Lead Agente')) existing.name = name;
-                if (rawEmail && !existing.email) existing.email = rawEmail;
-                if (rawPhone && !existing.phone) existing.phone = rawPhone;
-                existing.niche = nicho;
-                existing.source = 'Agente Comercial';
-                if (!existing.timeline) existing.timeline = [];
-                existing.timeline.push({
-                    id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
-                    type: 'note',
-                    description: `🤖 Sincronização Agente Comercial: Lead encontrado no banco do Agente (${lead.status || 'Ativo'})`,
-                    timestamp: new Date().toISOString()
-                });
-                updatedCount++;
-            } else {
-                const newContact = {
-                    id: 'c_agente_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
-                    name: name,
-                    company: company,
-                    email: rawEmail,
-                    phone: rawPhone ? (rawPhone.startsWith('55') ? rawPhone.replace(/^55/, '') : rawPhone) : '',
-                    niche: nicho,
-                    status: targetStatus,
-                    value: 400.00,
-                    notes: lead.gatilho || lead.lossReason || (lead.logs && lead.logs[0]) || 'Importado do Agente Comercial AI',
-                    source: 'Agente Comercial',
-                    createdAt: lead.createdAt || new Date().toISOString(),
-                    timeline: [
-                        {
-                            id: 'act_init_' + Date.now(),
-                            type: 'note',
-                            description: `🤖 Lead importado do Agente Comercial AI (${lead.status || 'Contatado'}).`,
-                            timestamp: new Date().toISOString()
-                        }
-                    ]
-                };
-                contacts.push(newContact);
-                importedCount++;
-            }
-        });
+        const extraLeads = (req.body && Array.isArray(req.body)) ? req.body : [];
+        const result = syncAtendenteLeadsCore(db, extraLeads);
 
         fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
 
         res.json({
             success: true,
-            message: `Busca no Agente Comercial concluída! ${importedCount} novos leads importados, ${updatedCount} atualizados. Total no CRM: ${contacts.length}`,
-            importedCount,
-            updatedCount,
-            totalContacts: contacts.length
+            message: `Busca no Agente Comercial concluída! ${result.importedCount} novos leads importados, ${result.updatedCount} atualizados. Total no CRM: ${result.totalContacts}`,
+            importedCount: result.importedCount,
+            updatedCount: result.updatedCount,
+            totalContacts: result.totalContacts
         });
     } catch (err) {
         console.error("Error in sync-atendente-comercial:", err);
@@ -555,27 +598,14 @@ function sanitizeLeadValue(val) {
 function runAutoSyncWhatsAppLeads() {
     console.log('[AUTO-SYNC] Running scheduled 2-hour WhatsApp/Agent lead sync (12x/day)...');
     try {
-        const atendentePaths = [
-            'C:/Users/Kamino/Documents/atendente comercial/data/db.json',
-            'C:/Users/Kamino/Documents/atendente comercial/data/db_seed.json',
-            path.join(DATA_DIR, 'atendente_db.json')
-        ];
-
         let db = { environments: { webco: { contacts: [] } } };
         if (fs.existsSync(DB_PATH)) {
             try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')) || db; } catch (e) {}
         }
-        if (!db.environments) db.environments = {};
-        if (!db.environments.webco) db.environments.webco = {};
-        if (!db.environments.webco.contacts) db.environments.webco.contacts = [];
 
-        // Always sanitize all existing contact values
-        db.environments.webco.contacts.forEach(c => {
-            c.value = sanitizeLeadValue(c.value);
-        });
-
+        const result = syncAtendenteLeadsCore(db);
         fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
-        console.log('[AUTO-SYNC] Contact values sanitized and state saved.');
+        console.log(`[AUTO-SYNC] Sync completed: ${result.importedCount} new imported, ${result.updatedCount} updated. Total: ${result.totalContacts} contacts.`);
     } catch (err) {
         console.error('[AUTO-SYNC] Error during scheduled sync:', err);
     }

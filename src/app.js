@@ -1,3 +1,9 @@
+function safeParseTags(val) {
+    if (!val) return [];
+    if (Array.isArray(val)) return val.map(t => String(t).trim()).filter(Boolean);
+    if (typeof val === 'string') return val.split(',').map(t => t.trim()).filter(Boolean);
+    return [];
+}
 // Centralized State Management with Multi-Tenancy for Nexus CRM
 let state = {
     currentEnv: "", // Central login env
@@ -111,7 +117,91 @@ const defaultDocuments = [
     }
 ];
 
+const defaultTemplates = [
+    {
+        id: "tmpl_wa_oferta_site_400",
+        name: "WhatsApp - Oferta Criação de Site R$ 400 (Gráficas & Negócios)",
+        channel: "whatsapp",
+        category: "prospecting",
+        subject: "Proposta de Criação de Site Profissional - WEBCO Agency",
+        body: "Olá, tudo bem? Aqui é o Matheus da WEBCO Agency. \n\nEstive analisando o perfil da sua empresa e notei que um site institucional moderno e veloz pode dobrar os pedidos diretos pelo seu WhatsApp.\n\nEstamos com uma condição exclusiva de desenvolvimento completo por apenas R$ 400,00 (sem mensalidades abusivas), com entrega em 5 dias e 100% otimizado para celulares.\n\nPosso te enviar uma prévia de demonstração sem compromisso?",
+        tags: ["whatsapp", "site", "grafica", "400", "prospeccao"],
+        createdAt: "2026-08-01T10:00:00.000Z"
+    },
+    {
+        id: "tmpl_wa_followup_proposta",
+        name: "WhatsApp - Follow-up após Envio de Proposta",
+        channel: "whatsapp",
+        category: "followup",
+        subject: "Acompanhamento da Proposta Comercial",
+        body: "Olá, {name}! Passando para saber se conseguiu dar uma olhada no projeto e na demonstração que te enviei.\n\nFicou com alguma dúvida sobre a estrutura ou formas de pagamento? \n\nPodemos fechar essa semana para garantir a vaga na nossa fila de desenvolvimento?",
+        tags: ["whatsapp", "followup", "fechamento"],
+        createdAt: "2026-08-01T10:15:00.000Z"
+    },
+    {
+        id: "tmpl_wa_cobranca_amigavel",
+        name: "WhatsApp - Lembrete Amigável de Vencimento / PIX",
+        channel: "whatsapp",
+        category: "finance",
+        subject: "Lembrete de Vencimento de Fatura",
+        body: "Olá, {name}! Tudo bem?\n\nPassando apenas para lembrar que a fatura referente ao serviço de desenvolvimento/hospedagem da {company} tem vencimento próximo.\n\nCaso já tenha realizado o pagamento via Pix, favor desconsiderar. Se precisar de uma nova chave ou comprovante, estou à total disposição!",
+        tags: ["whatsapp", "cobranca", "pix", "financeiro"],
+        createdAt: "2026-08-01T10:30:00.000Z"
+    },
+    {
+        id: "tmpl_email_proposta_oficial",
+        name: "E-mail - Proposta Comercial Oficial de Site",
+        channel: "email",
+        category: "proposal",
+        subject: "Proposta Comercial para Desenvolvimento Web - WEBCO Agency",
+        body: "Prezado(a) {name},\n\nÉ um prazer apresentar a proposta comercial para criação e estruturação do novo site da {company}.\n\nO projeto contempla:\n• Layout personalizado de alto impacto e responsivo;\n• Otimização para mecanismos de busca (SEO Local);\n• Botão flutuante de atendimento direto via WhatsApp;\n• Integração com domínio próprio e certificado SSL;\n• Entrega em até 5 dias úteis.\n\nInvestimento especial: R$ 400,00 à vista no Pix ou parcelado.\n\nFicamos à disposição para darmos início imediato ao briefing.\n\nAtenciosamente,\nMatheus Bellato | WEBCO Agency\nWhatsApp: (11) 91814-7277",
+        tags: ["email", "proposta", "site", "webco"],
+        createdAt: "2026-08-01T11:00:00.000Z"
+    },
+    {
+        id: "tmpl_email_briefing_boasvindas",
+        name: "E-mail - Boas-Vindas & Envio de Briefing",
+        channel: "email",
+        category: "onboarding",
+        subject: "Boas-vindas à WEBCO! Vamos iniciar o seu novo site",
+        body: "Olá, {name}!\n\nSeja muito bem-vindo(a) à WEBCO Agency! Estamos empolgados em construir a presença digital da {company}.\n\nPara iniciarmos o desenvolvimento, segue em anexo o nosso Formulário de Briefing rápido para coletarmos:\n1. Logotipo em alta resolução (PNG ou vetor);\n2. Paleta de cores ou referências de sites que você gosta;\n3. Lista dos principais serviços e fotos da empresa;\n4. WhatsApp e redes sociais para os botões de contato.\n\nQualquer dúvida, conte com nosso suporte direto.\n\nAbraços,\nEquipe WEBCO Agency",
+        tags: ["email", "briefing", "boas-vindas", "onboarding"],
+        createdAt: "2026-08-01T11:30:00.000Z"
+    },
+    {
+        id: "tmpl_wa_convite_afiliado",
+        name: "WhatsApp - Convite para Programa de Afiliados (3% Comissão)",
+        channel: "whatsapp",
+        category: "affiliate",
+        subject: "Convite para Parceria de Afiliados WEBCO",
+        body: "Fala, parceiro! Tudo bem?\n\nEstamos expandindo nossa rede de parceiros digitais e gostaria de te convidar para o nosso Programa de Afiliados.\n\nVocê ganha comissão de 3% sobre cada cliente que fechar criação de sites, lojas virtuais ou gestão de tráfego conosco. Acompanhamento 100% transparente com painel próprio e pagamentos rápidos via Pix.\n\nPosso gerar o seu link exclusivo agora?",
+        tags: ["whatsapp", "afiliado", "comissao", "parceria"],
+        createdAt: "2026-08-01T12:00:00.000Z"
+    }
+];
+
 const defaultContacts = [
+    {
+        "id": "c_formula_k",
+        "name": "Fórmula K",
+        "company": "Fórmula K",
+        "email": "contato@formulak.com.br",
+        "phone": "(11) 97088-2203",
+        "niche": "Gráfica",
+        "status": "negotiating",
+        "value": 400.00,
+        "notes": "Cliente quente via WhatsApp. Praticamente fechado o desenvolvimento do site (R$ 400).",
+        "source": "Agente Comercial",
+        "createdAt": "2026-08-18T20:00:00.000Z",
+        "timeline": [
+            {
+                "id": "act_fk_init",
+                "type": "note",
+                "description": "Lead qualificado via WhatsApp. Alinhado fechamento do site por R$ 400.",
+                "timestamp": "2026-08-18T20:00:00.000Z"
+            }
+        ]
+    },
     {
         "id": "c_agente_1785464786550_p521",
         "name": "Mine",
@@ -3982,23 +4072,10 @@ function applyDashboardCustomization() {
 
 // Helper to get active environment data
 function getEnv() {
-    const env = state.environments[state.currentEnv] || state.environments.webco;
-    if (env) {
-        if (env.contacts) {
-            env.contacts.forEach(c => {
-                if (c.value > 1000000 || isNaN(c.value)) {
-                    c.value = 0;
-                }
-            });
-        }
-        env.marketingAssets = [...defaultMarketingAssets];
-    }
-    return env;
-}
-function _getEnvOriginal() {
-    const env = state.currentEnv || "webco";
-    if (!state.environments[env]) {
-        state.environments[env] = {
+    if (!state.environments) state.environments = {};
+    const envKey = state.currentEnv || "webco";
+    if (!state.environments[envKey]) {
+        state.environments[envKey] = {
             contacts: [...defaultContacts],
             tasks: [...defaultTasks],
             products: [...defaultProducts],
@@ -4008,25 +4085,44 @@ function _getEnvOriginal() {
             expenses: [...defaultExpenses],
             contracts: [...defaultContractsList],
             events: [...defaultEvents],
-            marketingAssets: [...defaultMarketingAssets]
+            marketingAssets: [...defaultMarketingAssets],
+            templates: [...defaultTemplates],
+            documents: [...defaultDocuments],
+            affiliates: [...defaultAffiliates],
+            onlineProjects: typeof defaultOnlineProjectsList !== 'undefined' ? [...defaultOnlineProjectsList] : []
         };
     }
-    // Dynamic schema checks for users upgrading state
-    if (!state.environments[env].proposals) state.environments[env].proposals = [];
-    if (!state.environments[env].invoices) state.environments[env].invoices = [...defaultInvoices];
-    if (!state.environments[env].expenses) state.environments[env].expenses = [...defaultExpenses];
-    if (!state.environments[env].contractedServices || state.environments[env].contractedServices.length === 0) state.environments[env].contractedServices = [...defaultContractedServices];
-    if (!state.environments[env].contracts) state.environments[env].contracts = [...defaultContractsList];
-    if (!state.environments[env].events) state.environments[env].events = [...defaultEvents];
-    // FORCE OVERWRITE WITH LATEST MARKETING ASSETS
-    state.environments[env].marketingAssets = [...defaultMarketingAssets];
-    if (!state.environments[env].niches) state.environments[env].niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Turismo", "Saúde / Estética", "Outro"];
-    if (state.environments[env].balanceAdjustment === undefined) state.environments[env].balanceAdjustment = 0;
-    // ⚠️ CRITICAL: Always ensure templates and documents arrays exist so they are never lost on schema migration
-    if (!state.environments[env].templates) state.environments[env].templates = [];
-    if (!state.environments[env].documents) state.environments[env].documents = [...defaultDocuments];
-    return state.environments[env];
+    const env = state.environments[envKey];
+
+    // Guarantee non-empty arrays with safe defaults
+    if (!env.contacts || env.contacts.length === 0) env.contacts = [...defaultContacts];
+    if (!env.products || env.products.length === 0) env.products = [...defaultProducts];
+    if (!env.templates || env.templates.length === 0) env.templates = [...defaultTemplates];
+    if (!env.documents || env.documents.length === 0) env.documents = [...defaultDocuments];
+    if (!env.affiliates || env.affiliates.length === 0) env.affiliates = [...defaultAffiliates];
+    if (!env.tasks || env.tasks.length === 0) env.tasks = [...defaultTasks];
+    if (!env.expenses || env.expenses.length === 0) env.expenses = [...defaultExpenses];
+    if (!env.customers || env.customers.length === 0) env.customers = [...defaultCustomers];
+    if (!env.invoices) env.invoices = [...defaultInvoices];
+    if (!env.contracts) env.contracts = [...defaultContractsList];
+    if (!env.events) env.events = [...defaultEvents];
+    if (!env.proposals) env.proposals = [];
+    if (!env.niches) env.niches = ["Negócio Local", "E-commerce", "Infoproduto / Lançamentos", "SaaS / Startup", "Serviços B2B", "Turismo", "Saúde / Estética", "Gráfica", "Outro"];
+    if (env.balanceAdjustment === undefined) env.balanceAdjustment = 0;
+    env.marketingAssets = [...defaultMarketingAssets];
+
+    if (env.contacts) {
+        env.contacts.forEach(c => {
+            if (c.value > 1000000 || isNaN(c.value) || c.value === undefined) {
+                c.value = 0;
+            }
+        });
+    }
+
+    return env;
 }
+window.getEnv = getEnv;
+window.getState = () => state;
 
 function ensureParanaEcoturismo() {
     const envName = state.currentEnv || "webco";
@@ -4444,42 +4540,61 @@ window.editInvoiceById = function(id) {
     }, 100);
 };
 
+function formatYMD(y, m, d) {
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+function getLastDayOfMonth(y, m) {
+    return new Date(y, m, 0).getDate();
+}
+
 function getFinPeriodRange() {
     const now = new Date();
+    const currYear = now.getFullYear();
+    const currMonth = now.getMonth() + 1;
+
     if (finPeriod === 'all') return { start: '2000-01-01', end: '2099-12-31' };
     if (finPeriod === 'year') {
-        return { start: `${now.getFullYear()}-01-01`, end: `${now.getFullYear()}-12-31` };
+        return { start: `${currYear}-01-01`, end: `${currYear}-12-31` };
     }
     if (finPeriod === 'quarter') {
-        const q = Math.floor(now.getMonth() / 3);
-        const qStart = new Date(now.getFullYear(), q * 3, 1).toISOString().split('T')[0];
-        const qEnd = new Date(now.getFullYear(), q * 3 + 3, 0).toISOString().split('T')[0];
-        return { start: qStart, end: qEnd };
+        const qIndex = Math.floor((currMonth - 1) / 3);
+        const startMonth = qIndex * 3 + 1;
+        const endMonth = qIndex * 3 + 3;
+        const lastDay = getLastDayOfMonth(currYear, endMonth);
+        return { start: formatYMD(currYear, startMonth, 1), end: formatYMD(currYear, endMonth, lastDay) };
     }
     if (finPeriod === 'next_month') {
-        const nextM = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        const mStart = `${nextM.getFullYear()}-${String(nextM.getMonth() + 1).padStart(2, '0')}-01`;
-        const mEnd = new Date(nextM.getFullYear(), nextM.getMonth() + 1, 0).toISOString().split('T')[0];
-        return { start: mStart, end: mEnd };
+        let nextYear = currYear;
+        let nextMonth = currMonth + 1;
+        if (nextMonth > 12) {
+            nextMonth = 1;
+            nextYear++;
+        }
+        const lastDay = getLastDayOfMonth(nextYear, nextMonth);
+        return { start: formatYMD(nextYear, nextMonth, 1), end: formatYMD(nextYear, nextMonth, lastDay) };
     }
     if (finPeriod === 'prev_month') {
-        const prevM = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const mStart = `${prevM.getFullYear()}-${String(prevM.getMonth() + 1).padStart(2, '0')}-01`;
-        const mEnd = new Date(prevM.getFullYear(), prevM.getMonth() + 1, 0).toISOString().split('T')[0];
-        return { start: mStart, end: mEnd };
+        let prevYear = currYear;
+        let prevMonth = currMonth - 1;
+        if (prevMonth < 1) {
+            prevMonth = 12;
+            prevYear--;
+        }
+        const lastDay = getLastDayOfMonth(prevYear, prevMonth);
+        return { start: formatYMD(prevYear, prevMonth, 1), end: formatYMD(prevYear, prevMonth, lastDay) };
     }
     if (finPeriod === 'specific' && finSpecificMonthValue) {
         const [yearStr, monthStr] = finSpecificMonthValue.split('-');
         const y = parseInt(yearStr, 10);
         const m = parseInt(monthStr, 10);
-        const mStart = `${y}-${String(m).padStart(2, '0')}-01`;
-        const mEnd = new Date(y, m, 0).toISOString().split('T')[0];
-        return { start: mStart, end: mEnd };
+        if (!isNaN(y) && !isNaN(m) && m >= 1 && m <= 12) {
+            const lastDay = getLastDayOfMonth(y, m);
+            return { start: formatYMD(y, m, 1), end: formatYMD(y, m, lastDay) };
+        }
     }
-    // month (default current month)
-    const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-    return { start: monthStart, end: monthEnd };
+    // Default current month
+    const lastDay = getLastDayOfMonth(currYear, currMonth);
+    return { start: formatYMD(currYear, currMonth, 1), end: formatYMD(currYear, currMonth, lastDay) };
 }
 
 function getDashPeriodRange() {
@@ -11381,7 +11496,7 @@ const CHANNEL_COLORS = {
 
 function getTemplates() {
     const env = getEnv();
-    if (!env.templates) env.templates = [];
+    if (!env.templates || env.templates.length === 0) env.templates = [...defaultTemplates];
     return env.templates;
 }
 
@@ -11431,7 +11546,7 @@ function renderTemplates() {
 
     filtered.forEach(tmpl => {
         const colors = CHANNEL_COLORS[tmpl.channel] || CHANNEL_COLORS.outros;
-        const tags = (tmpl.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+        const tags = safeParseTags(tmpl.tags);
         const tagsHtml = tags.map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('');
         const previewText = (tmpl.body || '').replace(/\n/g, ' ').substring(0, 120) + ((tmpl.body || '').length > 120 ? '…' : '');
         const attCount = (tmpl.attachments || []).length;
@@ -11914,7 +12029,7 @@ function previewTemplate(tmpl) {
                 ${tmpl.subject ? `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">ASSUNTO</span><p style="margin:4px 0 0;font-weight:600;color:var(--text-primary);">${tmpl.subject}</p></div>` : ''}
                 <div style="padding:16px;background:var(--bg-card-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);white-space:pre-wrap;font-size:13.5px;line-height:1.7;color:var(--text-primary);min-height:100px;max-height:360px;overflow-y:auto;">${tmpl.body}</div>
                 ${attsHtml}
-                ${tmpl.tags ? `<div style="margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;">${tmpl.tags.split(',').map(t => t.trim()).filter(Boolean).map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('')}</div>` : ''}
+                ${safeParseTags(tmpl.tags).length > 0 ? `<div style="margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;">${safeParseTags(tmpl.tags).map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('')}</div>` : ''}
             </div>
             <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
                 <button type="button" class="btn btn-secondary" id="btnClosePreviewModal2">Fechar</button>
@@ -12222,12 +12337,12 @@ function formatFileSize(bytes) {
 
 function getAffiliates() {
     const env = getEnv();
-    if (!env.affiliates) env.affiliates = [...defaultAffiliates];
+    if (!env.affiliates || env.affiliates.length === 0) env.affiliates = [...defaultAffiliates];
     return env.affiliates;
 }
 function getDocuments() {
     const env = getEnv();
-    if (!env.documents) env.documents = [...defaultDocuments];
+    if (!env.documents || env.documents.length === 0) env.documents = [...defaultDocuments];
     return env.documents;
 }
 
@@ -12309,7 +12424,7 @@ function renderDocuments() {
 
         filtered.forEach(doc => {
             const colors = DOC_CATEGORY_COLORS[doc.category] || DOC_CATEGORY_COLORS.outros;
-            const tags = (doc.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+            const tags = safeParseTags(doc.tags);
             const tagsHtml = tags.map(t => `<span style="font-size:10px;background:var(--bg-card-hover);border:1px solid var(--border-color);color:var(--text-secondary);padding:2px 7px;border-radius:99px;">${t}</span>`).join('');
             
             const isPdf = (doc.fileType || '').includes('pdf') || (doc.fileName || '').toLowerCase().endsWith('.pdf');
@@ -13471,15 +13586,79 @@ if (affiliatePayoutForm) {
 const btnAddAffiliate = document.getElementById('btnAddAffiliate');
 if (btnAddAffiliate) btnAddAffiliate.onclick = () => openAffiliateModal();
 
+function openAffiliateLinkGenModal() {
+    const affiliates = getAffiliates();
+    const modal = document.getElementById('affiliateLinkGenModal');
+    if (!modal) return;
+    const select = document.getElementById('affLinkGenSelect');
+    const destSelect = document.getElementById('affLinkGenDestination');
+    const output = document.getElementById('affLinkGenOutput');
+
+    if (!affiliates || affiliates.length === 0) {
+        showToast('Nenhum afiliado cadastrado. Abrindo cadastro de afiliado...', 'info');
+        openAffiliateModal();
+        return;
+    }
+
+    if (select) {
+        select.innerHTML = '';
+        affiliates.forEach(a => {
+            const opt = document.createElement('option');
+            opt.value = a.code;
+            opt.innerText = `${a.name} (Cupom: ${a.code} - ${a.commissionRate}%)`;
+            select.appendChild(opt);
+        });
+    }
+
+    const updateOutput = () => {
+        const code = select ? select.value : (affiliates[0]?.code || 'PARCEIRO');
+        const baseUrl = destSelect ? destSelect.value : 'https://webcolabs.com.br/';
+        const sep = baseUrl.includes('?') ? '&' : '?';
+        const finalUrl = `${baseUrl}${sep}ref=${code}`;
+        if (output) output.value = finalUrl;
+    };
+
+    if (select) select.onchange = updateOutput;
+    if (destSelect) destSelect.onchange = updateOutput;
+    updateOutput();
+
+    const close = () => modal.classList.remove('active');
+    const btnClose = document.getElementById('btnCloseAffLinkGenModal');
+    if (btnClose) btnClose.onclick = close;
+    const btnCancel = document.getElementById('btnCancelAffLinkGenModal');
+    if (btnCancel) btnCancel.onclick = close;
+
+    const btnCopy = document.getElementById('btnCopyGeneratedAffLink');
+    if (btnCopy) {
+        btnCopy.onclick = () => {
+            if (output && output.value) {
+                navigator.clipboard.writeText(output.value).then(() => {
+                    showToast('✅ Link copiado para a área de transferência!', 'success');
+                }).catch(() => {
+                    prompt('Copie o link de afiliado:', output.value);
+                });
+            }
+        };
+    }
+
+    const btnShareWa = document.getElementById('btnShareAffLinkWhatsApp');
+    if (btnShareWa) {
+        btnShareWa.onclick = () => {
+            if (output && output.value) {
+                const text = `Olá! Conheça as soluções digitais e criação de sites da WEBCO Agency através do meu link exclusivo com desconto especial: ${output.value}`;
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+            }
+        };
+    }
+
+    modal.classList.add('active');
+    safeCreateIcons();
+}
+window.openAffiliateLinkGenModal = openAffiliateLinkGenModal;
+
 const btnOpenAffiliateLinkGenerator = document.getElementById('btnOpenAffiliateLinkGenerator');
 if (btnOpenAffiliateLinkGenerator) {
-    btnOpenAffiliateLinkGenerator.onclick = () => {
-        const affiliates = getAffiliates();
-        if (affiliates.length === 0) return showToast('Cadastre ao menos um afiliado primeiro.', 'warning');
-        const code = affiliates[0].code;
-        const url = `https://webcolabs.com.br/?ref=${code}`;
-        prompt('Link de Afiliado Gerado:', url);
-    };
+    btnOpenAffiliateLinkGenerator.onclick = () => openAffiliateLinkGenModal();
 }
 
 const filterAffStatus = document.getElementById('filterAffiliateStatus');
@@ -14368,3 +14547,10 @@ if (document.readyState === "loading") {
     setupProjectsEventListeners();
 }
 
+
+
+// Global Window Exports for Modals and QA Testing
+window.openAffiliateModal = openAffiliateModal;
+window.openAffiliatePayoutModal = openAffiliatePayoutModal;
+window.renderAffiliates = renderAffiliates;
+window.renderFinance = renderFinance;
