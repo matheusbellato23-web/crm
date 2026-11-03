@@ -453,7 +453,7 @@
           "email": "",
           "phone": "(11) 96292-0303",
           "niche": "Gráfica",
-          "status": "proposal",
+          "status": "interested",
           "value": 0,
           "notes": "Site existente (avaliar qualidade)",
           "source": "Agente Comercial",
@@ -464,6 +464,12 @@
               "type": "note",
               "description": "🤖 Lead importado do Agente Comercial AI (Interessado). Projeção R$ 400.",
               "timestamp": "2026-10-26T20:57:03.577Z"
+            },
+            {
+              "id": "act_1793724944908trz",
+              "type": "note",
+              "description": "🤖 Sincronização Agente Comercial: Lead atualizado via WhatsApp (Interessado).",
+              "timestamp": "2026-11-03T16:55:44.908Z"
             }
           ]
         },
@@ -1545,7 +1551,7 @@
           "email": "",
           "phone": "(11) 99943-4554",
           "niche": "Gráfica",
-          "status": "proposal",
+          "status": "interested",
           "value": 0,
           "notes": "Site existente (avaliar qualidade)",
           "source": "Agente Comercial",
@@ -1556,6 +1562,12 @@
               "type": "note",
               "description": "🤖 Lead importado do Agente Comercial AI (Interessado). Projeção R$ 400.",
               "timestamp": "2026-10-26T20:57:03.582Z"
+            },
+            {
+              "id": "act_1793724944910ny4",
+              "type": "note",
+              "description": "🤖 Sincronização Agente Comercial: Lead atualizado via WhatsApp (Interessado).",
+              "timestamp": "2026-11-03T16:55:44.910Z"
             }
           ]
         },
@@ -3372,7 +3384,7 @@
           "email": "",
           "phone": "(11) 91833-1122",
           "niche": "Gráfica",
-          "status": "proposal",
+          "status": "interested",
           "value": 0,
           "notes": "Sem site no Google Maps",
           "source": "Agente Comercial",
@@ -3383,6 +3395,12 @@
               "type": "note",
               "description": "🤖 Lead importado do Agente Comercial AI (Interessado). Projeção R$ 400.",
               "timestamp": "2026-10-26T20:57:03.590Z"
+            },
+            {
+              "id": "act_17937249449139fo",
+              "type": "note",
+              "description": "🤖 Sincronização Agente Comercial: Lead atualizado via WhatsApp (Interessado).",
+              "timestamp": "2026-11-03T16:55:44.913Z"
             }
           ]
         },
@@ -4914,7 +4932,8 @@
           "time": "16:30",
           "description": "Demonstração e negociação de Google Ads."
         }
-      ]
+      ],
+      "funnelLayers": 5
     }
   },
   "currentEnv": "webco",

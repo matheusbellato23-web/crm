@@ -753,6 +753,7 @@ body {
 
 .status-badge.lead { background-color: #f1f5f9; color: #475569; }
 .status-badge.contacted { background-color: var(--color-primary-glow); color: var(--color-primary); }
+.status-badge.interested { background-color: rgba(245, 158, 11, 0.15); color: #d97706; }
 .status-badge.proposal { background-color: var(--color-teal-glow); color: var(--color-teal); }
 .status-badge.negotiating { background-color: var(--color-warning-bg); color: var(--color-warning); }
 .status-badge.won { background-color: var(--color-success-bg); color: var(--color-success); }

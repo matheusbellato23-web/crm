@@ -4966,6 +4966,7 @@ function translateStatus(status) {
     const trans = {
         lead: "Novo Lead",
         contacted: "Contatado",
+        interested: "Interessado",
         proposal: "Proposta Enviada",
         negotiating: "Em Negociação",
         won: "Ganho",
@@ -5337,6 +5338,7 @@ function renderContacts() {
                     ">
                         <option value="lead" ${c.status === 'lead' ? 'selected' : ''}>Novo Lead</option>
                         <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contatado</option>
+                        <option value="interested" ${c.status === 'interested' ? 'selected' : ''}>Interessado</option>
                         <option value="proposal" ${c.status === 'proposal' ? 'selected' : ''}>Proposta Enviada</option>
                         <option value="negotiating" ${c.status === 'negotiating' ? 'selected' : ''}>Em Negociação</option>
                         <option value="won" ${c.status === 'won' ? 'selected' : ''}>Ganho (Won)</option>
@@ -5405,6 +5407,7 @@ function renderContacts() {
                     ">
                         <option value="lead" ${c.status === 'lead' ? 'selected' : ''}>Novo Lead</option>
                         <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contatado</option>
+                        <option value="interested" ${c.status === 'interested' ? 'selected' : ''}>Interessado</option>
                         <option value="proposal" ${c.status === 'proposal' ? 'selected' : ''}>Proposta Enviada</option>
                         <option value="negotiating" ${c.status === 'negotiating' ? 'selected' : ''}>Em Negociação</option>
                         <option value="won" ${c.status === 'won' ? 'selected' : ''}>Ganho (Won)</option>
@@ -5440,7 +5443,7 @@ function renderContacts() {
 // 3. Kanban Pipeline Render
 function renderKanban() {
     const env = getEnv();
-    const stages = ['lead', 'contacted', 'proposal', 'negotiating', 'won', 'lost'];
+    const stages = ['lead', 'contacted', 'interested', 'proposal', 'negotiating', 'won', 'lost'];
     const searchVal = document.getElementById("globalSearch").value.toLowerCase();
     
     // Read pipeline filters
@@ -5492,7 +5495,7 @@ function renderKanban() {
 
     // Calculate Sales Funnel Metrics
     const topLeads = filteredContacts.filter(c => c.status === 'lead' || c.status === 'contacted');
-    const midLeads = filteredContacts.filter(c => c.status === 'proposal' || c.status === 'negotiating');
+    const midLeads = filteredContacts.filter(c => c.status === 'interested' || c.status === 'proposal' || c.status === 'negotiating');
     const bottomLeads = filteredContacts.filter(c => c.status === 'won');
 
     const topCount = topLeads.length;
@@ -5567,7 +5570,7 @@ function renderKanban() {
 
     const funnelSelect = document.getElementById("funnelLayersSelect");
     if (funnelSelect) {
-        funnelSelect.value = env.funnelLayers || 3;
+        funnelSelect.value = env.funnelLayers || 5;
         funnelSelect.onchange = (e) => {
             env.funnelLayers = parseInt(e.target.value);
             saveState();
@@ -5579,33 +5582,42 @@ function renderKanban() {
         const funnelConfig = {
             3: [
                 { key: "top", name: "1. TOPO (Novos Leads)", stages: ["lead", "contacted"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
-                { key: "mid", name: "2. MEIO (Orçamentos)", stages: ["proposal", "negotiating"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
+                { key: "mid", name: "2. MEIO (Interessados & Negociação)", stages: ["interested", "proposal", "negotiating"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
                 { key: "bottom", name: "3. FUNDO (Fechados)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" }
             ],
             4: [
-                { key: "layer1", name: "1. Novos Leads", stages: ["lead"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
-                { key: "layer2", name: "2. Contatados", stages: ["contacted"], color: "var(--color-purple)", bg: "rgba(168, 85, 247, 0.08)", text: "Leads" },
-                { key: "layer3", name: "3. Em Negociação", stages: ["proposal", "negotiating"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
+                { key: "layer1", name: "1. Novos & Contatados", stages: ["lead", "contacted"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
+                { key: "layer2", name: "2. Interessados", stages: ["interested"], color: "var(--color-warning)", bg: "rgba(245, 158, 11, 0.08)", text: "Leads" },
+                { key: "layer3", name: "3. Em Negociação", stages: ["proposal", "negotiating"], color: "var(--color-orange)", bg: "rgba(249, 115, 22, 0.08)", text: "Leads" },
                 { key: "layer4", name: "4. Fechados (Won)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" }
             ],
             5: [
                 { key: "layer1", name: "1. Novos Leads", stages: ["lead"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
                 { key: "layer2", name: "2. Contatados", stages: ["contacted"], color: "var(--color-purple)", bg: "rgba(168, 85, 247, 0.08)", text: "Leads" },
-                { key: "layer3", name: "3. Proposta Enviada", stages: ["proposal"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
-                { key: "layer4", name: "4. Em Negociação", stages: ["negotiating"], color: "var(--color-orange)", bg: "rgba(249, 115, 22, 0.08)", text: "Leads" },
+                { key: "layer3", name: "3. Interessados", stages: ["interested"], color: "var(--color-warning)", bg: "rgba(245, 158, 11, 0.08)", text: "Leads" },
+                { key: "layer4", name: "4. Em Negociação", stages: ["proposal", "negotiating"], color: "var(--color-orange)", bg: "rgba(249, 115, 22, 0.08)", text: "Leads" },
                 { key: "layer5", name: "5. Fechados (Won)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" }
             ],
             6: [
                 { key: "layer1", name: "1. Novos Leads", stages: ["lead"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
                 { key: "layer2", name: "2. Contatados", stages: ["contacted"], color: "var(--color-purple)", bg: "rgba(168, 85, 247, 0.08)", text: "Leads" },
-                { key: "layer3", name: "3. Proposta Enviada", stages: ["proposal"], color: "var(--color-warning)", bg: "rgba(250, 180, 0, 0.04)", text: "Leads" },
-                { key: "layer4", name: "4. Em Negociação", stages: ["negotiating"], color: "var(--color-orange)", bg: "rgba(249, 115, 22, 0.08)", text: "Leads" },
-                { key: "layer5", name: "5. Fechados (Won)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" },
-                { key: "layer6", name: "6. Perdidos (Lost)", stages: ["lost"], color: "var(--color-danger)", bg: "rgba(239, 68, 68, 0.08)", text: "Contatos" }
+                { key: "layer3", name: "3. Interessados", stages: ["interested"], color: "var(--color-warning)", bg: "rgba(245, 158, 11, 0.08)", text: "Leads" },
+                { key: "layer4", name: "4. Proposta Enviada", stages: ["proposal"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.08)", text: "Leads" },
+                { key: "layer5", name: "5. Em Negociação", stages: ["negotiating"], color: "var(--color-orange)", bg: "rgba(249, 115, 22, 0.08)", text: "Leads" },
+                { key: "layer6", name: "6. Fechados (Won)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" }
+            ],
+            7: [
+                { key: "layer1", name: "1. Novos Leads", stages: ["lead"], color: "var(--color-primary)", bg: "rgba(0, 140, 255, 0.08)", text: "Leads" },
+                { key: "layer2", name: "2. Contatados", stages: ["contacted"], color: "var(--color-purple)", bg: "rgba(168, 85, 247, 0.08)", text: "Leads" },
+                { key: "layer3", name: "3. Interessados", stages: ["interested"], color: "var(--color-warning)", bg: "rgba(245, 158, 11, 0.08)", text: "Leads" },
+                { key: "layer4", name: "4. Proposta Enviada", stages: ["proposal"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.08)", text: "Leads" },
+                { key: "layer5", name: "5. Em Negociação", stages: ["negotiating"], color: "var(--color-orange)", bg: "rgba(249, 115, 22, 0.08)", text: "Leads" },
+                { key: "layer6", name: "6. Fechados (Won)", stages: ["won"], color: "var(--color-teal)", bg: "rgba(13, 242, 201, 0.04)", text: "Clientes" },
+                { key: "layer7", name: "7. Perdidos (Lost)", stages: ["lost"], color: "var(--color-danger)", bg: "rgba(239, 68, 68, 0.08)", text: "Contatos" }
             ]
         };
 
-        const layersCount = env.funnelLayers || 3;
+        const layersCount = env.funnelLayers || 5;
         const layers = funnelConfig[layersCount] || funnelConfig[3];
         
         const layerKeys = layers.map(l => l.key);
@@ -5789,6 +5801,7 @@ function renderKanban() {
                         <select class="funnel-quick-status-sel" data-id="${c.id}" style="font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary); cursor:pointer; outline:none;" title="Alterar estágio">
                             <option value="lead" ${c.status === 'lead' ? 'selected' : ''}>Novo Lead</option>
                             <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contatado</option>
+                            <option value="interested" ${c.status === 'interested' ? 'selected' : ''}>Interessado</option>
                             <option value="proposal" ${c.status === 'proposal' ? 'selected' : ''}>Proposta</option>
                             <option value="negotiating" ${c.status === 'negotiating' ? 'selected' : ''}>Negociação</option>
                             <option value="won" ${c.status === 'won' ? 'selected' : ''}>Ganho (Won)</option>

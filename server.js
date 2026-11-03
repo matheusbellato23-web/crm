@@ -116,7 +116,8 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
 
     const statusMap = {
         'conversando': 'negotiating',
-        'interessado': 'proposal',
+        'interessado': 'interested',
+        'interesse': 'interested',
         'qualificado': 'proposal',
         'proposta': 'proposal',
         'ganho': 'won',
@@ -153,7 +154,14 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
         let targetStatus = statusMap[rawStatus] || 'contacted';
         if (lead.humanTakeover) {
             targetStatus = 'negotiating';
+        } else if (rawStatus.includes('interessad') || rawStatus.includes('interesse') || rawStatus.includes('preço') || rawStatus.includes('preco')) {
+            targetStatus = 'interested';
         }
+
+        const isHotOrInteresse = ['interested', 'proposal', 'negotiating', 'won'].includes(targetStatus) ||
+                                rawStatus.includes('interessad') ||
+                                rawStatus.includes('interesse') ||
+                                lead.humanTakeover;
 
         // Default value is 0.00 so the user can manually assign value in CRM practically
         const leadValue = 0.00;
@@ -288,13 +296,13 @@ app.post(['/api/contacts/reset-values', '/crm/api/contacts/reset-values'], (req,
         let count = 0;
 
         contacts.forEach(c => {
-            if (scope === 'negotiating' && (c.status === 'negotiating' || c.status === 'proposal')) {
+            if (scope === 'negotiating' && (c.status === 'negotiating' || c.status === 'proposal' || c.status === 'interested')) {
                 c.value = 0.00;
                 count++;
             } else if (scope === 'all_open' && c.status !== 'won') {
                 c.value = 0.00;
                 count++;
-            } else if (scope === 'reset_stages' && (c.status === 'negotiating' || c.status === 'proposal')) {
+            } else if (scope === 'reset_stages' && (c.status === 'negotiating' || c.status === 'proposal' || c.status === 'interested')) {
                 c.value = 0.00;
                 c.status = 'lead';
                 count++;
