@@ -155,11 +155,8 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
             targetStatus = 'negotiating';
         }
 
-        // Projection: leads in negotiation / interested / proposal have R$ 400 projection
-        const isHotOrInteresse = ['proposal', 'negotiating', 'won'].includes(targetStatus) ||
-                                rawStatus.includes('interessad') ||
-                                lead.humanTakeover;
-        const leadValue = isHotOrInteresse ? 400.00 : 0.00;
+        // Default value is 0.00 so the user can manually assign value in CRM practically
+        const leadValue = 0.00;
 
         // Find existing contact by normalized phone, email or exact company name
         let existing = null;
@@ -192,13 +189,15 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
                 changed = true;
             }
             // If lead advanced on WhatsApp (e.g. became Interested, Negotiating or Human Takeover), upgrade status
+            // IMPORTANT: Never override user's manual value assignment!
             if (isHotOrInteresse && existing.status !== 'won') {
-                existing.status = targetStatus;
-                existing.value = 400.00;
-                changed = true;
+                if (existing.status !== targetStatus) {
+                    existing.status = targetStatus;
+                    changed = true;
+                }
             }
             if (existing.value === undefined || isNaN(existing.value) || existing.value > 1000000) {
-                existing.value = leadValue;
+                existing.value = 0.00;
                 changed = true;
             }
 
@@ -207,7 +206,7 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
                 existing.timeline.push({
                     id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
                     type: 'note',
-                    description: `🤖 Sincronização Agente Comercial: Lead atualizado via WhatsApp (${lead.status || 'Ativo'}). Projeção R$ 400.`,
+                    description: `🤖 Sincronização Agente Comercial: Lead atualizado via WhatsApp (${lead.status || 'Ativo'}).`,
                     timestamp: new Date().toISOString()
                 });
                 updatedCount++;
@@ -226,7 +225,7 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
                 phone: formatPhoneBR(normPhoneLead),
                 niche: nicho,
                 status: targetStatus,
-                value: leadValue,
+                value: 0.00, // Starts at 0 for manual assignment
                 notes: lead.gatilho || lead.lossReason || (lead.logs && lead.logs[0]) || 'Lead importado do Agente Comercial AI',
                 source: 'Agente Comercial',
                 createdAt: lead.createdAt || new Date().toISOString(),
@@ -234,7 +233,7 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
                     {
                         id: 'act_init_' + Date.now(),
                         type: 'note',
-                        description: `🤖 Lead importado do Agente Comercial AI (${lead.status || 'Contatado'}). Projeção R$ 400.`,
+                        description: `🤖 Lead importado do Agente Comercial AI (${lead.status || 'Contatado'}).`,
                         timestamp: new Date().toISOString()
                     }
                 ]
@@ -274,6 +273,42 @@ app.post(['/api/sync-atendente-comercial', '/crm/api/sync-atendente-comercial'],
     } catch (err) {
         console.error("Error in sync-atendente-comercial:", err);
         res.status(500).json({ error: err.message || "Erro ao puxar leads do Agente Comercial." });
+    }
+});
+
+// API: Reset pipeline/contacts estimated values
+app.post(['/api/contacts/reset-values', '/crm/api/contacts/reset-values'], (req, res) => {
+    try {
+        let db = { environments: { webco: { contacts: [] } } };
+        if (fs.existsSync(DB_PATH)) {
+            try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')) || db; } catch (e) {}
+        }
+        const { scope = 'negotiating' } = req.body || {};
+        const contacts = db.environments?.webco?.contacts || [];
+        let count = 0;
+
+        contacts.forEach(c => {
+            if (scope === 'negotiating' && (c.status === 'negotiating' || c.status === 'proposal')) {
+                c.value = 0.00;
+                count++;
+            } else if (scope === 'all_open' && c.status !== 'won') {
+                c.value = 0.00;
+                count++;
+            } else if (scope === 'reset_stages' && (c.status === 'negotiating' || c.status === 'proposal')) {
+                c.value = 0.00;
+                c.status = 'lead';
+                count++;
+            } else if (scope === 'all') {
+                c.value = 0.00;
+                count++;
+            }
+        });
+
+        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
+        res.json({ success: true, count, message: `${count} leads foram zerados com sucesso!` });
+    } catch (err) {
+        console.error("Error resetting contact values:", err);
+        res.status(500).json({ error: err.message });
     }
 });
 

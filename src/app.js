@@ -1,3 +1,120 @@
+
+// =========================================================================
+// QUICK LEAD VALUE ASSIGNMENT & PIPELINE RESET CONTROLS
+// =========================================================================
+let funnelSegmentSearchQuery = '';
+
+function updateContactLeadValue(contactId, newValue) {
+    const env = getEnv();
+    if (!env || !env.contacts) return;
+    const c = env.contacts.find(x => x.id === contactId);
+    if (!c) return;
+
+    const parsedVal = Math.max(0, parseFloat(newValue) || 0);
+    const oldVal = c.value || 0;
+    c.value = parsedVal;
+
+    if (!c.timeline) c.timeline = [];
+    c.timeline.push({
+        id: 'act_' + Date.now(),
+        type: 'note',
+        description: `Valor estimado atualizado manualmente de ${formatCurrency(oldVal)} para ${formatCurrency(parsedVal)}.`,
+        timestamp: new Date().toISOString()
+    });
+
+    saveState();
+    renderAll();
+    showToast(`✅ Valor de "${c.name}" atualizado para ${formatCurrency(parsedVal)}!`, 'success');
+}
+window.updateContactLeadValue = updateContactLeadValue;
+
+function promptEditLeadValue(contactId, currentVal) {
+    const newVal = prompt('Digite o novo valor estimado para este lead (R$):', currentVal || '0');
+    if (newVal !== null && newVal.trim() !== '') {
+        const cleaned = newVal.replace(/[^0-9.,]/g, '').replace(',', '.');
+        updateContactLeadValue(contactId, cleaned);
+    }
+}
+window.promptEditLeadValue = promptEditLeadValue;
+
+function updateContactLeadStatus(contactId, newStatus) {
+    const env = getEnv();
+    if (!env || !env.contacts) return;
+    const c = env.contacts.find(x => x.id === contactId);
+    if (!c) return;
+
+    const prevStatus = c.status;
+    c.status = newStatus;
+
+    if (!c.timeline) c.timeline = [];
+    c.timeline.push({
+        id: 'act_' + Date.now(),
+        type: 'note',
+        description: `Estágio atualizado manualmente para: ${translateStatus(newStatus)}`,
+        timestamp: new Date().toISOString()
+    });
+
+    if (newStatus === 'won' && prevStatus !== 'won') {
+        openConversionModal(c.id);
+    } else {
+        saveState();
+        renderAll();
+        showToast(`Estágio de "${c.name}" alterado para ${translateStatus(newStatus)}!`, 'info');
+    }
+}
+window.updateContactLeadStatus = updateContactLeadStatus;
+
+async function resetPipelineValues(scope = 'negotiating') {
+    const env = getEnv();
+    if (!env || !env.contacts) return;
+
+    let affectedCount = 0;
+    env.contacts.forEach(c => {
+        if (scope === 'negotiating' && (c.status === 'negotiating' || c.status === 'proposal')) {
+            c.value = 0.00;
+            affectedCount++;
+        } else if (scope === 'all_open' && c.status !== 'won') {
+            c.value = 0.00;
+            affectedCount++;
+        } else if (scope === 'reset_stages' && (c.status === 'negotiating' || c.status === 'proposal')) {
+            c.value = 0.00;
+            c.status = 'lead';
+            affectedCount++;
+        } else if (scope === 'all') {
+            c.value = 0.00;
+            affectedCount++;
+        }
+    });
+
+    saveState();
+
+    try {
+        await fetch(getApiUrl('/api/contacts/reset-values'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scope })
+        });
+    } catch (e) {
+        console.warn('Erro ao chamar /api/contacts/reset-values:', e);
+    }
+
+    renderAll();
+    showToast(`✅ ${affectedCount} leads tiveram seus valores zerados com sucesso!`, 'success');
+}
+window.resetPipelineValues = resetPipelineValues;
+
+function openPipelineResetModal() {
+    const modal = document.getElementById('pipelineResetModal');
+    if (modal) modal.classList.add('active');
+}
+window.openPipelineResetModal = openPipelineResetModal;
+
+function closePipelineResetModal() {
+    const modal = document.getElementById('pipelineResetModal');
+    if (modal) modal.classList.remove('active');
+}
+window.closePipelineResetModal = closePipelineResetModal;
+
 function safeParseTags(val) {
     if (!val) return [];
     if (Array.isArray(val)) return val.map(t => String(t).trim()).filter(Boolean);
@@ -5114,6 +5231,20 @@ function renderContacts() {
 
     // Helper event binder for rows and cards
     const bindRowActions = (element, c) => {
+        const btnTableVal = element.querySelector(".btn-contact-table-val");
+        if (btnTableVal) {
+            btnTableVal.onclick = (e) => {
+                e.stopPropagation();
+                promptEditLeadValue(c.id, c.value || 0);
+            };
+        }
+        element.querySelectorAll(".btn-table-quick-val").forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                updateContactLeadValue(c.id, btn.getAttribute("data-val"));
+            };
+        });
+
         const statusSelect = element.querySelector(".select-inline-status");
         if (statusSelect) {
             statusSelect.onchange = (e) => {
@@ -5247,7 +5378,19 @@ function renderContacts() {
                         ${c.email ? `<span style="font-size:10.5px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;" title="${c.email}">${c.email}</span>` : ''}
                     </div>
                 </td>
-                <td><strong style="font-size:12.5px; color:#059669; white-space:nowrap;">${formatCurrency(c.value)}</strong></td>
+                <td>
+    <div style="display:flex; align-items:center; gap:4px; white-space:nowrap;">
+        <button type="button" class="btn-contact-table-val" data-id="${c.id}" data-val="${c.value || 0}" title="Clique para alterar valor estimado" style="background:transparent; border:none; color:${c.value > 0 ? '#059669' : 'var(--text-muted)'}; font-size:12px; font-weight:700; cursor:pointer; padding:2px 4px; border-radius:3px;">
+            ${formatCurrency(c.value)} ✏️
+        </button>
+        <button type="button" class="btn-table-quick-val" data-id="${c.id}" data-val="400" title="Atribuir R$ 400" style="padding:1px 4px; font-size:9.5px; font-weight:700; border-radius:3px; border:1px solid rgba(79,70,229,0.3); background:rgba(79,70,229,0.08); color:var(--color-primary); cursor:pointer;">
+            400
+        </button>
+        <button type="button" class="btn-table-quick-val" data-id="${c.id}" data-val="0" title="Zerar valor (R$ 0)" style="padding:1px 4px; font-size:9.5px; font-weight:600; border-radius:3px; border:1px solid var(--border-color); background:var(--bg-app); color:var(--text-muted); cursor:pointer;">
+            0
+        </button>
+    </div>
+</td>
                 <td>
                     <select class="select-inline-status status-${c.status}" data-id="${c.id}" style="
                         font-size: 11px;
@@ -5562,6 +5705,7 @@ function renderKanban() {
 
         const activeLayer = layers.find(l => l.key === state.activeFunnelSegment) || layers[0];
         const activeLeads = filteredContacts.filter(c => activeLayer.stages.includes(c.status));
+        const activeLayerTotalVal = activeLeads.reduce((sum, c) => sum + (c.value || 0), 0);
 
         const segmentTitleEl = document.getElementById("funnelSegmentTitle");
         if (segmentTitleEl) {
@@ -5569,37 +5713,125 @@ function renderKanban() {
             segmentTitleEl.style.color = activeLayer.color;
         }
 
+        const segmentTotalValEl = document.getElementById("funnelSegmentTotalVal");
+        if (segmentTotalValEl) {
+            segmentTotalValEl.innerText = `Total estimado: ${formatCurrency(activeLayerTotalVal)}`;
+        }
+
         const segmentBadge = document.getElementById("funnelSegmentBadgeCount");
         if (segmentBadge) {
             segmentBadge.innerText = `${activeLeads.length} contatos`;
         }
 
-        const container = document.getElementById("funnelSegmentLeadsContainer");
-        if (container) {
-            container.innerHTML = "";
-            if (activeLeads.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:11px;">Nenhum lead nesta etapa com as configurações filtradas.</div>`;
-            } else {
-                activeLeads.forEach(c => {
-                    const card = document.createElement("div");
-                    card.style = "background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition: all 0.2s;";
-                    card.innerHTML = `
-                        <div>
-                            <strong style="color:var(--text-primary); font-size:12px;">${c.name}</strong>
-                            <div style="font-size:10px; color:var(--text-muted);">${c.company || "Sem Empresa"} • ${c.niche || "Outro"}</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <strong style="color:var(--color-primary); font-size:11px;">${formatCurrency(c.value)}</strong>
-                            <div style="font-size:9px; color:var(--text-secondary);">${translateStatus(c.status)}</div>
-                        </div>
-                    `;
-                    card.onmouseenter = () => { card.style.borderColor = "var(--color-primary)"; card.style.background = "var(--bg-card-hover)"; };
-                    card.onmouseleave = () => { card.style.borderColor = "var(--border-color)"; card.style.background = "var(--bg-app)"; };
-                    card.onclick = () => openContactDetails(c.id);
-                    container.appendChild(card);
-                });
-            }
+        // Wire Reset button for this specific segment
+        const btnResetSegment = document.getElementById("btnResetCurrentSegmentValues");
+        if (btnResetSegment) {
+            btnResetSegment.onclick = (e) => {
+                e.stopPropagation();
+                if (confirm(`Deseja zerar os valores de todos os ${activeLeads.length} leads nesta etapa (${activeLayer.name}) para R$ 0,00?\n\nVocê poderá atribuir valores manualmente depois para cada um com 1 clique.`)) {
+                    activeLeads.forEach(c => {
+                        c.value = 0.00;
+                    });
+                    saveState();
+                    renderAll();
+                    showToast(`✅ Valores da etapa "${activeLayer.name}" zerados com sucesso!`, 'success');
+                }
+            };
         }
+
+        // Wire Search input for leads inside this segment
+        const segSearchInput = document.getElementById("funnelSegmentSearchInput");
+        if (segSearchInput) {
+            segSearchInput.value = funnelSegmentSearchQuery || '';
+            segSearchInput.oninput = (e) => {
+                funnelSegmentSearchQuery = e.target.value.toLowerCase().trim();
+                renderSegmentCards();
+            };
+        }
+
+        const renderSegmentCards = () => {
+            const container = document.getElementById("funnelSegmentLeadsContainer");
+            if (!container) return;
+            container.innerHTML = "";
+
+            let displayLeads = activeLeads;
+            if (funnelSegmentSearchQuery) {
+                displayLeads = activeLeads.filter(c => 
+                    (c.name || '').toLowerCase().includes(funnelSegmentSearchQuery) ||
+                    (c.company || '').toLowerCase().includes(funnelSegmentSearchQuery) ||
+                    (c.phone || '').replace(/\D/g, '').includes(funnelSegmentSearchQuery)
+                );
+            }
+
+            if (displayLeads.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:30px 20px; color:var(--text-muted); font-size:11px;">
+                    ${funnelSegmentSearchQuery ? 'Nenhum lead encontrado para esta busca.' : 'Nenhum lead nesta etapa com as configurações filtradas.'}
+                </div>`;
+                return;
+            }
+
+            displayLeads.forEach(c => {
+                const card = document.createElement("div");
+                card.style = "background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:10px; transition: all 0.2s;";
+                
+                const hasValue = c.value && Number(c.value) > 0;
+                const cleanPhone = (c.phone || '').replace(/\D/g, '');
+
+                card.innerHTML = `
+                    <div style="min-width:0; flex:1; cursor:pointer;" class="funnel-lead-info-click" title="Clique para ver ficha completa">
+                        <strong style="color:var(--text-primary); font-size:12px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.name}</strong>
+                        <div style="font-size:10px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.company || "Sem Empresa"} • ${c.niche || "Geral"}</div>
+                        ${cleanPhone ? `<a href="https://wa.me/${cleanPhone}" target="_blank" onclick="event.stopPropagation();" style="font-size:10px; color:#25D366; display:inline-flex; align-items:center; gap:3px; text-decoration:none; margin-top:2px;"><span>📱 ${c.phone}</span></a>` : ''}
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0;" onclick="event.stopPropagation();">
+                        <!-- Quick Status inline selector -->
+                        <select class="funnel-quick-status-sel" data-id="${c.id}" style="font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary); cursor:pointer; outline:none;" title="Alterar estágio">
+                            <option value="lead" ${c.status === 'lead' ? 'selected' : ''}>Novo Lead</option>
+                            <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contatado</option>
+                            <option value="proposal" ${c.status === 'proposal' ? 'selected' : ''}>Proposta</option>
+                            <option value="negotiating" ${c.status === 'negotiating' ? 'selected' : ''}>Negociação</option>
+                            <option value="won" ${c.status === 'won' ? 'selected' : ''}>Ganho (Won)</option>
+                            <option value="lost" ${c.status === 'lost' ? 'selected' : ''}>Perdido (Lost)</option>
+                        </select>
+
+                        <!-- Quick Value Controls -->
+                        <div style="display:flex; align-items:center; gap:3px;">
+                            <button type="button" class="btn-prompt-lead-val" data-id="${c.id}" data-val="${c.value || 0}" title="Clique para digitar valor personalizado" style="font-size:11px; font-weight:700; color:${hasValue ? '#059669' : 'var(--text-muted)'}; background:${hasValue ? 'rgba(5,150,105,0.08)' : 'var(--bg-card)'}; border:1px solid ${hasValue ? 'rgba(5,150,105,0.3)' : 'var(--border-color)'}; border-radius:4px; padding:2px 6px; cursor:pointer;">
+                                ${formatCurrency(c.value)} ✏️
+                            </button>
+                            <button type="button" class="btn-set-quick-val" data-id="${c.id}" data-val="400" title="Atribuir R$ 400 com 1 clique" style="font-size:9.5px; font-weight:700; padding:2px 5px; border-radius:4px; border:1px solid rgba(79,70,229,0.3); background:rgba(79,70,229,0.08); color:var(--color-primary); cursor:pointer;">
+                                R$ 400
+                            </button>
+                            <button type="button" class="btn-set-quick-val" data-id="${c.id}" data-val="0" title="Zerar valor (R$ 0)" style="font-size:9.5px; font-weight:600; padding:2px 5px; border-radius:4px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-muted); cursor:pointer;">
+                                R$ 0
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                card.querySelector(".funnel-lead-info-click").onclick = () => openContactDetails(c.id);
+
+                card.querySelector(".funnel-quick-status-sel").onchange = (e) => {
+                    updateContactLeadStatus(c.id, e.target.value);
+                };
+
+                card.querySelector(".btn-prompt-lead-val").onclick = () => {
+                    promptEditLeadValue(c.id, c.value || 0);
+                };
+
+                card.querySelectorAll(".btn-set-quick-val").forEach(btn => {
+                    btn.onclick = () => {
+                        updateContactLeadValue(c.id, btn.getAttribute("data-val"));
+                    };
+                });
+
+                container.appendChild(card);
+            });
+            safeCreateIcons();
+        };
+
+        renderSegmentCards();
     }
 
     // Render columns
@@ -5626,8 +5858,18 @@ function renderKanban() {
                 <div class="kanban-card-content">
                     <h4 class="kanban-card-title">${c.name}</h4>
                     <div class="kanban-card-company">${c.company || "Sem Empresa"} <small style="color:var(--text-muted);font-size:9px;">(${c.niche || "Outro"})</small></div>
-                    <div class="kanban-card-footer">
-                        <span class="kanban-card-value">${formatCurrency(c.value)}</span>
+                    <div class="kanban-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; align-items:center; gap:3px;">
+                            <span class="kanban-card-value" onclick="event.stopPropagation(); promptEditLeadValue('${c.id}', ${c.value || 0})" title="Clique para editar valor estimado" style="cursor:pointer; display:inline-flex; align-items:center; gap:2px; font-weight:700;">
+                                ${formatCurrency(c.value)} ✏️
+                            </span>
+                            <button type="button" class="btn-kanban-quick-400" onclick="event.stopPropagation(); updateContactLeadValue('${c.id}', 400)" title="Atribuir R$ 400" style="padding:1px 4px; font-size:9px; font-weight:700; border-radius:3px; border:1px solid rgba(79,70,229,0.3); background:rgba(79,70,229,0.08); color:var(--color-primary); cursor:pointer;">
+                                400
+                            </button>
+                            <button type="button" class="btn-kanban-quick-0" onclick="event.stopPropagation(); updateContactLeadValue('${c.id}', 0)" title="Zerar valor (R$ 0)" style="padding:1px 4px; font-size:9px; font-weight:600; border-radius:3px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-muted); cursor:pointer;">
+                                0
+                            </button>
+                        </div>
                         <span class="kanban-card-days">${getDaysSince(c.createdAt)}</span>
                     </div>
                 </div>
@@ -14554,3 +14796,31 @@ window.openAffiliateModal = openAffiliateModal;
 window.openAffiliatePayoutModal = openAffiliatePayoutModal;
 window.renderAffiliates = renderAffiliates;
 window.renderFinance = renderFinance;
+
+
+// Initialize Pipeline Reset Listeners
+document.addEventListener("DOMContentLoaded", () => {
+
+    // Pipeline Reset Modal Triggers
+    const btnOpenReset = document.getElementById('btnOpenResetPipelineModal');
+    if (btnOpenReset) {
+        btnOpenReset.onclick = () => openPipelineResetModal();
+    }
+    const btnCloseReset = document.getElementById('btnClosePipelineResetModal');
+    if (btnCloseReset) {
+        btnCloseReset.onclick = () => closePipelineResetModal();
+    }
+    const btnCancelReset = document.getElementById('btnCancelPipelineResetModal');
+    if (btnCancelReset) {
+        btnCancelReset.onclick = () => closePipelineResetModal();
+    }
+    const btnConfirmReset = document.getElementById('btnConfirmPipelineReset');
+    if (btnConfirmReset) {
+        btnConfirmReset.onclick = () => {
+            const selectedScope = document.querySelector('input[name="pipelineResetScope"]:checked')?.value || 'negotiating';
+            resetPipelineValues(selectedScope);
+            closePipelineResetModal();
+        };
+    }
+
+});

@@ -819,9 +819,14 @@
                         <h1 class="view-title">Pipeline de Vendas</h1>
                         <p class="view-subtitle">Arraste os cards para alterar o status da venda na Web Co.</p>
                     </div>
-                    <div class="view-toggle-group" style="display:flex; border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow:hidden;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button type="button" class="btn btn-secondary btn-sm" id="btnOpenResetPipelineModal" style="color:var(--color-danger); border-color:rgba(239, 68, 68, 0.5); display:flex; align-items:center; gap:6px; font-size:11px; padding:6px 12px; font-weight:600;">
+                            <i data-lucide="rotate-ccw" style="width:13px; height:13px;"></i> Zerar Valores do Funil
+                        </button>
+                        <div class="view-toggle-group" style="display:flex; border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow:hidden;">
                         <button type="button" class="btn btn-secondary btn-sm active" id="btnPipelineModeKanban" style="border-radius:0; border:none; padding: 6px 12px; font-size: 11px; display:flex; align-items:center; gap:4px;"><i data-lucide="kanban" style="width:12px; height:12px;"></i> Quadro Kanban</button>
                         <button type="button" class="btn btn-secondary btn-sm" id="btnPipelineModeFunnel" style="border-radius:0; border:none; padding: 6px 12px; font-size: 11px; display:flex; align-items:center; gap:4px;"><i data-lucide="filter" style="width:12px; height:12px;"></i> Modo Funil</button>
+                    </div>
                     </div>
                 </div>
 
@@ -957,9 +962,20 @@
 
                         <!-- Right Panel: Leads list of selected segment -->
                         <div class="funnel-leads-list-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px; display:flex; flex-direction:column; min-height: 400px; box-shadow: var(--shadow-sm);">
-                            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-bottom:16px;">
-                                <h3 style="font-size:12px; font-weight:600; text-transform:uppercase; color:var(--text-primary);" id="funnelSegmentTitle">Contatos no Topo do Funil</h3>
-                                <span style="font-size:10px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:4px; padding:2px 8px; font-weight:600; color:var(--text-secondary);" id="funnelSegmentBadgeCount">0 leads</span>
+                            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:10px;">
+                                <div>
+                                    <h3 style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-primary); margin:0;" id="funnelSegmentTitle">Contatos no Topo do Funil</h3>
+                                    <span style="font-size:11px; color:var(--text-secondary); font-weight:600; margin-top:2px; display:block;" id="funnelSegmentTotalVal">Total estimado: R$ 0,00</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <button type="button" class="btn btn-secondary btn-sm" id="btnResetCurrentSegmentValues" style="font-size:10px; padding:3px 8px; color:var(--color-danger); border-color:rgba(239,68,68,0.4); display:flex; align-items:center; gap:4px; font-weight:600;" title="Zerar valor de todos os leads nesta etapa">
+                                        <i data-lucide="slash" style="width:11px; height:11px;"></i> Zerar Etapa
+                                    </button>
+                                    <span style="font-size:10px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:4px; padding:2px 8px; font-weight:600; color:var(--text-secondary);" id="funnelSegmentBadgeCount">0 leads</span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom:10px;">
+                                <input type="text" id="funnelSegmentSearchInput" class="form-control" placeholder="Buscar nesta etapa (nome, empresa, tel)..." style="font-size:11px; padding:5px 10px; height:30px;">
                             </div>
                             
                             <div style="flex:1; overflow-y:auto; max-height: 350px; display:flex; flex-direction:column; gap:10px;" id="funnelSegmentLeadsContainer">
@@ -4187,7 +4203,64 @@
             </div>
         </div>
 
-        <div class="modal" id="documentPreviewModal">
+                <!-- MODAL: ZERAR / REDEFINIR VALORES DO PIPELINE -->
+        <div class="modal" id="pipelineResetModal">
+            <div class="modal-content" style="max-width: 520px; width: 100%;">
+                <div class="modal-header">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <i data-lucide="rotate-ccw" style="width:20px;height:20px;color:var(--color-danger);"></i>
+                        <h3 style="margin:0; font-size:16px;">Zerar / Redefinir Valores do Pipeline</h3>
+                    </div>
+                    <button class="btn-close" id="btnClosePipelineResetModal">&times;</button>
+                </div>
+                <div class="modal-body" style="display:flex; flex-direction:column; gap:14px;">
+                    <p style="font-size:13px; color:var(--text-secondary); margin:0; line-height:1.5;">
+                        Escolha como deseja zerar as projeções financeiras do funil de vendas. Esta ação redefine os valores estimados para que você possa atribuí-los manualmente para cada contato:
+                    </p>
+
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-card-hover); cursor:pointer;">
+                            <input type="radio" name="pipelineResetScope" value="negotiating" checked style="margin-top:3px;">
+                            <div>
+                                <strong style="font-size:13px; color:var(--text-primary); display:block;">Zerar apenas etapa "Em Negociação" (Recomendado)</strong>
+                                <span style="font-size:11.5px; color:var(--text-muted); line-height:1.4; display:block;">
+                                    Zera o valor estimado dos leads na etapa de Negociação para R$ 0,00. Mantém o status do lead inalterado.
+                                </span>
+                            </div>
+                        </label>
+
+                        <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-card-hover); cursor:pointer;">
+                            <input type="radio" name="pipelineResetScope" value="all_open" style="margin-top:3px;">
+                            <div>
+                                <strong style="font-size:13px; color:var(--text-primary); display:block;">Zerar valores de TODO o Funil em Aberto</strong>
+                                <span style="font-size:11.5px; color:var(--text-muted); line-height:1.4; display:block;">
+                                    Zera o valor estimado de todos os leads em aberto (Novos Leads, Contatados, Propostas e Negociações), deixando apenas clientes já fechados com receita real.
+                                </span>
+                            </div>
+                        </label>
+
+                        <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-card-hover); cursor:pointer;">
+                            <input type="radio" name="pipelineResetScope" value="reset_stages" style="margin-top:3px;">
+                            <div>
+                                <strong style="font-size:13px; color:var(--text-primary); display:block;">Zerar Valores e Mover Leads para "Novos Leads"</strong>
+                                <span style="font-size:11.5px; color:var(--text-muted); line-height:1.4; display:block;">
+                                    Move todos os leads que estavam em "Em Negociação" de volta para "Novo Lead" e redefine o valor estimado para R$ 0,00 para começar do zero.
+                                </span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+                    <button type="button" class="btn btn-secondary" id="btnCancelPipelineResetModal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmPipelineReset" style="background:#ef4444; border-color:#ef4444; color:#fff; display:flex; align-items:center; gap:6px;">
+                        <i data-lucide="check" style="width:14px; height:14px;"></i>
+                        <span>Confirmar e Zerar Valores</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+<div class="modal" id="documentPreviewModal">
         <div class="modal-content" style="max-width: 860px; width: 100%; height: 88vh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
