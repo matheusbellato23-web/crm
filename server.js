@@ -82,28 +82,116 @@ function formatPhoneBR(p) {
     return p;
 }
 
+const AGENTE_STATUS_MAP = {
+    'lead': 'lead',
+    'novo': 'lead',
+    'nao contatado': 'lead',
+    'não contatado': 'lead',
+    'mensagem enviada': 'contacted',
+    'msg enviada': 'contacted',
+    'contacted': 'contacted',
+    'contatado': 'contacted',
+    'aguardando': 'contacted',
+    'aguardando resposta': 'contacted',
+    'conversando': 'negotiating',
+    'negociando': 'negotiating',
+    'em negociacao': 'negotiating',
+    'em negociação': 'negotiating',
+    'negotiating': 'negotiating',
+    'quer_fechar': 'negotiating',
+    'interessado': 'interested',
+    'interesse': 'interested',
+    'interessado_previa': 'interested',
+    'qualificado': 'proposal',
+    'proposta': 'proposal',
+    'proposta enviada': 'proposal',
+    'proposal': 'proposal',
+    'aceite_previa': 'proposal',
+    'pergunta_preco': 'proposal',
+    'fechado': 'won',
+    'won': 'won',
+    'ganho': 'won',
+    'perdido': 'lost',
+    'rejeicao': 'lost',
+    'rejeição': 'lost',
+    'lost': 'lost',
+    'falhou': 'lost',
+    'sem interesse': 'lost'
+};
+
+function resolveOriginSource(lead, existingSource = '') {
+    const rawOrigin = (lead.origin || '').trim();
+    const rawLower = rawOrigin.toLowerCase();
+    if (rawLower.includes('indicac') || rawLower.includes('indicaç') || (lead.referredBy && String(lead.referredBy).trim())) {
+        return lead.referredBy ? `Indicação (${String(lead.referredBy).trim()})` : 'Indicação';
+    }
+    if (existingSource && !['Agente Comercial', 'Prospecção Ativa (Maps)', ''].includes(existingSource)) {
+        return existingSource;
+    }
+    if (rawOrigin) return rawOrigin;
+    return 'Agente Comercial';
+}
+
+async function fetchLeadsFromAtendenteAPI() {
+    const baseUrl = (process.env.ATENDENTE_API_URL || 'https://webcolabs.com.br/app/atendente').replace(/\/$/, '');
+    const username = (process.env.ATENDENTE_USER || '').trim();
+    const password = (process.env.ATENDENTE_PASS || '').trim();
+    if (!username || !password) return [];
+
+    try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 12000);
+        const loginRes = await fetch(`${baseUrl}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+            signal: controller.signal
+        });
+        if (!loginRes.ok) {
+            clearTimeout(timer);
+            return [];
+        }
+        const loginData = await loginRes.json();
+        if (!loginData?.token) {
+            clearTimeout(timer);
+            return [];
+        }
+        const leadsRes = await fetch(`${baseUrl}/api/leads`, {
+            headers: { Authorization: `Bearer ${loginData.token}` },
+            signal: controller.signal
+        });
+        clearTimeout(timer);
+        if (!leadsRes.ok) return [];
+        const data = await leadsRes.json();
+        return Array.isArray(data) ? data : [];
+    } catch (e) {
+        console.warn('[CRM Sync] Falha ao buscar leads via HTTP do Agente Comercial:', e.message);
+        return [];
+    }
+}
+
 // Core lead synchronization engine between Atendente Comercial and Nexus CRM
 function syncAtendenteLeadsCore(db, extraLeads = []) {
     const atendentePaths = [
-        'C:/Users/Kamino/Documents/atendente comercial/data/db.json',
-        'C:/Users/Kamino/Documents/atendente comercial/data/db_seed.json',
+        'C:/Users/Gandhi/Documents/atendentecomercial/data/db.json',
+        'C:/Users/Gandhi/Documents/atendentecomercial/data/db_seed.json',
         path.join(DATA_DIR, 'atendente_db.json')
     ];
 
     let rawLeads = [];
-    atendentePaths.forEach(p => {
-        if (fs.existsSync(p)) {
-            try {
-                const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
-                if (parsed.leads && Array.isArray(parsed.leads)) {
-                    rawLeads.push(...parsed.leads);
-                }
-            } catch (e) {}
-        }
-    });
-
     if (Array.isArray(extraLeads) && extraLeads.length > 0) {
         rawLeads.push(...extraLeads);
+    } else {
+        atendentePaths.forEach(p => {
+            if (fs.existsSync(p)) {
+                try {
+                    const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+                    if (parsed.leads && Array.isArray(parsed.leads)) {
+                        rawLeads.push(...parsed.leads);
+                    }
+                } catch (e) {}
+            }
+        });
     }
 
     if (!db.environments) db.environments = {};
@@ -113,20 +201,6 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
     const contacts = db.environments.webco.contacts;
     let importedCount = 0;
     let updatedCount = 0;
-
-    const statusMap = {
-        'conversando': 'negotiating',
-        'interessado': 'interested',
-        'interesse': 'interested',
-        'qualificado': 'proposal',
-        'proposta': 'proposal',
-        'ganho': 'won',
-        'fechado': 'won',
-        'perdido': 'lost',
-        'falhou': 'lost',
-        'novo': 'lead',
-        'aguardando': 'contacted'
-    };
 
     rawLeads.forEach(lead => {
         const rawPhone = (lead.phone || lead.telefone || lead.whatsapp || '').trim();
@@ -144,29 +218,21 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
         if (company === 'Seu Nome' || company === 'Lead Agente') company = name;
         if (company.includes('|')) company = company.split('|')[0].trim();
 
-        // Extract Nicho
         let nicho = (lead.nicho || lead.ramo || lead.categoria || '').trim();
         if (!nicho || nicho === 'Todos' || nicho.toLowerCase().includes('graf') || nicho.toLowerCase().includes('gráf')) {
             nicho = 'Gráfica';
         }
 
-        const rawStatus = (lead.status || '').toLowerCase();
-        let targetStatus = statusMap[rawStatus] || 'contacted';
-        if (lead.humanTakeover) {
+        const rawStatus = (lead.status || '').toLowerCase().trim();
+        let targetStatus = AGENTE_STATUS_MAP[rawStatus] || 'contacted';
+        if (lead.humanTakeover && !['won', 'lost'].includes(targetStatus)) {
             targetStatus = 'negotiating';
-        } else if (rawStatus.includes('interessad') || rawStatus.includes('interesse') || rawStatus.includes('preço') || rawStatus.includes('preco')) {
+        } else if (rawStatus.includes('interessad') || rawStatus.includes('interesse')) {
             targetStatus = 'interested';
         }
 
-        const isHotOrInteresse = ['interested', 'proposal', 'negotiating', 'won'].includes(targetStatus) ||
-                                rawStatus.includes('interessad') ||
-                                rawStatus.includes('interesse') ||
-                                lead.humanTakeover;
+        const isHotOrInteresse = ['interested', 'proposal', 'negotiating', 'won', 'lost'].includes(targetStatus) || lead.humanTakeover;
 
-        // Default value is 0.00 so the user can manually assign value in CRM practically
-        const leadValue = 0.00;
-
-        // Find existing contact by normalized phone, email or exact company name
         let existing = null;
         if (rawEmail) {
             existing = contacts.find(c => (c.email || '').toLowerCase() === rawEmail);
@@ -196,8 +262,16 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
                 existing.phone = formatPhoneBR(normPhoneLead);
                 changed = true;
             }
-            // If lead advanced on WhatsApp (e.g. became Interested, Negotiating or Human Takeover), upgrade status
-            // IMPORTANT: Never override user's manual value assignment!
+            const nextSource = resolveOriginSource(lead, existing.source);
+            if (nextSource !== existing.source) {
+                existing.source = nextSource;
+                changed = true;
+            }
+            if (lead.referredBy && !existing.referredBy) existing.referredBy = lead.referredBy;
+            if (lead.closeReason && !existing.winReason) existing.winReason = lead.closeReason;
+            if (lead.lossReason && !existing.lossReason) existing.lossReason = lead.lossReason;
+            if (lead.bairro && !existing.bairro) existing.bairro = lead.bairro;
+
             if (isHotOrInteresse && existing.status !== 'won') {
                 if (existing.status !== targetStatus) {
                     existing.status = targetStatus;
@@ -214,17 +288,16 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
                 existing.timeline.push({
                     id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
                     type: 'note',
-                    description: `🤖 Sincronização Agente Comercial: Lead atualizado via WhatsApp (${lead.status || 'Ativo'}).`,
+                    description: `🤖 Sincronização Agente Comercial: Status [${lead.status || targetStatus}]${existing.source ? ` • Origem: ${existing.source}` : ''}.`,
                     timestamp: new Date().toISOString()
                 });
                 updatedCount++;
             }
         } else {
-            // Do not import dummy placeholder 'Seu Nome' with test phone 5511999999999
             if (name === 'Seu Nome' && normPhoneLead === '11999999999') {
                 return;
             }
-
+            const resolvedSource = resolveOriginSource(lead, '');
             const newContact = {
                 id: 'c_agente_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
                 name: name,
@@ -233,15 +306,19 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
                 phone: formatPhoneBR(normPhoneLead),
                 niche: nicho,
                 status: targetStatus,
-                value: 0.00, // Starts at 0 for manual assignment
-                notes: lead.gatilho || lead.lossReason || (lead.logs && lead.logs[0]) || 'Lead importado do Agente Comercial AI',
-                source: 'Agente Comercial',
+                value: Number(lead.closeValue) || 0.00,
+                notes: lead.closeReason || lead.lossReason || lead.gatilho || (lead.logs && lead.logs[0]) || 'Lead importado do Agente Comercial AI',
+                source: resolvedSource,
+                referredBy: lead.referredBy || '',
+                winReason: lead.closeReason || '',
+                lossReason: lead.lossReason || '',
+                bairro: lead.bairro || '',
                 createdAt: lead.createdAt || new Date().toISOString(),
                 timeline: [
                     {
                         id: 'act_init_' + Date.now(),
                         type: 'note',
-                        description: `🤖 Lead importado do Agente Comercial AI (${lead.status || 'Contatado'}).`,
+                        description: `🤖 Lead importado do Agente Comercial (${lead.status || 'Novo'}) • Origem: ${resolvedSource}.`,
                         timestamp: new Date().toISOString()
                     }
                 ]
@@ -251,7 +328,6 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
         }
     });
 
-    // Sanitize any invalid lead values
     contacts.forEach(c => {
         c.value = sanitizeLeadValue(c.value);
     });
@@ -259,14 +335,20 @@ function syncAtendenteLeadsCore(db, extraLeads = []) {
     return { importedCount, updatedCount, totalContacts: contacts.length };
 }
 
-app.post(['/api/sync-atendente-comercial', '/crm/api/sync-atendente-comercial'], (req, res) => {
+app.post(['/api/sync-atendente-comercial', '/crm/api/sync-atendente-comercial'], async (req, res) => {
     try {
         let db = { environments: { webco: { contacts: [] } } };
         if (fs.existsSync(DB_PATH)) {
             try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')) || db; } catch (e) {}
         }
 
-        const extraLeads = (req.body && Array.isArray(req.body)) ? req.body : [];
+        let extraLeads = (req.body && Array.isArray(req.body)) ? req.body : [];
+        if (extraLeads.length === 0) {
+            const remoteLeads = await fetchLeadsFromAtendenteAPI();
+            if (remoteLeads.length > 0) {
+                extraLeads = remoteLeads;
+            }
+        }
         const result = syncAtendenteLeadsCore(db, extraLeads);
 
         fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
@@ -323,8 +405,9 @@ app.post(['/api/contacts/reset-values', '/crm/api/contacts/reset-values'], (req,
 // API Webhook: Receive leads directly from Agente Comercial AI
 app.post(['/api/webhook/agente-comercial', '/api/agente-webhook', '/api/webhook-agente'], (req, res) => {
     try {
-        // Support both single lead object (or webhook format { lead: { ... } }) and arrays
         let rawBody = req.body;
+        const webhookEvent = rawBody?.event || 'lead_sync';
+        const webhookMeta = rawBody?.meta || {};
         let leads = [];
         if (Array.isArray(rawBody)) {
             leads = rawBody;
@@ -336,6 +419,10 @@ app.post(['/api/webhook/agente-comercial', '/api/agente-webhook', '/api/webhook-
 
         if (!leads || leads.length === 0) {
             return res.status(400).json({ error: "Nenhum lead fornecido no payload." });
+        }
+
+        if (webhookEvent === 'test' || (leads.length === 1 && leads[0]?.id === 'test_lead_999')) {
+            return res.json({ success: true, testOk: true, message: 'Webhook CRM validado com sucesso (sem poluir a base).' });
         }
 
         let db = { environments: { webco: { contacts: [] } } };
@@ -354,62 +441,54 @@ app.post(['/api/webhook/agente-comercial', '/api/agente-webhook', '/api/webhook-
         leads.forEach(lead => {
             const email = (lead.email || lead.e_mail || '').trim().toLowerCase();
             const phone = (lead.phone || lead.telefone || lead.whatsapp || '').trim();
-            const phoneDigits = phone.replace(/\D/g, '');
+            const phoneDigits = normalizePhone(phone);
             const company = (lead.company || lead.empresa || lead.fullName || '').trim();
             const name = (lead.name || lead.nome || lead.contato || company || 'Lead Agente').trim();
 
             let existing = null;
             if (email) existing = contacts.find(c => (c.email || '').toLowerCase() === email);
-            if (!existing && phoneDigits.length >= 8) existing = contacts.find(c => (c.phone || '').replace(/\D/g, '') === phoneDigits);
+            if (!existing && phoneDigits.length >= 8) existing = contacts.find(c => normalizePhone(c.phone) === phoneDigits);
             if (!existing && company && company !== 'Lead Agente') existing = contacts.find(c => (c.company || '').toLowerCase() === company.toLowerCase());
 
-            const statusMap = {
-                'lead': 'lead',
-                'novo': 'lead',
-                'contacted': 'contacted',
-                'contatado': 'contacted',
-                'aguardando': 'contacted',
-                'aguardando resposta': 'contacted',
-                'conversando': 'negotiating',
-                'interessado': 'proposal',
-                'interessado_previa': 'proposal',
-                'aceite_previa': 'proposal',
-                'pergunta_preco': 'proposal',
-                'proposta enviada': 'proposal',
-                'proposal': 'proposal',
-                'proposta': 'proposal',
-                'qualificado': 'proposal',
-                'negotiating': 'negotiating',
-                'em negociacao': 'negotiating',
-                'quer_fechar': 'negotiating',
-                'fechado': 'won',
-                'won': 'won',
-                'ganho': 'won',
-                'perdido': 'lost',
-                'rejeicao': 'lost',
-                'lost': 'lost',
-                'falhou': 'lost'
-            };
+            const rawStatus = (lead.status || webhookMeta.status || '').toLowerCase().trim();
+            const targetStatus = AGENTE_STATUS_MAP[rawStatus] || 'contacted';
+            const leadValue = Number(lead.closeValue || lead.value || lead.valor || webhookMeta.value) || 0;
+            const resolvedSource = resolveOriginSource(lead, existing?.source || '');
 
-            const rawStatus = (lead.status || '').toLowerCase().trim();
-            const targetStatus = statusMap[rawStatus] || 'proposal';
-            const leadValue = Number(lead.value || lead.valor) || 400.00;
+            const incomingMsgText = webhookMeta.message ? String(webhookMeta.message).trim() : '';
+            const timelineEntryText = webhookEvent === 'lead_message_received' && incomingMsgText
+                ? `💬 Cliente: "${incomingMsgText}"`
+                : (webhookEvent === 'lead_message_sent' && incomingMsgText
+                    ? `🤖 Atendente: "${incomingMsgText}"`
+                    : `🤖 Agente Comercial (${targetStatus}): ${lead.closeReason || lead.lossReason || lead.notes || webhookMeta.notes || 'Atualização de etapa'}`);
 
             if (existing) {
                 if (email && !existing.email) existing.email = email;
-                if (phone && !existing.phone) existing.phone = phone;
+                if (phone && !existing.phone) existing.phone = formatPhoneBR(phoneDigits);
                 if (company && (!existing.company || existing.company === 'Lead Agente')) existing.company = company;
                 if (name && (!existing.name || existing.name === 'Lead Agente')) existing.name = name;
-                existing.status = targetStatus;
-                if (!existing.value || existing.value === 0) existing.value = leadValue;
-                existing.source = 'Agente Comercial';
+
+                // Nunca sobrescreve estágio 'won' ou status se for apenas evento de ausência automática
+                if (existing.status !== 'won' && webhookMeta.interesse !== 'AUTO_REPLY_AUSENCIA') {
+                    existing.status = targetStatus;
+                }
+                if (leadValue > 0 && (!existing.value || existing.value === 0)) existing.value = leadValue;
+                existing.source = resolvedSource;
+                if (lead.referredBy) existing.referredBy = lead.referredBy;
+                if (lead.closeReason) existing.winReason = lead.closeReason;
+                if (lead.lossReason) existing.lossReason = lead.lossReason;
+                if (lead.bairro && !existing.bairro) existing.bairro = lead.bairro;
+
                 if (!existing.timeline) existing.timeline = [];
-                existing.timeline.push({
-                    id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
-                    type: 'note',
-                    description: `🤖 Atualização Agente Comercial: Status alterado para [${targetStatus}] (${lead.notes || lead.observacoes || 'Interação no WhatsApp'})`,
-                    timestamp: new Date().toISOString()
-                });
+                const lastDesc = existing.timeline[existing.timeline.length - 1]?.description;
+                if (lastDesc !== timelineEntryText) {
+                    existing.timeline.push({
+                        id: 'act_' + Date.now() + Math.random().toString(36).substring(2, 5),
+                        type: webhookEvent.includes('message') ? 'note' : 'note',
+                        description: timelineEntryText,
+                        timestamp: new Date().toISOString()
+                    });
+                }
                 updatedCount++;
             } else {
                 const newContact = {
@@ -417,18 +496,22 @@ app.post(['/api/webhook/agente-comercial', '/api/agente-webhook', '/api/webhook-
                     name: name,
                     company: company || name,
                     email: email,
-                    phone: phone ? (phone.startsWith('55') ? phone.replace(/^55/, '') : phone) : '',
+                    phone: formatPhoneBR(phoneDigits),
                     niche: lead.niche || lead.ramo || lead.nicho || 'Gráfica',
                     status: targetStatus,
-                    value: leadValue,
-                    notes: lead.notes || lead.observacoes || lead.gatilho || 'Interessado no WhatsApp (Agente Comercial AI)',
-                    source: 'Agente Comercial',
-                    createdAt: new Date().toISOString(),
+                    value: leadValue || 400.00,
+                    notes: lead.closeReason || lead.lossReason || lead.notes || lead.observacoes || lead.gatilho || 'Lead recebido pelo Agente Comercial AI',
+                    source: resolvedSource,
+                    referredBy: lead.referredBy || '',
+                    winReason: lead.closeReason || '',
+                    lossReason: lead.lossReason || '',
+                    bairro: lead.bairro || '',
+                    createdAt: lead.createdAt || new Date().toISOString(),
                     timeline: [
                         {
                             id: 'act_init_' + Date.now(),
                             type: 'note',
-                            description: `🤖 Lead importado do Agente Comercial AI (${targetStatus}) - Projeção de ${leadValue}.`,
+                            description: `${timelineEntryText} • Origem: ${resolvedSource}.`,
                             timestamp: new Date().toISOString()
                         }
                     ]
@@ -638,7 +721,7 @@ function sanitizeLeadValue(val) {
     return num;
 }
 
-function runAutoSyncWhatsAppLeads() {
+async function runAutoSyncWhatsAppLeads() {
     console.log('[AUTO-SYNC] Running scheduled 2-hour WhatsApp/Agent lead sync (12x/day)...');
     try {
         let db = { environments: { webco: { contacts: [] } } };
@@ -646,7 +729,8 @@ function runAutoSyncWhatsAppLeads() {
             try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')) || db; } catch (e) {}
         }
 
-        const result = syncAtendenteLeadsCore(db);
+        const remoteLeads = await fetchLeadsFromAtendenteAPI();
+        const result = syncAtendenteLeadsCore(db, remoteLeads);
         fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
         console.log(`[AUTO-SYNC] Sync completed: ${result.importedCount} new imported, ${result.updatedCount} updated. Total: ${result.totalContacts} contacts.`);
     } catch (err) {

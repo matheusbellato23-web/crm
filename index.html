@@ -493,6 +493,28 @@
                     </div>
                 </div>
 
+                <!-- Origem, Indicações & Aprendizado de Fechamentos -->
+                <div class="charts-grid" id="widgetOriginLearning" style="margin-top: 16px;">
+                    <div class="chart-card" style="grid-column: span 2;">
+                        <div class="chart-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                            <div>
+                                <h3>📊 Origens &amp; Classificação dos Fechamentos (Indicação vs Atendente AI)</h3>
+                                <span class="chart-legend">Acompanhamento de por onde os clientes chegam e por que fecham</span>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:12px;">
+                            <div>
+                                <h4 style="font-size:12.5px;color:var(--text-secondary);margin-bottom:8px;">Conversão por Origem</h4>
+                                <div id="dashOriginsBreakdown" style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;"></div>
+                            </div>
+                            <div>
+                                <h4 style="font-size:12.5px;color:var(--text-secondary);margin-bottom:8px;">Por que Fechamos (Vendas Ganhas)</h4>
+                                <div id="dashWinReasonsList" style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;max-height:220px;overflow-y:auto;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Bottom Row: Recent Contacts & Pending Tasks -->
                 <div class="dashboard-details-grid">
                     <div class="details-card" id="widgetRecentLeads">
@@ -2832,8 +2854,8 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="contactEmail">E-mail *</label>
-                            <input type="email" id="contactEmail" class="form-control" placeholder="joao@empresa.com" required>
+                            <label for="contactEmail">E-mail (Opcional)</label>
+                            <input type="email" id="contactEmail" class="form-control" placeholder="joao@empresa.com">
                         </div>
                         <div class="form-group">
                             <label for="contactPhone">Telefone</label>
@@ -2856,6 +2878,24 @@
                                 <option value="won">Ganho (Won)</option>
                                 <option value="lost">Perdido (Lost)</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactSource">Origem do Lead *</label>
+                            <select id="contactSource" class="form-control" required>
+                                <option value="Agente Comercial">🤖 Prospecção Ativa (Agente / Maps)</option>
+                                <option value="Indicação">🤝 Indicação de Cliente / Parceiro</option>
+                                <option value="Comercial WEBCO">💼 Comercial Web Co (Direto)</option>
+                                <option value="WhatsApp Direto">💬 WhatsApp Direto (Inbound)</option>
+                                <option value="Google Ads / Site">🔎 Google Ads / Site</option>
+                                <option value="Instagram / Social">📱 Instagram / Social</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactReferredBy">Quem Indicou / Detalhe (Opcional)</label>
+                            <input type="text" id="contactReferredBy" class="form-control" placeholder="Ex: Story Lens, Ariana, Cliente X">
                         </div>
                     </div>
                     <div class="form-row">
@@ -2943,6 +2983,13 @@
                             <div>
                                 <span class="label">Nicho</span>
                                 <span class="val" id="detailNiche">Negócio Local</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i data-lucide="git-branch"></i>
+                            <div>
+                                <span class="label">Origem</span>
+                                <span class="val" id="detailSource">Agente Comercial</span>
                             </div>
                         </div>
                     </div>
@@ -3088,6 +3135,34 @@
                                 <option value="yearly">Recorrente Anual</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="form-row" style="margin-top:8px;">
+                        <div class="form-group">
+                            <label for="conversionSource">Origem do Fechamento *</label>
+                            <select id="conversionSource" class="form-control" required>
+                                <option value="Indicação">🤝 Indicação de Cliente / Parceiro</option>
+                                <option value="Agente Comercial">🤖 Agente Comercial (WhatsApp AI)</option>
+                                <option value="Comercial WEBCO">💼 Comercial Web Co (Direto)</option>
+                                <option value="WhatsApp Direto">💬 WhatsApp Direto (Inbound)</option>
+                                <option value="Google Ads / Site">🔎 Google Ads / Site</option>
+                                <option value="Instagram / Social">📱 Instagram / Social</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="conversionWinReason">Por que fechou? (Motivo Decisivo) *</label>
+                            <select id="conversionWinReason" class="form-control" required>
+                                <option value="Indicação de confiança">🤝 Indicação de confiança</option>
+                                <option value="Site fora do ar / antigo">🌐 Site fora do ar / desatualizado</option>
+                                <option value="Portfólio e prévia visual">🎨 Portfólio / prévia visual convenceu</option>
+                                <option value="Preço acessível e prazo rápido (esta semana)">⚡ Preço R$ 400 + entrega rápida</option>
+                                <option value="Atendimento técnico/consultivo no WhatsApp">🧠 Atendimento consultivo no WhatsApp</option>
+                                <option value="Outro motivo">Outro motivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:8px;">
+                        <label for="conversionWinDetail">Observação / Quem Indicou (Opcional)</label>
+                        <input type="text" id="conversionWinDetail" class="form-control" placeholder="Ex: Indicado pela Story Lens — cliente já queria fechar site rápido">
                     </div>
                     <div class="form-group" style="margin-top:12px;">
                         <label style="font-weight:600; margin-bottom:8px; display:block;">Serviços Conectados / Adicionais (Upsell)</label>

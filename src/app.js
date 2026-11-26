@@ -5024,6 +5024,74 @@ function renderCharts() {
             }
         }
     });
+
+    if (typeof renderOriginLearningWidget === 'function') {
+        renderOriginLearningWidget();
+    }
+}
+
+function renderOriginLearningWidget() {
+    const originsContainer = document.getElementById('dashOriginsBreakdown');
+    const winsContainer = document.getElementById('dashWinReasonsList');
+    if (!originsContainer || !winsContainer) return;
+
+    const env = getEnv();
+    const contacts = env.contacts || [];
+    const groups = new Map();
+
+    contacts.forEach(c => {
+        const rawSrc = (c.source || '').trim();
+        let label = rawSrc || 'Não informada';
+        if (rawSrc.toLowerCase().includes('indicac') || rawSrc.toLowerCase().includes('indicaç') || c.affiliateId) {
+            label = 'Indicação';
+        }
+        if (!groups.has(label)) {
+            groups.set(label, { label, total: 0, hot: 0, won: 0, wonValue: 0 });
+        }
+        const g = groups.get(label);
+        g.total++;
+        if (['interested', 'proposal', 'negotiating'].includes(c.status)) g.hot++;
+        if (c.status === 'won') {
+            g.won++;
+            g.wonValue += Number(c.value) || 0;
+        }
+    });
+
+    const sortedGroups = Array.from(groups.values()).sort((a, b) => b.won - a.won || b.total - a.total);
+    originsContainer.innerHTML = sortedGroups.length === 0
+        ? '<span style="color:var(--text-muted);">Sem contatos cadastrados.</span>'
+        : sortedGroups.map(g => {
+            const conv = g.total > 0 ? ((g.won / g.total) * 100).toFixed(1) : '0.0';
+            const isInd = g.label === 'Indicação';
+            return `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;background:var(--bg-app);border:1px solid ${isInd ? 'rgba(139,92,246,0.35)' : 'var(--border-color)'};">
+                <div>
+                  <strong style="color:${isInd ? '#8b5cf6' : 'var(--text-primary)'};">${isInd ? '🤝 ' : ''}${g.label}</strong>
+                  <div style="font-size:11px;color:var(--text-muted);">${g.total} contatos • ${g.hot} ativos no funil</div>
+                </div>
+                <div style="text-align:right;">
+                  <strong style="color:${g.won > 0 ? 'var(--color-success)' : 'var(--text-secondary)'};">${g.won} fech. (${conv}%)</strong>
+                  <div style="font-size:11px;color:var(--text-muted);">${formatCurrency(g.wonValue)}</div>
+                </div>
+              </div>
+            `;
+        }).join('');
+
+    const wonList = contacts.filter(c => c.status === 'won');
+    winsContainer.innerHTML = wonList.length === 0
+        ? '<span style="color:var(--text-muted);">Nenhuma venda marcada como Ganho ainda. Ao fechar uma venda, o CRM registra aqui o motivo e a origem.</span>'
+        : wonList.slice().reverse().map(c => `
+            <div style="padding:8px 10px;border-radius:8px;background:var(--bg-app);border:1px solid var(--border-color);border-left:3px solid var(--color-success);">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <strong style="color:var(--text-primary);">${c.name || c.company}</strong>
+                <span style="font-size:11px;font-weight:700;color:var(--color-success);">${formatCurrency(c.value || 0)}</span>
+              </div>
+              <div style="font-size:11.5px;color:var(--text-secondary);margin-top:2px;">
+                <strong>Origem:</strong> ${c.source || 'Não informada'}${c.referredBy ? ` (${c.referredBy})` : ''} •
+                <strong>Motivo:</strong> ${c.winReason || (c.notes ? c.notes.substring(0, 70) : 'Não classificado')}
+              </div>
+            </div>
+        `).join('');
 }
 
 let contactsTableState = {
@@ -5288,7 +5356,10 @@ function renderContacts() {
     // Render Items
     paginatedItems.forEach(c => {
         const isAgente = c.source === 'Agente Comercial' || (c.id && c.id.includes('agente')) || (c.notes && c.notes.toLowerCase().includes('agente'));
-        const isAgenteBadge = isAgente ? `<span style="font-size:10px;background:rgba(79,70,229,0.1);color:#4F46E5;border:1px solid rgba(79,70,229,0.3);padding:2px 6px;border-radius:99px;font-weight:600;display:inline-flex;align-items:center;gap:2px;">🤖 AI</span>` : '';
+        const isIndicacao = (c.source || '').toLowerCase().includes('indicac') || (c.source || '').toLowerCase().includes('indicaç') || !!c.affiliateId;
+        const isAgenteBadge = isIndicacao
+            ? `<span style="font-size:10px;background:rgba(139,92,246,0.14);color:#8b5cf6;border:1px solid rgba(139,92,246,0.35);padding:2px 6px;border-radius:99px;font-weight:600;display:inline-flex;align-items:center;gap:2px;">🤝 Indicação</span>`
+            : (isAgente ? `<span style="font-size:10px;background:rgba(79,70,229,0.1);color:#4F46E5;border:1px solid rgba(79,70,229,0.3);padding:2px 6px;border-radius:99px;font-weight:600;display:inline-flex;align-items:center;gap:2px;">🤖 AI</span>` : '');
         
         const rawPhoneDigits = (c.phone || '').replace(/\D/g, '');
         const waLink = rawPhoneDigits ? `https://wa.me/55${rawPhoneDigits.length >= 10 && rawPhoneDigits.startsWith('55') ? rawPhoneDigits.substring(2) : rawPhoneDigits}` : null;
@@ -7326,6 +7397,8 @@ function openAddContact() {
     document.getElementById("contactForm").reset();
     document.getElementById("contactId").value = "";
     document.getElementById("contactNiche").value = "Negócio Local";
+    if (document.getElementById("contactSource")) document.getElementById("contactSource").value = "Indicação";
+    if (document.getElementById("contactReferredBy")) document.getElementById("contactReferredBy").value = "";
     document.getElementById("contactModalTitle").innerText = "Adicionar Contato";
     document.getElementById("contactModal").classList.add("active");
 }
@@ -7338,11 +7411,17 @@ function openEditContact(id) {
     document.getElementById("contactId").value = c.id;
     document.getElementById("contactName").value = c.name;
     document.getElementById("contactCompany").value = c.company || "";
-    document.getElementById("contactEmail").value = c.email;
+    document.getElementById("contactEmail").value = c.email || "";
     document.getElementById("contactPhone").value = c.phone || "";
     document.getElementById("contactValue").value = c.value || 0;
     document.getElementById("contactStatus").value = c.status;
     document.getElementById("contactNiche").value = c.niche || "Negócio Local";
+    if (document.getElementById("contactSource")) {
+        const srcEl = document.getElementById("contactSource");
+        const matchedOpt = Array.from(srcEl.options).find(o => o.value === c.source || (c.source || '').toLowerCase().includes('indicac') && o.value === 'Indicação');
+        srcEl.value = matchedOpt ? matchedOpt.value : 'Agente Comercial';
+    }
+    if (document.getElementById("contactReferredBy")) document.getElementById("contactReferredBy").value = c.referredBy || "";
     if (document.getElementById("contactAffiliate")) document.getElementById("contactAffiliate").value = c.affiliateId || "";
     document.getElementById("contactNotes").value = c.notes || "";
 
@@ -7370,10 +7449,13 @@ function openContactDetails(id) {
     document.getElementById("detailInitials").innerText = getInitials(c.name);
     document.getElementById("detailName").innerText = c.name;
     document.getElementById("detailCompany").innerText = c.company || "Sem Empresa";
-    document.getElementById("detailEmail").innerText = c.email;
+    document.getElementById("detailEmail").innerText = c.email || "Não informado";
     document.getElementById("detailPhone").innerText = c.phone || "Não cadastrado";
     document.getElementById("detailValue").innerText = formatCurrency(c.value);
     document.getElementById("detailNiche").innerText = c.niche || "Outro";
+    if (document.getElementById("detailSource")) {
+        document.getElementById("detailSource").innerText = `${c.source || "Não informada"}${c.referredBy ? ` (${c.referredBy})` : ""}`;
+    }
     
     const badge = document.getElementById("detailBadgeStatus");
     badge.className = `status-badge ${c.status}`;
@@ -7870,6 +7952,23 @@ function openConversionModal(contactId) {
         document.getElementById("conversionType").value = "single";
     }
 
+    const srcEl = document.getElementById("conversionSource");
+    if (srcEl) {
+        const rawSrc = (c.source || '').trim();
+        if (rawSrc.toLowerCase().includes('indicac') || rawSrc.toLowerCase().includes('indicaç') || c.affiliateId) {
+            srcEl.value = "Indicação";
+        } else {
+            const matched = Array.from(srcEl.options).find(o => o.value === rawSrc);
+            srcEl.value = matched ? matched.value : "Agente Comercial";
+        }
+    }
+    const winReasonEl = document.getElementById("conversionWinReason");
+    if (winReasonEl) {
+        winReasonEl.value = c.winReason || ((srcEl && srcEl.value === "Indicação") ? "Indicação de confiança" : "Portfólio e prévia visual");
+    }
+    const winDetailEl = document.getElementById("conversionWinDetail");
+    if (winDetailEl) winDetailEl.value = c.referredBy || "";
+
     document.getElementById("conversionModal").classList.add("active");
 }
 
@@ -7902,6 +8001,9 @@ document.getElementById("conversionForm").addEventListener("submit", (e) => {
     const productId = document.getElementById("conversionProduct").value;
     const finalPrice = parseFloat(document.getElementById("conversionPrice").value) || 0;
     const billingType = document.getElementById("conversionType").value;
+    const convSource = document.getElementById("conversionSource")?.value || '';
+    const convWinReason = document.getElementById("conversionWinReason")?.value || '';
+    const convWinDetail = document.getElementById("conversionWinDetail")?.value?.trim() || '';
 
     const contact = env.contacts.find(c => c.id === contactId);
     const product = env.products.find(p => p.id === productId);
@@ -7909,7 +8011,10 @@ document.getElementById("conversionForm").addEventListener("submit", (e) => {
     if (contact && product) {
         contact.status = "won";
         contact.value = finalPrice;
-        
+        if (convSource) contact.source = convWinDetail && convSource === 'Indicação' ? `Indicação (${convWinDetail})` : convSource;
+        if (convWinReason) contact.winReason = convWinReason;
+        if (convWinDetail) contact.referredBy = convWinDetail;
+
         // Build descriptions for addons too
         const checkedAddonNames = [];
         document.querySelectorAll(".conversion-addon-checkbox:checked").forEach(cb => {
@@ -7917,9 +8022,12 @@ document.getElementById("conversionForm").addEventListener("submit", (e) => {
             if (addProd) checkedAddonNames.push(`${addProd.name} (${formatCurrency(addProd.price)})`);
         });
 
-        const noteText = `Venda concluída! Produto Principal: ${product.name} (${formatCurrency(finalPrice)}).` + 
+        const reasonSummary = [convSource ? `Origem: ${contact.source}` : '', convWinReason ? `Motivo: ${convWinReason}` : '', convWinDetail ? `Detalhe: ${convWinDetail}` : ''].filter(Boolean).join(' • ');
+        const noteText = `Venda concluída! Produto Principal: ${product.name} (${formatCurrency(finalPrice)}).` +
+            (reasonSummary ? ` [${reasonSummary}]` : '') +
             (checkedAddonNames.length > 0 ? ` Adicionais: ${checkedAddonNames.join(", ")}.` : "");
 
+        if (!contact.timeline) contact.timeline = [];
         contact.timeline.push({
             id: "act_" + Date.now(),
             type: "note",
@@ -8397,6 +8505,10 @@ document.getElementById("contactForm").addEventListener("submit", (e) => {
     const value = parseFloat(document.getElementById("contactValue").value) || 0;
     const status = document.getElementById("contactStatus").value;
     const niche = document.getElementById("contactNiche").value;
+    const sourceRaw = document.getElementById("contactSource")?.value || 'Agente Comercial';
+    const referredBy = document.getElementById("contactReferredBy")?.value?.trim() || '';
+    const affiliateId = document.getElementById("contactAffiliate")?.value || '';
+    const source = (sourceRaw === 'Indicação' && referredBy) ? `Indicação (${referredBy})` : sourceRaw;
     const notes = document.getElementById("contactNotes").value;
 
     if (id) {
@@ -8411,6 +8523,10 @@ document.getElementById("contactForm").addEventListener("submit", (e) => {
             contact.phone = phone;
             contact.value = value;
             contact.niche = niche;
+            contact.source = source;
+            contact.referredBy = referredBy;
+            if (affiliateId) contact.affiliateId = affiliateId;
+            else delete contact.affiliateId;
             
             if (contact.status !== status) {
                 if (status === "won") {
@@ -8419,6 +8535,7 @@ document.getElementById("contactForm").addEventListener("submit", (e) => {
                     return;
                 } else {
                     contact.status = status;
+                    if (!contact.timeline) contact.timeline = [];
                     contact.timeline.push({
                         id: "act_" + Date.now(),
                         type: "note",
@@ -8439,10 +8556,13 @@ document.getElementById("contactForm").addEventListener("submit", (e) => {
             value,
             status,
             niche,
+            source,
+            referredBy,
+            ...(affiliateId ? { affiliateId } : {}),
             notes,
             createdAt: new Date().toISOString(),
             timeline: [
-                { id: "act_" + Date.now(), type: "note", description: "Contato cadastrado no sistema.", timestamp: new Date().toISOString() }
+                { id: "act_" + Date.now(), type: "note", description: `Contato cadastrado no sistema (${source}).`, timestamp: new Date().toISOString() }
             ]
         };
         env.contacts.push(newContact);
